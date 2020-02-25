@@ -1,0 +1,250 @@
+
+network "../resources/o3prm/simpleCar.o3prm" {
+   property software aGrUM;
+}
+
+variable fanbelt.fanbeltBroken {
+   type discrete[2] {no, yes};
+}
+
+variable battery.batteryOld {
+   type discrete[2] {no, yes};
+}
+
+variable battery.batteryDead {
+   type discrete[2] {no, yes};
+}
+
+variable battery.batteryMeterOk {
+   type discrete[2] {no, yes};
+}
+
+variable starter.starterBroken {
+   type discrete[2] {no, yes};
+}
+
+variable starter.clickingSound {
+   type discrete[2] {no, yes};
+}
+
+variable tank.Empty {
+   type discrete[2] {no, yes};
+}
+
+variable tank.fuelLineBlocked {
+   type discrete[2] {no, yes};
+}
+
+variable car.ChargingError {
+   type discrete[2] {no, yes};
+}
+
+variable car.batteryFlat {
+   type discrete[2] {no, yes};
+}
+
+variable car.lightsOk {
+   type discrete[2] {no, yes};
+}
+
+variable car.noOilLightOn {
+   type discrete[2] {no, yes};
+}
+
+variable car.gasGaugeOk {
+   type discrete[2] {no, yes};
+}
+
+variable car.carWontStart {
+   type discrete[2] {no, yes};
+}
+
+variable alternator.alternatorBroken {
+   type discrete[2] {no, yes};
+}
+
+variable oil.noOil {
+   type discrete[2] {no, yes};
+}
+
+variable oil.dipstickLevelOk {
+   type discrete[2] {no, yes};
+}
+
+variable global.diagnosis {
+   type discrete[6] {car.batteryFlat, oil.noOil, starter.starterBroken, tank.fuelLineBlocked, tank.Empty, unknown};
+}
+
+variable callService {
+   type discrete[2] {no, yes};
+}
+
+probability (fanbelt.fanbeltBroken) {
+   default 0.999 0.001;
+}
+probability (battery.batteryOld) {
+   default 0.98 0.02;
+}
+probability (battery.batteryDead | battery.batteryOld) {
+   (no) 0.99 0.01;
+   (yes) 0.01 0.99;
+}
+probability (battery.batteryMeterOk | battery.batteryDead) {
+   (no) 0.05 0.95;
+   (yes) 1 0;
+}
+probability (starter.starterBroken) {
+   default 0.998 0.002;
+}
+probability (starter.clickingSound | starter.starterBroken) {
+   (no) 0.99 0.01;
+   (yes) 0.02 0.98;
+}
+probability (tank.Empty) {
+   default 0.994 0.006;
+}
+probability (tank.fuelLineBlocked) {
+   default 0.996 0.004;
+}
+probability (car.ChargingError | alternator.alternatorBroken, fanbelt.fanbeltBroken) {
+   (no, no) 0.999 0.001;
+   (yes, no) 0 1;
+   (no, yes) 0 1;
+   (yes, yes) 0 1;
+}
+probability (car.batteryFlat | battery.batteryDead, car.ChargingError) {
+   (no, no) 1 0;
+   (yes, no) 0 1;
+   (no, yes) 0 1;
+   (yes, yes) 0 1;
+}
+probability (car.lightsOk | car.batteryFlat) {
+   (no) 0.02 0.98;
+   (yes) 1 0;
+}
+probability (car.noOilLightOn | car.batteryFlat, oil.noOil) {
+   (no, no) 0.999 0.001;
+   (yes, no) 1 0;
+   (no, yes) 0.02 0.98;
+   (yes, yes) 1 0;
+}
+probability (car.gasGaugeOk | car.batteryFlat, tank.Empty) {
+   (no, no) 0.01 0.99;
+   (yes, no) 0.999 0.001;
+   (no, yes) 0.999 0.001;
+   (yes, yes) 1 0;
+}
+probability (car.carWontStart | car.batteryFlat, oil.noOil, tank.Empty, tank.fuelLineBlocked, starter.starterBroken, callService) {
+   (no, no, no, no, no, no) 0.999 0.001;
+   (no, no, no, no, no, yes) 1 0;
+   (yes, no, no, no, no, no) 0 1;
+   (yes, no, no, no, no, yes) 1 0;
+   (no, yes, no, no, no, no) 0 1;
+   (no, yes, no, no, no, yes) 1 0;
+   (yes, yes, no, no, no, no) 0 1;
+   (yes, yes, no, no, no, yes) 1 0;
+   (no, no, yes, no, no, no) 0 1;
+   (no, no, yes, no, no, yes) 1 0;
+   (yes, no, yes, no, no, no) 0 1;
+   (yes, no, yes, no, no, yes) 1 0;
+   (no, yes, yes, no, no, no) 0 1;
+   (no, yes, yes, no, no, yes) 1 0; 
+   (yes, yes, yes, no, no, no) 0 1;
+   (yes, yes, yes, no, no, yes) 1 0;
+   (no, no, no, yes, no, no) 0 1;
+   (no, no, no, yes, no, yes) 1 0;   
+   (yes, no, no, yes, no, no) 0 1;
+   (yes, no, no, yes, no, yes) 1 0;
+   (no, yes, no, yes, no, no) 0 1;
+   (no, yes, no, yes, no, yes) 1 0;
+   (yes, yes, no, yes, no, no) 0 1;
+   (yes, yes, no, yes, no, yes) 1 0;
+   (no, no, yes, yes, no, no) 0 1;
+   (no, no, yes, yes, no, yes) 1 0;
+   (yes, no, yes, yes, no, no) 0 1;
+   (yes, no, yes, yes, no, yes) 1 0;
+   (no, yes, yes, yes, no, no) 0 1;
+   (no, yes, yes, yes, no, yes) 1 0;
+   (yes, yes, yes, yes, no, no) 0 1;
+   (yes, yes, yes, yes, no, yes) 1 0;
+   (no, no, no, no, yes, no) 0 1;
+   (no, no, no, no, yes, yes) 1 0;
+   (yes, no, no, no, yes, no) 0 1;
+   (yes, no, no, no, yes, yes) 1 0;   
+   (no, yes, no, no, yes, no) 0 1;
+   (no, yes, no, no, yes, yes) 1 0;
+   (yes, yes, no, no, yes, no) 0 1;
+   (yes, yes, no, no, yes, yes) 1 0;
+   (no, no, yes, no, yes, no) 0 1;
+   (no, no, yes, no, yes, yes) 1 0;
+   (yes, no, yes, no, yes, no) 0 1;
+   (yes, no, yes, no, yes, yes) 1 0;
+   (no, yes, yes, no, yes, no) 0 1;
+   (no, yes, yes, no, yes, yes) 1 0;
+   (yes, yes, yes, no, yes, no) 0 1;
+   (yes, yes, yes, no, yes, yes) 1 0;
+   (no, no, no, yes, yes, no) 0 1;
+   (no, no, no, yes, yes, yes) 1 0;
+   (yes, no, no, yes, yes, no) 0 1;
+   (yes, no, no, yes, yes, yes) 1 0;
+   (no, yes, no, yes, yes, no) 0 1;
+   (no, yes, no, yes, yes, yes) 1 0;
+   (yes, yes, no, yes, yes, no) 0 1;
+   (yes, yes, no, yes, yes, yes) 1 0;
+   (no, no, yes, yes, yes, no) 0 1;
+   (no, no, yes, yes, yes, yes) 1 0;
+   (yes, no, yes, yes, yes, no) 0 1;
+   (yes, no, yes, yes, yes, yes) 1 0;
+   (no, yes, yes, yes, yes, no) 0 1;
+   (no, yes, yes, yes, yes, yes) 1 0;   
+   (yes, yes, yes, yes, yes, no) 0 1;
+   (yes, yes, yes, yes, yes, yes) 1 0;
+}
+probability (alternator.alternatorBroken) {
+   default 0.998 0.002;
+}
+probability (oil.noOil) {
+   default 0.99 0.01;
+}
+probability (oil.dipstickLevelOk | oil.noOil) {
+   (no) 0.001 0.999;
+   (yes) 0.999 0.001;
+}
+probability (global.diagnosis | car.batteryFlat, oil.noOil, starter.starterBroken, tank.fuelLineBlocked, tank.Empty) {
+   (no, no, no, no, no) 0 0 0 0 0 1;
+   (yes, no, no, no, no) 1 0 0 0 0 0;
+   (no, yes, no, no, no) 0 1 0 0 0 0;
+   (yes, yes, no, no, no) 1 0 0 0 0 0;
+   (no, no, yes, no, no) 0 0 1 0 0 0;
+   (yes, no, yes, no, no) 1 0 0 0 0 0;
+   (no, yes, yes, no, no) 0 1 0 0 0 0;
+   (yes, yes, yes, no, no) 1 0 0 0 0 0;
+   (no, no, no, yes, no) 0 0 0 1 0 0;
+   (yes, no, no, yes, no) 1 0 0 0 0 0;
+   (no, yes, no, yes, no) 0 1 0 0 0 0;
+   (yes, yes, no, yes, no) 1 0 0 0 0 0;
+   (no, no, yes, yes, no) 0 0 1 0 0 0;
+   (yes, no, yes, yes, no) 1 0 0 0 0 0;
+   (no, yes, yes, yes, no) 0 1 0 0 0 0;
+   (yes, yes, yes, yes, no) 1 0 0 0 0 0;
+   (no, no, no, no, yes) 0 0 0 0 1 0;
+   (yes, no, no, no, yes) 1 0 0 0 0 0;
+   (no, yes, no, no, yes) 0 1 0 0 0 0;
+   (yes, yes, no, no, yes) 1 0 0 0 0 0;
+   (no, no, yes, no, yes) 0 0 1 0 0 0;
+   (yes, no, yes, no, yes) 1 0 0 0 0 0;
+   (no, yes, yes, no, yes) 0 1 0 0 0 0;
+   (yes, yes, yes, no, yes) 1 0 0 0 0 0;
+   (no, no, no, yes, yes) 0 0 0 1 0 0;
+   (yes, no, no, yes, yes) 1 0 0 0 0 0;
+   (no, yes, no, yes, yes) 0 1 0 0 0 0;
+   (yes, yes, no, yes, yes) 1 0 0 0 0 0;
+   (no, no, yes, yes, yes) 0 0 1 0 0 0;
+   (yes, no, yes, yes, yes) 1 0 0 0 0 0;
+   (no, yes, yes, yes, yes) 0 1 0 0 0 0;
+   (yes, yes, yes, yes, yes) 1 0 0 0 0 0;
+}
+
+probability (callService) {
+   default 1 0;
+}
