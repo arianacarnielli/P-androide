@@ -10,7 +10,7 @@ Enseigneurs résponsables :
   Ariana Carnielli, 
   Ivan Kachaikin
   
-Derniers modifications :
+Dernières modifications :
 
 Correction du premier algorithme pour le TSP. Le calcul de l'esperance dans cet algorithme a été corrigé, le code utilise des appels à chgEvidence() maintenant et est commenté, la fonction a une mode debug aussi. 
 
