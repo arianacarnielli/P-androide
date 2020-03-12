@@ -1,4 +1,5 @@
 import pyAgrum as gum
+from itertools import permutations
 
 class TroubleShootingProblem:
     """
@@ -197,7 +198,7 @@ class TroubleShootingProblem:
         self.reset_bay_lp()
         
         return rep_seq, exp_cost
-                
+           
     def simple_solver_obs(self, debug = False):
         """
         """
@@ -309,6 +310,51 @@ class TroubleShootingProblem:
         self.reset_bay_lp(self.evidences)           
         return rep_seq, exp_cost
 
+    # Une fonction qui calcule un coût espéré de réparation à partir d'une séquence d'actions donnée
+    # Ici on utilise une formule
+    # ECR = coût(C1) +
+    #       (1 - P(e = Normal | C1 = Normal)) * coût(C2) +
+    #       (1 - P(e = Normal | C1 = Normal, C2 = Normal)) * coût(C3) + ...
+    def estimated_repair_cost_seq_of_actions(self, seq):
+
+        ecr = 0.0
+        prob = 1.0
+        self.reset_bay_lp()
+
+        # Parcours par tous les compasants à réparer
+        for node in seq:
+            # On ajoute un terme à ECR
+            ecr += self.costs_rep[node] * prob
+            # On propage dans notre réseau une évidence que C_next = Normal
+            if node == self.service_node:
+                self.bay_lp.chgEvidence(node, "yes")
+            else:
+                self.bay_lp.chgEvidence(node, "no")
+            pot = self.bay_lp.posterior(self.problem_defining_node)
+            inst = gum.Instantiation(pot)
+            inst.chgVal(self.problem_defining_node, "no")
+            # On met-à-jour une proba
+            prob = (1 - pot.get(inst))
+
+        self.reset_bay_lp()
+
+        return ecr
+
+    # Une fonction qui cherche une séquence optimale de réparation par une recherche exhaustive en choisissant
+    # une séquence de meilleur ECR
+    def brute_force_solver(self, debug=False):
+        min_seq = [self.service_node] + self.repairable_nodes.copy()
+        min_ecr = self.estimated_repair_cost_seq_of_actions(min_seq)
+
+        # Parcours par toutes les permutations de l'union de noeuds réparables avec un noeud de service
+        for seq in [list(t) for t in permutations(self.repairable_nodes + [self.service_node])]:
+            ecr = self.estimated_repair_cost_seq_of_actions(seq)
+            if ecr < min_ecr:
+                min_ecr = ecr
+                min_seq = seq.copy()
+
+        return min_seq, min_ecr
+
 # =============================================================================
 # Méthodes pas encore fonctionnelles            
 # =============================================================================
@@ -368,30 +414,26 @@ class TroubleShootingProblem:
  
         # On retourne aux évidences du début
         self.reset_bay_lp(self.evidences)           
-        return chosen_node
-
-
-
-    
+        return chosen_node    
 
     # Une méthode qui implémente un algorithme le plus simple de résolution du problème de Troubleshooting
     def solve_static(self):
         rep_nodes = list(self.repairable_nodes.copy())
         rep_seq = []
         # L'efficacité de l'appel à service
-        service_ef = 1.0 / self.costs_rep['callService']
+        service_ef = 1.0 / self.costs_rep[self.service_node]
         ie = gum.LazyPropagation(self.bayesian_network)
         # Tant qu'on n'a pas encore observer tous les noeuds réparables
         while len(rep_nodes) > 0:
             # On suppose par défaut que l'appel à service est une action la plus efficace
             # on cherche ensuite une action plus efficace
-            action_to_put = 'service'
+            action_to_put = self.service_node
             ef = service_ef
             # On observe tous les actions pas encore observés
             for rnode in range(len(rep_nodes)):
                 if rnode != 0:
                     ie.eraseEvidence(rep_nodes[rnode-1])
-                ie.setEvidence({rep_nodes[rnode]: False})
+                ie.addEvidence(rep_nodes[rnode], "no")
                 # On vérifie si une action courante est plus efficace que le dernier  max par efficacité
                 #print(ie.posterior(self.problem_defining_node).tolist()[0])
                 if ef < ie.posterior(self.problem_defining_node).tolist()[0] / self.costs_rep[rep_nodes[rnode]]:
@@ -402,17 +444,11 @@ class TroubleShootingProblem:
             # Si on a trouvé quelque part qu'un appel au service est plus efficace que toutes les actions possibles,
             # on ajoute donc 'service' dans une séquence de réparation et on s'arrête car cet appel réparera un appareil
             # avec un certain
-            if action_to_put == 'service':
-                return rep_seq
+            if action_to_put == self.service_node:
+                return rep_seq, self.estimated_repair_cost_seq_of_actions(rep_seq)
             ie.eraseEvidence(rep_nodes[-1])
-            ie.setEvidence({action_to_put: False})
+            ie.addEvidence(action_to_put, "no")
             # on met-à-jour les noeuds réparables
             rep_nodes.remove(action_to_put)
-        rep_seq.append('service')
-        return rep_seq
-    
-            
-            
-            
-            
-            
+        rep_seq.append(self.service_node)
+        return rep_seq, self.estimated_repair_cost_seq_of_actions(rep_seq)
