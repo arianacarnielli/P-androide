@@ -17,14 +17,14 @@ class TroubleShootingProblem:
             du BN et les valeurs leurs coûts de reparation (float).
         costs_obs : Dictionnaire de coûts où les clés représentent les noeuds 
             du BN et les valeurs leurs coûts d'observation (float).  
-        repairable_nodes : Liste de noeuds qui correspondent aux éléments du 
+        repairable_nodes : Ensemble de noeuds qui correspondent aux éléments du 
             système concerné qui peuvent être réparés.
-        unrepairable_nodes : Liste de noeuds qui correspondent aux éléments 
+        unrepairable_nodes : Ensemble de noeuds qui correspondent aux éléments 
             d'un système qui ne peuvent pas être réparés.
         problem_defining_node : Noeud qui répresent le problème a être reglé
             (système fonctionnel où pas).
-        observation_nodes : Liste de noeuds qui correspondent aux éléments du 
-            système qui peuvent être observés.
+        observation_nodes : Ensemble de noeuds qui correspondent aux éléments 
+            du système qui peuvent être observés.
         service_node : Noeud qui répresent l'appel au service (appel à la 
             réparation sûre du système).
     """
@@ -50,14 +50,14 @@ class TroubleShootingProblem:
         self.costs_rep = costs[0].copy()
         self.costs_obs = costs[1].copy()
         self.nodes_types = nodes_types.copy()
-        self.repairable_nodes = [node for node in nodes_types.keys() \
-                                if 'repairable' in nodes_types[node]]
-        self.unrepairable_nodes = [node for node in nodes_types.keys() \
-                                if 'unrepairable' in  nodes_types[node]]
+        self.repairable_nodes = {node for node in nodes_types.keys() \
+                                if 'repairable' in nodes_types[node]}
+        self.unrepairable_nodes = {node for node in nodes_types.keys() \
+                                if 'unrepairable' in  nodes_types[node]}
         self.problem_defining_node = [node for node in nodes_types.keys() \
                                 if 'problem-defining' in nodes_types[node]][0]
-        self.observation_nodes = [node for node in nodes_types.keys() \
-                                if 'observable' in nodes_types[node]]
+        self.observation_nodes = {node for node in nodes_types.keys() \
+                                if 'observable' in nodes_types[node]}
         self.service_node = [node for node in nodes_types.keys() \
                                 if 'service' in nodes_types[node]][0]
         self.start_bay_lp()
@@ -73,8 +73,11 @@ class TroubleShootingProblem:
         servent pour qu'on puisse utiliser la méthode chgEvidence de pyAgrum 
         à la suite.
         """
-        for node in self.repairable_nodes + [self.service_node]:
+        modifiable_nodes = self.repairable_nodes.union(self.observation_nodes)
+        modifiable_nodes.add(self.service_node)
+        for node in modifiable_nodes:
             self.bay_lp.addEvidence(node, [1, 1]) 
+        self.evidences = {}
             
     def reset_bay_lp(self, dict_inf = {}):
         """
@@ -87,11 +90,20 @@ class TroubleShootingProblem:
             dict_inf (facultatif) : Dictionnaire où les clés sont des noeuds et
                 les valeurs sont des inférences. 
         """
-        for node in self.repairable_nodes + [self.service_node]:
+        modifiable_nodes = self.repairable_nodes.union(self.observation_nodes)
+        modifiable_nodes.add(self.service_node)
+        for node in modifiable_nodes:
             if node in dict_inf:
-                self.bay_lp.chgEvidence(node, dict_inf[node])
+                self.change_evidence(node, dict_inf[node])
             else:
                 self.bay_lp.chgEvidence(node, [1, 1])
+                self.evidences.pop(node, None)
+
+    def change_evidence(self, node, evidence):
+        """
+        """
+        self.bay_lp.chgEvidence(node, evidence)
+        self.evidences[node] = evidence
 
     def simple_solver(self, debug = False):
         """
@@ -104,7 +116,7 @@ class TroubleShootingProblem:
         
         Args : 
             debug (facultatif) : si True, affiche des messages montrant le 
-                de l'algorithme.
+                deroulement de l'algorithme.
         Returns :
             Un tuple avec la séquence des noeuds à être réparés dans l'ordre et
             l'esperance du coût de réparation de cette séquence.
@@ -114,8 +126,8 @@ class TroubleShootingProblem:
         dic_eff = {}
         
         # Pour chaque noeud réparable + service (et qui n'est pas irréparable):
-        for node in set(self.repairable_nodes + [self.service_node]) \
-        - set(self.unrepairable_nodes):
+        for node in (self.repairable_nodes|{self.service_node}) - \
+        (self.unrepairable_nodes):
             # On actualise l'évidence liée au noeud en traitement: 
             # On dit que le noeud courrant n'est pas cassé 
             # (On considere qu'il a été réparé)
@@ -163,7 +175,7 @@ class TroubleShootingProblem:
             print("esperance partiel du coût de la séquence : ", exp_cost)
 
         for node in rep_seq[1:]:
-            # On récupere la probabilité que le problème persiste après la 
+            # On récupere la probabilité que le problème persiste après les 
             # réparations des noeuds déjà pris en considération
             # p = p(e != Normal|repair(tous les noeuds déjà considerés)) 
             p = self.bay_lp.posterior(self.problem_defining_node)
@@ -185,28 +197,33 @@ class TroubleShootingProblem:
         self.reset_bay_lp()
         
         return rep_seq, exp_cost
-    
-# =============================================================================
-# Méthodes pas encore fonctionnelles            
-# =============================================================================
-            
-    def solveur_simple_iter(self, debug = False):
+                
+    def simple_solver_obs(self, debug = False):
         """
         """
         rep_seq = []
-        repares = {}
-        unrep_nodes = set(self.unrepairable_nodes.copy())
+        exp_cost = 0
+        proba_cost = 1
+        repares = [k for k in self.evidences]
+        unrep_nodes = self.unrepairable_nodes.copy()|(set(repares))
         
-        #on itère jusqu'à ce qu'il n'existe plus de noeud que peut être reparé
-        reparables = list(set(self.repairable_nodes + [self.service_node]) \
-        - unrep_nodes)
-        while reparables != []:  
+        # On itère jusqu'à ce qu'il n'existe plus de noeud que peut être reparé
+        reparables = (self.repairable_nodes | {self.service_node}) \
+        - unrep_nodes
+        while len(reparables) != 0:  
             if debug == True:
                 print("Les noeuds considerés dans ce tour de boucle : ",\
                       reparables)
             # On crée un dictionnaire avec les efficacités liées à chaque noeud 
             # réparable + service dans ce tour de boucle
-            dic_eff = {}            
+            dic_eff = {}  
+            
+            # On crée un dictionnaire avec les coûts utilisés pour calculer 
+            # l'esperance de coût de la séquence.
+            # On se sert que du coût lié au noeud choisi à la fin de chaque 
+            # tour de boucle.
+            dic_costs = {}
+            
             # Pour chaque noeud réparable + service (et qui n'est pas 
             # irréparable):
             for node in reparables:   
@@ -224,13 +241,18 @@ class TroubleShootingProblem:
                     p_noeud_casse[inst_noeud_casse] * self.costs_rep[node]
                 else:
                     cost = self.costs_rep[node]
+                
+                # On récupere le coût pour le calcul de l'ésperance
+                dic_costs[node] = cost
+                
                 # On actualise l'évidence liée au noeud en traitement: 
                 # On dit que le noeud courrant n'est pas cassé 
                 # (On considere qu'il a été réparé)
                 if node != "callService":
                     self.bay_lp.chgEvidence(node, "no")
                 else:
-                    self.bay_lp.chgEvidence(node, "yes")          
+                    self.bay_lp.chgEvidence(node, "yes")  
+                    
                 # On calcule l'efficacité du noeud:
                 # p(e = Normal|repair(node), Ei) / cost(node)
                 p = self.bay_lp.posterior(self.problem_defining_node)                
@@ -241,13 +263,13 @@ class TroubleShootingProblem:
                 # On retourne l'évidence du noeud à celle qui ne change pas les 
                 # probabilités du départ du tour de boucle actuel
                 self.bay_lp.chgEvidence(node, [1, 1])
-                
+                             
                 if debug == True:
                     print("noeud consideré : " + node)
                     print("proba p(node != Normal|Ei) : ",\
                           p_noeud_casse[inst_noeud_casse])
                     print("proba p(e = Normal|repair(node), Ei) : ", p[inst]) 
-                    print ("coût esperé du pair observation-repair : ", cost)
+                    print("coût esperé du pair observation-repair : ", cost)
                     print("éfficacité du noeud : ", dic_eff[node])
                     print()
             
@@ -258,29 +280,103 @@ class TroubleShootingProblem:
             # de boucle actuel
             chosen_node = seq[0][0]
             rep_seq.append(chosen_node)
+            
+            # On calcule la contribution à l'ésperance de coût de la sequence
+            # de ce noeud
+            exp_cost += dic_costs[chosen_node] * proba_cost
+            p = self.bay_lp.posterior(self.problem_defining_node)                
+            inst = gum.Instantiation(p)
+            inst.chgVal(self.problem_defining_node, "yes")
+            proba_cost = p[inst]
+            
             if debug == True:
                 print("noeud choisi dans ce tour de boucle : ", chosen_node)
-            
+                print("contribution à l'ésperance du coût de la séquence : ",\
+                      dic_costs[chosen_node])
+                print("ésperance du coût partiel : ", exp_cost)
+                print()
+                            
             # On garde ce noeud au dictionnaire repares pour qu'on puisse
             # mantenir le reseau à jour a chaque tour de la boucle while 
             if chosen_node != "callService":
-                repares[chosen_node] =  "no"
                 unrep_nodes.add(chosen_node)
-                reparables = list(set(self.repairable_nodes + \
-                                      [self.service_node]) - unrep_nodes)
-                self.reset_bay_lp(repares)
+                reparables = (self.repairable_nodes | set([self.service_node]))\
+                    - unrep_nodes
+                self.bay_lp.chgEvidence(chosen_node, "no")
             else:
                 break
         # On retourne aux évidences du début
-        self.reset_bay_lp()           
-        return rep_seq
-        
-            
+        self.reset_bay_lp(self.evidences)           
+        return rep_seq, exp_cost
 
+# =============================================================================
+# Méthodes pas encore fonctionnelles            
+# =============================================================================
+    def myopic_solver(self, debug = False):
+        """
+        """
+        # Liste des observations generales qu'on peut faire
+        nd_obs = list(set(self.observation_nodes).intersection(\
+                      set(self.unrepairable_nodes)))
+
+        # Ésperance du coût de la séquence calculé au état actuel sans 
+        # observations suplementáires
+        seq_ecr, ecr = self.simple_solver_obs(debug)         
+        
+        # Dictionnaire pour les ésperances du coût si on fait une observation 
+        # generale avant de calculer la séquence
+        eco = {}
+        
+        # Pour chaque noeud d'obsérvation génerale, on calcule l'ésperance de 
+        # coût quand on fait l'observation
+        for node in nd_obs:
+            # On récupere les probabilités des valeurs possibles du noeud
+            p = self.bay_lp.posterior(node)                
+            inst = gum.Instantiation(p)
+            
+            # ECO[node] = cost_obs[node] + somme(ésperance de la séquence 
+            # calculé après chaque observation possible du node * probabilité 
+            # de chaque observation)
+            eco[node] = self.costs_obs[node]
+            
+            # Pour chaque valeur possible du noeud
+            for k in self.bayesian_network.variable(node).labels():
+                inst.chgVal(self.problem_defining_node, k)  
+                # On recupere la probabilité de la valeur actuelle
+                proba_obs = p[inst]
+                # On dit qu'on a observé la valeur actuelle
+                self.bay_lp.chgEvidence(node, k)
+                # On calcule l'ésperance de coût de la séquence generé avec
+                # l'observation du noeud avec la valeur actuel
+                _, ecr_node_k = self.simple_solver_obs(debug)
+                eco[node] += ecr_node_k * proba_obs
+                # On retourne l'évidence du noeud à celle qui ne change pas les 
+                # probabilités du départ du tour de boucle actuel
+                self.bay_lp.chgEvidence(node, [1, 1])
+        
+        # On ordonne les ECO de façon décroissant
+        seq = sorted(eco.items(), key = lambda x: x[1]) 
+
+        # Si ecr < min(eco), alors on fait pas d'observation dans ce tour, 
+        # sinon on fait l'observation avec le plus petit ECO
+        if seq == [] or ecr < eco[seq[0][0]]:
+            # On récupere le premier élément de la séquence liée au ecr
+            chosen_node = seq_ecr[0]
+        else:
+             # On recupere le noeud observation avec le plus petit ECO
+            chosen_node = seq[0][0]
+ 
+        # On retourne aux évidences du début
+        self.reset_bay_lp(self.evidences)           
+        return chosen_node
+
+
+
+    
 
     # Une méthode qui implémente un algorithme le plus simple de résolution du problème de Troubleshooting
     def solve_static(self):
-        rep_nodes = self.repairable_nodes.copy()
+        rep_nodes = list(self.repairable_nodes.copy())
         rep_seq = []
         # L'efficacité de l'appel à service
         service_ef = 1.0 / self.costs_rep['callService']
