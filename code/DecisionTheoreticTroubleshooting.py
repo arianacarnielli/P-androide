@@ -76,6 +76,7 @@ class TroubleShootingProblem:
         """
         modifiable_nodes = self.repairable_nodes.union(self.observation_nodes)
         modifiable_nodes.add(self.service_node)
+        modifiable_nodes.add(self.problem_defining_node)
         for node in modifiable_nodes:
             self.bay_lp.addEvidence(node, [1, 1]) 
         self.evidences = {}
@@ -93,6 +94,7 @@ class TroubleShootingProblem:
         """
         modifiable_nodes = self.repairable_nodes.union(self.observation_nodes)
         modifiable_nodes.add(self.service_node)
+        modifiable_nodes.add(self.problem_defining_node)
         for node in modifiable_nodes:
             if node in dict_inf:
                 self.change_evidence(node, dict_inf[node])
@@ -228,6 +230,9 @@ class TroubleShootingProblem:
             # Pour chaque noeud réparable + service (et qui n'est pas 
             # irréparable):
             for node in reparables:   
+                # On rajoute le fait que le dispositif est en panne
+                self.bay_lp.chgEvidence(self.problem_defining_node, "yes")
+                
                 # On calcule la probabilité que le noeud actuel soit cassé                              
                 # p(node != Normal|Ei)
                 # Ei = les informations connues au tour de boucle actuel
@@ -242,6 +247,10 @@ class TroubleShootingProblem:
                     p_noeud_casse[inst_noeud_casse] * self.costs_rep[node]
                 else:
                     cost = self.costs_rep[node]
+                
+                # Une fois qu'on aura fait l'observation-repair, on ne sait
+                # plus si le dispositif est en panne ou pas
+                self.bay_lp.chgEvidence(self.problem_defining_node, [1, 1])
                 
                 # On récupere le coût pour le calcul de l'ésperance
                 dic_costs[node] = cost
@@ -309,6 +318,81 @@ class TroubleShootingProblem:
         # On retourne aux évidences du début
         self.reset_bay_lp(self.evidences)           
         return rep_seq, exp_cost
+    
+    def myopic_solver(self, debug = False):
+        """
+        """
+        # Liste des observations generales qu'on peut faire
+        nd_obs = set(self.observation_nodes).intersection(\
+                      set(self.unrepairable_nodes))
+        nd_obs = list(nd_obs.difference(self.evidences.keys()))
+        
+        # Ésperance du coût de la séquence calculé au état actuel sans 
+        # observations suplementáires
+        seq_ecr, ecr = self.simple_solver_obs()
+        
+        if debug:
+            print("Liste des observations possibles :")
+            print(nd_obs)
+            print("Resolution sans obsérvations :")
+            print(seq_ecr)
+            print("Ecr : " + str(ecr))
+        # Dictionnaire pour les ésperances de coût si on fait une observation 
+        # generale avant de calculer la séquence
+        eco = {}
+        
+        # Pour chaque noeud d'obsérvation génerale, on calcule l'ésperance de 
+        # coût quand on fait l'observation
+        for node in nd_obs:
+            # On récupere les probabilités des valeurs possibles du noeud
+            p = self.bay_lp.posterior(node)                
+            inst = gum.Instantiation(p)
+            
+            if debug:
+                print(node)
+                print(p)
+            
+            # ECO[node] = cost_obs[node] + somme(ésperance de la séquence 
+            # calculé après chaque observation possible du node * probabilité 
+            # de chaque observation)
+            eco[node] = self.costs_obs[node]
+            
+            # Pour chaque valeur possible du noeud
+            for k in self.bayesian_network.variable(node).labels():
+                inst.chgVal(node, k)  
+                # On recupere la probabilité de la valeur actuelle
+                proba_obs = p[inst]
+                # On dit qu'on a observé la valeur actuelle
+                self.bay_lp.chgEvidence(node, k)
+                # On calcule l'ésperance de coût de la séquence generé avec
+                # l'observation du noeud avec la valeur actuel
+                _, ecr_node_k = self.simple_solver_obs()
+                eco[node] += ecr_node_k * proba_obs
+                # On retourne l'évidence du noeud à celle qui ne change pas les 
+                # probabilités du départ du tour de boucle actuel
+                self.bay_lp.chgEvidence(node, [1]*len(self.bayesian_network.variable(node).labels()))
+        
+        if debug:
+            print(eco)
+        # On ordonne les ECO de façon croissant
+        seq = sorted(eco.items(), key = lambda x: x[1]) 
+
+        # Si ecr < min(eco), alors on fait pas d'observation dans ce tour, 
+        # sinon on fait l'observation avec le plus petit ECO
+        if seq == [] or ecr < seq[0][1]:
+            # On récupere le premier élément de la séquence liée au ecr
+            chosen_node = seq_ecr[0]
+            type_node = "repair"
+        else:
+             # On recupere le noeud observation avec le plus petit ECO
+            chosen_node = seq[0][0]
+            type_node = "obs"
+ 
+        # On retourne aux évidences du début
+        self.reset_bay_lp(self.evidences)           
+        return chosen_node, type_node
+    
+    
 
     # Une fonction qui calcule un coût espéré de réparation à partir d'une séquence d'actions donnée
     # Ici on utilise une formule
@@ -358,63 +442,81 @@ class TroubleShootingProblem:
 # =============================================================================
 # Méthodes pas encore fonctionnelles            
 # =============================================================================
-    def myopic_solver(self, debug = False):
+    def myopic_wraper(self, debug = False):
         """
         """
-        # Liste des observations generales qu'on peut faire
-        nd_obs = list(set(self.observation_nodes).intersection(\
-                      set(self.unrepairable_nodes)))
-
-        # Ésperance du coût de la séquence calculé au état actuel sans 
-        # observations suplementáires
-        seq_ecr, ecr = self.simple_solver_obs(debug)         
+        print("Bienvenue! Suivez les instructions pour réparer votre dispositif")
+        fixed = False
+        while not fixed:
+            node, type_node = self.myopic_solver(debug) 
+            if type_node == "obs":
+                print("Faire l'observation du node " + node)
+                possibilites = self.bayesian_network.variable(node).labels()
+                print("Résultats possibles :")
+                for i, p in enumerate(possibilites):
+                    print("{} : {}".format(i, p))
+                print("Tapez le numero du résultat observé")
+                val_obs = int(input())
+                self.change_evidence(node, possibilites[val_obs])
+            else:
+                print("Faire l'observation-réparation suivante : " + node)
+                print("Problème résolu ? (Y/N)")
+                val_rep = input()
+                if val_rep in "Yy":
+                    fixed = True
+                else:
+                    obsoletes = self.observation_obsolete(node) 
+                    if node != "callService":
+                        self.change_evidence(node, "no")
+                    else:
+                        self.change_evidence(node, "yes")  
+                    for obs in obsoletes:
+                        self.evidences.pop(obs)
+                    self.reset_bay_lp(self.evidences)
+        print("Merci d'avoir utilisé le logiciel !")
+        self.reset_bay_lp()    
+                
         
-        # Dictionnaire pour les ésperances du coût si on fait une observation 
-        # generale avant de calculer la séquence
-        eco = {}
+    def noeud_ant(self, node, visites):
+        """
+        """
+        ant_obs = set()
+        parents = {self.bayesian_network.names()[p] for p in self.bayesian_network.parents(node)}
+        parents = parents.difference(visites)
+        for p in parents:
+            visites.add(p)
+            if p in self.evidences:
+                if p in self.unrepairable_nodes and p in self.observation_nodes:
+                    ant_obs.add(p)
+                    ant_obs.update(self.noeud_ant(p, visites))
+                
+            else:
+                ant_obs.update(self.noeud_ant(p, visites))
+        return ant_obs
         
-        # Pour chaque noeud d'obsérvation génerale, on calcule l'ésperance de 
-        # coût quand on fait l'observation
-        for node in nd_obs:
-            # On récupere les probabilités des valeurs possibles du noeud
-            p = self.bay_lp.posterior(node)                
-            inst = gum.Instantiation(p)
-            
-            # ECO[node] = cost_obs[node] + somme(ésperance de la séquence 
-            # calculé après chaque observation possible du node * probabilité 
-            # de chaque observation)
-            eco[node] = self.costs_obs[node]
-            
-            # Pour chaque valeur possible du noeud
-            for k in self.bayesian_network.variable(node).labels():
-                inst.chgVal(self.problem_defining_node, k)  
-                # On recupere la probabilité de la valeur actuelle
-                proba_obs = p[inst]
-                # On dit qu'on a observé la valeur actuelle
-                self.bay_lp.chgEvidence(node, k)
-                # On calcule l'ésperance de coût de la séquence generé avec
-                # l'observation du noeud avec la valeur actuel
-                _, ecr_node_k = self.simple_solver_obs(debug)
-                eco[node] += ecr_node_k * proba_obs
-                # On retourne l'évidence du noeud à celle qui ne change pas les 
-                # probabilités du départ du tour de boucle actuel
-                self.bay_lp.chgEvidence(node, [1, 1])
+    def observation_obsolete(self, node):
+        """
+        """
+        visites = {node}
+        obs = self.noeud_ant(node, visites)
+        stack = [node]
+        while stack != []:
+            n = stack.pop()
+            enfants = {self.bayesian_network.names()[p] for p in self.bayesian_network.children(n)}
+            enfants = enfants.difference(visites)
+            for en in enfants:
+                visites.add(en)
+                if en in self.evidences:
+                    if en in self.unrepairable_nodes and en in self.observation_nodes:    
+                        obs.add(en)
+                        stack.append(en)
+                    elif en in self.repairable_nodes:
+                        obs.update(self.noeud_ant(en, visites))
+                else:
+                    stack.append(en)
+        return obs
         
-        # On ordonne les ECO de façon décroissant
-        seq = sorted(eco.items(), key = lambda x: x[1]) 
-
-        # Si ecr < min(eco), alors on fait pas d'observation dans ce tour, 
-        # sinon on fait l'observation avec le plus petit ECO
-        if seq == [] or ecr < eco[seq[0][0]]:
-            # On récupere le premier élément de la séquence liée au ecr
-            chosen_node = seq_ecr[0]
-        else:
-             # On recupere le noeud observation avec le plus petit ECO
-            chosen_node = seq[0][0]
- 
-        # On retourne aux évidences du début
-        self.reset_bay_lp(self.evidences)           
-        return chosen_node    
+        
 
     # Une méthode qui implémente un algorithme le plus simple de résolution du problème de Troubleshooting
     def solve_static(self):

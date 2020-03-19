@@ -25,6 +25,9 @@ if __name__ == '__main__':
         'tank.Empty': 5,
         'tank.fuelLineBlocked': 60,
         'starter.starterBroken': 10,
+        "car.lightsOk": 2,
+        "car.noOilLightOn": 1,
+        "oil.dipstickLevelOk": 7
     }
     
     # ... ainsi que des types des noeuds d'un réseau bayésien
@@ -34,10 +37,13 @@ if __name__ == '__main__':
         'tank.Empty': {'repairable'},
         'tank.fuelLineBlocked': {'repairable', 'observable'},
         'starter.starterBroken': {'repairable', 'observable'},
+        "car.lightsOk": {'unrepairable', 'observable'},
+        "car.noOilLightOn": {'unrepairable', 'observable'},
+        "oil.dipstickLevelOk": {'unrepairable', 'observable'},
         'car.carWontStart': {'problem-defining'},
         'callService': {'service'}
     }
     # On résoudre le problème de Troubleshooting donné
     tsp = dtt.TroubleShootingProblem(bn_car, [costs_rep, costs_obs], nodes_associations)
-    print(tsp.solve_static())
+    #print(tsp.solve_static())
     #plb.pdfize(bn_car, "test")
