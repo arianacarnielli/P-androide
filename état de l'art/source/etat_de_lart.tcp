@@ -1,0 +1,12 @@
+[FormatInfo]
+Type=TeXnicCenterProjectInformation
+Version=4
+
+[ProjectInfo]
+MainFile=etat_de_lart.tex
+UseBibTeX=1
+UseMakeIndex=0
+ActiveProfile=LaTeX ⇨ PDF
+ProjectLanguage=fr
+ProjectDialect=moderne
+
