@@ -10,9 +10,9 @@ Enseigneurs résponsables :
   Ariana Carnielli, 
   Ivan Kachaikin
   
-Dernières modifications :
+Dernières modifications / Prochains pas :
 
-Correction du premier algorithme pour le TSP. Le calcul de l'esperance dans cet algorithme a été corrigé, le code utilise des appels à chgEvidence() maintenant et est commenté, la fonction a une mode debug aussi. 
+Une première version de l'algorithme myope est fonctionnelle avec une interface interactive à la console. Le code n'est pas encore comenté, on compte le faire dans les prochains jours. 
 
-Des fonctions auxiliares pour le reset du BN ont été créées (start_bay_lp() and reset_bay_lp(dict_inf)). Une première fonction pour le calcul d'une séquence en utilisant des obsérvations à été codé d'après les articles de Heckerman mais n'est pas complete, elle ne retourne pas encore l'esperance de coût de la séquence calculé (ce qui est necéssaire pour la séquence du travail). 
+L'état de l'art à été modifié, des sections et sous-sections on été ajoutées pour ameliorer la lisibilité et la structuration du document. On a ajouté quelques détails sur le rôle des réseaux Bayésiens et sur la complexité du problème. On compte ajouter plus d'éléments sur l'élicitation dans la suite.  
 
