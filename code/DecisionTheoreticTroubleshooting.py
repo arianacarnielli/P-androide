@@ -1,5 +1,7 @@
 import pyAgrum as gum
+import StrategyTree as st
 from itertools import permutations
+
 
 class TroubleShootingProblem:
     """
@@ -62,6 +64,9 @@ class TroubleShootingProblem:
         self.service_node = [node for node in nodes_types.keys() \
                                 if 'service' in nodes_types[node]][0]
         self.start_bay_lp()
+        self._nodes_ids_db_brute_force = []
+        self._best_st = None
+        self._best_ecr = None
 
 # =============================================================================
 # Méthodes fonctionnelles
@@ -208,7 +213,7 @@ class TroubleShootingProblem:
         exp_cost = 0
         proba_cost = 1
         repares = [k for k in self.evidences]
-        unrep_nodes = self.unrepairable_nodes.copy()|(set(repares))
+        unrep_nodes = self.unrepairable_nodes.copy() | (set(repares))
         
         # On itère jusqu'à ce qu'il n'existe plus de noeud que peut être reparé
         reparables = (self.repairable_nodes | {self.service_node}) \
@@ -391,15 +396,13 @@ class TroubleShootingProblem:
         # On retourne aux évidences du début
         self.reset_bay_lp(self.evidences)           
         return chosen_node, type_node
-    
-    
 
     # Une fonction qui calcule un coût espéré de réparation à partir d'une séquence d'actions donnée
     # Ici on utilise une formule
     # ECR = coût(C1) +
     #       (1 - P(e = Normal | C1 = Normal)) * coût(C2) +
     #       (1 - P(e = Normal | C1 = Normal, C2 = Normal)) * coût(C3) + ...
-    def estimated_repair_cost_seq_of_actions(self, seq):
+    def expected_cost_of_repair_seq_of_actions(self, seq):
 
         ecr = 0.0
         prob = 1.0
@@ -426,18 +429,79 @@ class TroubleShootingProblem:
 
     # Une fonction qui cherche une séquence optimale de réparation par une recherche exhaustive en choisissant
     # une séquence de meilleur ECR
-    def brute_force_solver(self, debug=False):
-        min_seq = [self.service_node] + self.repairable_nodes.copy()
-        min_ecr = self.estimated_repair_cost_seq_of_actions(min_seq)
+    def brute_force_solver_actions_only(self, debug=False):
+        min_seq = [self.service_node] + list(self.repairable_nodes).copy()
+        min_ecr = self.expected_cost_of_repair_seq_of_actions(min_seq)
 
         # Parcours par toutes les permutations de l'union de noeuds réparables avec un noeud de service
-        for seq in [list(t) for t in permutations(self.repairable_nodes + [self.service_node])]:
-            ecr = self.estimated_repair_cost_seq_of_actions(seq)
+        for seq in [list(t) for t in permutations(list(self.repairable_nodes) + [self.service_node])]:
+            ecr = self.expected_cost_of_repair_seq_of_actions(seq)
             if ecr < min_ecr:
                 min_ecr = ecr
                 min_seq = seq.copy()
 
         return min_seq, min_ecr
+
+    # Une méthode qui calcule le coût espéré de réparation étant donné un arbre de décision
+    def expected_cost_of_repair(self, strategy_tree):
+        ecr = self.expected_cost_of_repair_internal(strategy_tree)
+        self.bay_lp.setEvidence({})
+        self.start_bay_lp()
+        self.reset_bay_lp()
+        return ecr
+
+    # Une partie récursive d'une fonction expected_cost_of_repair ci-dessus
+    def expected_cost_of_repair_internal(self, strategy_tree, evid_init=None):
+        
+        if not isinstance(strategy_tree, st.StrategyTree):
+            raise TypeError('strategy_tree must have type StrategyTre')
+
+        ecr = 0.0
+        evidence = evid_init.copy() if isinstance(evid_init, dict) else {}
+        self.bay_lp.setEvidence(evidence)
+        prob = 1.0 if evidence == {} else (1 - self.prob_val(self.problem_defining_node, 'no'))
+        node = strategy_tree.get_root()
+        node_name = strategy_tree.get_root().get_name()
+        cost = self.costs_rep[node_name] if isinstance(node, st.Repair) else self.costs_obs[node_name]
+        ecr += prob * cost
+
+        if len(node.get_list_of_children()) == 0:
+            return ecr
+        if isinstance(node, st.Repair):
+            evidence[node_name] = 'yes' if node_name == self.service_node else 'no'
+            ecr += self.expected_cost_of_repair_internal(strategy_tree.get_sub_tree(node.get_child()), evidence)
+        else:
+            for obs_label in self.bayesian_network.variable(node_name).labels():
+                child = node.bn_labels_children_association()[obs_label]
+                evidence[node_name] = obs_label
+                ecr += (self.prob_val(node_name, obs_label) *
+                        self.expected_cost_of_repair_internal(strategy_tree.get_sub_tree(child), evidence))
+
+        return ecr
+
+    # Une méthode auxiliare qui retourne une probabilité posterioiri qu'une variable var égal à value
+    def prob_val(self, var, value):
+        pot_var = self.bay_lp.posterior(var)
+        inst_var = gum.Instantiation(pot_var)
+        inst_var.chgVal(var, value)
+        return pot_var[inst_var]
+
+    # Une méthode auxiliare qui crée des noeuds de StrategyTree à partir de leurs noms dans un modèle
+    def _create_nodes(self, names, rep_string='_repair', obs_string='_observation'):
+        nodes = []
+        for name, i in zip(names, range(len(names))):
+            if name.endswith(rep_string) or name == self.service_node:
+                node = st.Repair(str(i), self.costs_rep[name.replace(rep_string, '')], name.replace(rep_string, ''))
+            else:
+                node = st.Observation(str(i), self.costs_obs[name.replace(obs_string, '')],
+                                      name.replace(obs_string, ''))
+            nodes.append(node)
+            self._nodes_ids_db_brute_force.append(str(i))
+        return nodes
+
+    # Une méthode qui permet d'obtenir une prochaine valeur de id pour un noeud de StrategyTree
+    def _next_node_id(self):
+        return str(int(self._nodes_ids_db_brute_force[-1]) + 1)
 
 # =============================================================================
 # Méthodes pas encore fonctionnelles            
@@ -515,8 +579,6 @@ class TroubleShootingProblem:
                 else:
                     stack.append(en)
         return obs
-        
-        
 
     # Une méthode qui implémente un algorithme le plus simple de résolution du problème de Troubleshooting
     def solve_static(self):
@@ -547,10 +609,30 @@ class TroubleShootingProblem:
             # on ajoute donc 'service' dans une séquence de réparation et on s'arrête car cet appel réparera un appareil
             # avec un certain
             if action_to_put == self.service_node:
-                return rep_seq, self.estimated_repair_cost_seq_of_actions(rep_seq)
+                return rep_seq, self.expected_cost_of_repair_seq_of_actions(rep_seq)
             ie.eraseEvidence(rep_nodes[-1])
             ie.addEvidence(action_to_put, "no")
             # on met-à-jour les noeuds réparables
             rep_nodes.remove(action_to_put)
         rep_seq.append(self.service_node)
-        return rep_seq, self.estimated_repair_cost_seq_of_actions(rep_seq)
+        return rep_seq, self.expected_cost_of_repair_seq_of_actions(rep_seq)
+
+    def brute_force_solver(self, debug=False):
+        rep_string, obs_string = '_repair', '_observation'
+        rep_nodes = {n + rep_string for n in self.repairable_nodes}
+        obs_nodes = {n + obs_string for n in self.observation_nodes}
+        feasible_nodes_names = {self.service_node}.union(rep_nodes).union(obs_nodes)
+        self._nodes_ids_db_brute_force = []
+        feasible_nodes = self._create_nodes(feasible_nodes_names, rep_string, obs_string)
+
+        call_service_node = st.Repair(self._next_node_id(), self.costs_rep[self.service_node], self.service_node)
+        call_service_tree = st.StrategyTree(call_service_node, [call_service_node])
+        self._best_st = call_service_tree.copy()
+        self._best_ecr = self.expected_cost_of_repair(call_service_tree)
+
+        self._evaluate_all_st(feasible_nodes)
+
+        return self._best_st, self._best_ecr
+
+    def _evaluate_all_st(self, feasible_nodes, obs_next_nodes=None, par_mutable=None, par_immutable=None):
+        pass
