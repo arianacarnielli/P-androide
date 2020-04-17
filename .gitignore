@@ -5,3 +5,6 @@ code/__pycache__/
 *.log
 *.synctex
 *.synctex.gz
+*.out
+*.tcp
+*.tps
