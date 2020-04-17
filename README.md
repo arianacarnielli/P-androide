@@ -12,7 +12,7 @@ Enseigneurs résponsables :
   
 Dernières modifications / Prochains pas :
 
-Une première version de l'algorithme myope est fonctionnelle avec une interface interactive à la console. Le code n'est pas encore comenté, on compte le faire dans les prochains jours. 
+Le logiciel a une interface graphique interactive implémentant l'algorithme myope. Le code n'est pas encore comenté, on compte le faire dans les prochains jours / semaines. 
 
-L'état de l'art à été modifié, des sections et sous-sections on été ajoutées pour ameliorer la lisibilité et la structuration du document. On a ajouté quelques détails sur le rôle des réseaux Bayésiens et sur la complexité du problème. On compte ajouter plus d'éléments sur l'élicitation dans la suite.  
+L'état de l'art à été modifié, avec un ajout de plusieurs nouvelles sous-sections concernant les différents aspects de l'élicitation et leurs utilités pour notre problème.
 
