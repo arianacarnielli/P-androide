@@ -50,7 +50,7 @@ class TroubleShootingProblem:
         """
         self.bayesian_network = gum.BayesNet(bayesian_network)
         self.bay_lp = gum.LazyPropagation(self.bayesian_network)
-        self.costs_rep = costs[0].copy()
+        self.costs_rep, self.costs_rep_interval = self.compute_costs(costs[0])
         self.costs_obs = costs[1].copy()
         self.nodes_types = nodes_types.copy()
         self.repairable_nodes = {node for node in nodes_types.keys() \
@@ -71,6 +71,29 @@ class TroubleShootingProblem:
 # =============================================================================
 # Méthodes fonctionnelles
 # =============================================================================
+
+    def compute_costs(self, costs):
+        """
+        Parameters
+        ----------
+        costs : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        expected_cost, interval_cost
+        """
+        expected_cost = {}
+        interval_cost =  {}
+        
+        for k, v in costs.items():
+            if isinstance(v, int) or isinstance(v, float):
+                expected_cost[k] = v
+                interval_cost[k] = [v, v]
+            else:
+                expected_cost[k] = sum(v) / 2
+                interval_cost[k] = list(v)  
+        return expected_cost, interval_cost
 
     def start_bay_lp(self):
         """
@@ -328,8 +351,7 @@ class TroubleShootingProblem:
         """
         """
         # Liste des observations generales qu'on peut faire
-        nd_obs = set(self.observation_nodes).intersection(\
-                      set(self.unrepairable_nodes))
+        nd_obs = self.observation_nodes.intersection(self.unrepairable_nodes)
         nd_obs = list(nd_obs.difference(self.evidences.keys()))
         
         # Ésperance du coût de la séquence calculé au état actuel sans 
@@ -396,6 +418,124 @@ class TroubleShootingProblem:
         # On retourne aux évidences du début
         self.reset_bay_lp(self.evidences)           
         return chosen_node, type_node
+    
+    def myopic_wraper(self, debug = False):
+        """
+        """
+        print("Bienvenue! Suivez les instructions pour réparer votre dispositif")
+        fixed = False
+        while not fixed:
+            node, type_node = self.myopic_solver(debug) 
+            if type_node == "obs":
+                print("Faire l'observation du node " + node)
+                possibilites = self.bayesian_network.variable(node).labels()
+                print("Résultats possibles :")
+                for i, p in enumerate(possibilites):
+                    print("{} : {}".format(i, p))
+                print("Tapez le numero du résultat observé")
+                val_obs = int(input())
+                self.change_evidence(node, possibilites[val_obs])
+            else:
+                print("Faire l'observation-réparation suivante : " + node)
+                print("Problème résolu ? (Y/N)")
+                val_rep = input()
+                if val_rep in "Yy":
+                    fixed = True
+                else:
+                    obsoletes = self.observation_obsolete(node) 
+                    if node != "callService":
+                        self.change_evidence(node, "no")
+                    else:
+                        self.change_evidence(node, "yes")  
+                    for obs in obsoletes:
+                        self.evidences.pop(obs)
+                    self.reset_bay_lp(self.evidences)
+        print("Merci d'avoir utilisé le logiciel !")
+        self.reset_bay_lp()    
+                
+        
+    def noeud_ant(self, node, visites):
+        """
+        """
+        ant_obs = set()
+        parents = {self.bayesian_network.names()[p] for p in self.bayesian_network.parents(node)}
+        parents = parents.difference(visites)
+        for p in parents:
+            visites.add(p)
+            if p in self.evidences:
+                if p in self.unrepairable_nodes and p in self.observation_nodes:
+                    ant_obs.add(p)
+                    ant_obs.update(self.noeud_ant(p, visites))
+                
+            else:
+                ant_obs.update(self.noeud_ant(p, visites))
+        return ant_obs
+        
+    def observation_obsolete(self, node):
+        """
+        """
+        visites = {node}
+        obs = self.noeud_ant(node, visites)
+        stack = [node]
+        while stack != []:
+            n = stack.pop()
+            enfants = {self.bayesian_network.names()[p] for p in self.bayesian_network.children(n)}
+            enfants = enfants.difference(visites)
+            for en in enfants:
+                visites.add(en)
+                if en in self.evidences:
+                    if en in self.unrepairable_nodes and en in self.observation_nodes:    
+                        obs.add(en)
+                        stack.append(en)
+                    elif en in self.repairable_nodes:
+                        obs.update(self.noeud_ant(en, visites))
+                else:
+                    stack.append(en)
+        return obs
+    
+    def compute_EVOIs(self):
+        """
+
+        Returns
+        -------
+        evoi : TYPE
+            DESCRIPTION.
+
+        """               
+        nd_rep = (self.repairable_nodes | {self.service_node})
+        nd_rep = list(nd_rep.difference(self.evidences.keys()))
+        evoi = {}
+        _, expected_cost_repair = self.simple_solver_obs()
+        for noeud in nd_rep:
+            evoi[noeud] = expected_cost_repair
+            alpha = self.costs_rep[noeud]
+            self.costs_rep[noeud] = (self.costs_rep_interval[noeud][0]\
+                                     + alpha) / 2
+            _, expected_cost_repair_minus = self.simple_solver_obs()
+            evoi[noeud] -= expected_cost_repair_minus * 0.5
+            
+            self.costs_rep[noeud] = (self.costs_rep_interval[noeud][1]\
+                                     + alpha) / 2
+            _, expected_cost_repair_plus = self.simple_solver_obs()
+            evoi[noeud] -= expected_cost_repair_plus * 0.5
+            evoi[noeud] = abs(evoi[noeud])
+            self.costs_rep[noeud] = alpha
+        return evoi
+    
+    def best_EVOI(self):
+        evois = self.compute_EVOIs()
+        return sorted(evois.items(), key = lambda x: x[1], reverse = True)[0]
+    
+    def elicitation(self, noeud, islower):
+        if islower:
+            self.costs_rep_interval[noeud][1] = self.costs_rep[noeud]
+        else:
+            self.costs_rep_interval[noeud][0] = self.costs_rep[noeud]
+        self.costs_rep[noeud] = sum(self.costs_rep_interval [noeud]) / 2
+            
+# =============================================================================
+# Calcul Exacte
+# =============================================================================      
 
     # Une fonction qui calcule un coût espéré de réparation à partir d'une séquence d'actions donnée
     # Ici on utilise une formule
@@ -506,79 +646,7 @@ class TroubleShootingProblem:
 # =============================================================================
 # Méthodes pas encore fonctionnelles            
 # =============================================================================
-    def myopic_wraper(self, debug = False):
-        """
-        """
-        print("Bienvenue! Suivez les instructions pour réparer votre dispositif")
-        fixed = False
-        while not fixed:
-            node, type_node = self.myopic_solver(debug) 
-            if type_node == "obs":
-                print("Faire l'observation du node " + node)
-                possibilites = self.bayesian_network.variable(node).labels()
-                print("Résultats possibles :")
-                for i, p in enumerate(possibilites):
-                    print("{} : {}".format(i, p))
-                print("Tapez le numero du résultat observé")
-                val_obs = int(input())
-                self.change_evidence(node, possibilites[val_obs])
-            else:
-                print("Faire l'observation-réparation suivante : " + node)
-                print("Problème résolu ? (Y/N)")
-                val_rep = input()
-                if val_rep in "Yy":
-                    fixed = True
-                else:
-                    obsoletes = self.observation_obsolete(node) 
-                    if node != "callService":
-                        self.change_evidence(node, "no")
-                    else:
-                        self.change_evidence(node, "yes")  
-                    for obs in obsoletes:
-                        self.evidences.pop(obs)
-                    self.reset_bay_lp(self.evidences)
-        print("Merci d'avoir utilisé le logiciel !")
-        self.reset_bay_lp()    
-                
-        
-    def noeud_ant(self, node, visites):
-        """
-        """
-        ant_obs = set()
-        parents = {self.bayesian_network.names()[p] for p in self.bayesian_network.parents(node)}
-        parents = parents.difference(visites)
-        for p in parents:
-            visites.add(p)
-            if p in self.evidences:
-                if p in self.unrepairable_nodes and p in self.observation_nodes:
-                    ant_obs.add(p)
-                    ant_obs.update(self.noeud_ant(p, visites))
-                
-            else:
-                ant_obs.update(self.noeud_ant(p, visites))
-        return ant_obs
-        
-    def observation_obsolete(self, node):
-        """
-        """
-        visites = {node}
-        obs = self.noeud_ant(node, visites)
-        stack = [node]
-        while stack != []:
-            n = stack.pop()
-            enfants = {self.bayesian_network.names()[p] for p in self.bayesian_network.children(n)}
-            enfants = enfants.difference(visites)
-            for en in enfants:
-                visites.add(en)
-                if en in self.evidences:
-                    if en in self.unrepairable_nodes and en in self.observation_nodes:    
-                        obs.add(en)
-                        stack.append(en)
-                    elif en in self.repairable_nodes:
-                        obs.update(self.noeud_ant(en, visites))
-                else:
-                    stack.append(en)
-        return obs
+    
 
     # Une méthode qui implémente un algorithme le plus simple de résolution du problème de Troubleshooting
     def solve_static(self):

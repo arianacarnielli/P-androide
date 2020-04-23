@@ -32,13 +32,15 @@ class Troubleshoot(QWidget):
         self.actButton = QPushButton("Reparer")
         self.actButton.setEnabled(False)
         self.listAct.itemClicked.connect(self.actButtonActivate)
+        
+        self.layoutSecondaire.addWidget(self.listObs)
+        self.layoutSecondaire.addWidget(self.listAct)
 
         self.layoutTertiaire.addWidget(self.obsButton)
         self.layoutTertiaire.addWidget(self.actButton)
 
-        self.layoutSecondaire.addWidget(self.listObs)
-        self.layoutSecondaire.addWidget(self.listAct)
-               
+        self.eliButton = QPushButton("Repondre à des questions")
+        self.layoutPrincipal.addWidget(self.eliButton)
       
     def observationsPossibles(self, observables):
         self.listObs.clear()
@@ -55,3 +57,5 @@ class Troubleshoot(QWidget):
 
     def actButtonActivate(self):
         self.actButton.setEnabled(True)    
+        
+    

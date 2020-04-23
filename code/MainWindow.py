@@ -12,6 +12,7 @@ from Introduction import *
 from Troubleshoot import *
 from Observation import *
 from Action import *
+from Elicitation import *
 from Fin import *
 
 class MainWindow(QMainWindow):
@@ -36,6 +37,7 @@ class MainWindow(QMainWindow):
         self.trouble = Troubleshoot() 
         self.trouble.obsButton.clicked.connect(self.callObs)
         self.trouble.actButton.clicked.connect(self.callAct)
+        self.trouble.eliButton.clicked.connect(self.callEli)
 
         self.obs = Observation()
         self.obs.cb.textActivated.connect(self.makeObs)
@@ -43,6 +45,10 @@ class MainWindow(QMainWindow):
         self.act = Action()
         self.act.yesButton.clicked.connect(self.makeAct)
         self.act.noButton.clicked.connect(self.makeAct)
+        
+        self.eli =  Elicitation()
+        self.eli.yesButton.clicked.connect(self.makeEli)
+        self.eli.noButton.clicked.connect(self.makeEli)
         
         self.fin = Fin()
         self.fin.finButton.clicked.connect(self.finish)
@@ -56,6 +62,7 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.trouble)
         self.stack.addWidget(self.obs)
         self.stack.addWidget(self.act)
+        self.stack.addWidget(self.eli)
         self.stack.addWidget(self.fin)
         
         self.setCentralWidget(self.stack)
@@ -72,9 +79,9 @@ class MainWindow(QMainWindow):
         costsRep = {
             "car.batteryFlat": 200,
             "oil.noOil": 100,
-            "tank.Empty": 80,
+            "tank.Empty": [40, 120],
             "tank.fuelLineBlocked": 150,
-            "starter.starterBroken": 40,
+            "starter.starterBroken": [20, 60],
             "callService": 500
         }
         
@@ -109,6 +116,7 @@ class MainWindow(QMainWindow):
         self.repairables.add(self.tsp.service_node)
         self.observables = set(self.tsp.observation_nodes).intersection(set(self.tsp.unrepairable_nodes))
         
+        self.elicitationNode = ""
         self.recommendation, self.typeNodeRec = self.tsp.myopic_solver()
         self.currentNode =  ""
         self.currentObs = ""
@@ -138,7 +146,16 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentWidget(self.act)
         self.currentNode = self.trouble.listAct.currentItem().text()
         
-        
+    def callEli(self):
+        self.elicitationNode, val = self.tsp.best_EVOI()
+        if not np.allclose(0, val):
+            text = "Est-ce que le prix de réparer " + self.elicitationNode + " est plus petit que " + str(self.tsp.costs_rep[self.elicitationNode]) + " ?" 
+            self.eli.title.setText(text)
+            self.stack.setCurrentWidget(self.eli)       
+        else:
+            error = QMessageBox(((QMessageBox.Warning)), "Alerte", "Pas de questions à poser")
+            error.exec()
+            
     def makeObs(self, text):
         self.currentObs = text
         self.tsp.change_evidence(self.currentNode, self.currentObs)
@@ -167,6 +184,15 @@ class MainWindow(QMainWindow):
             self.startTroubleshoot()
         else:
             self.stack.setCurrentWidget(self.fin)
+        
+    def makeEli(self):
+        if self.sender().text() == "Yes":
+            islower = True
+        else:
+            islower = False
+        self.tsp.elicitation(self.elicitationNode, islower)
+        self.startTroubleshoot()
+    
         
     def finish(self):
         sys.exit()

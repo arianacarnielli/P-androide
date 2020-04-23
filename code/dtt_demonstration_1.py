@@ -11,20 +11,20 @@ if __name__ == '__main__':
         
     # On initialise des coûts des réparations et des observations ...
     costs_rep = {
-        'car.batteryFlat': 200,
-        'oil.noOil': 100,
-        'tank.Empty': 80,
-        'tank.fuelLineBlocked': 150,
-        'starter.starterBroken': 40,
-        'callService': 500
+        "car.batteryFlat": 200,
+        "oil.noOil": 100,
+        "tank.Empty": [40, 120],
+        "tank.fuelLineBlocked": 150,
+        "starter.starterBroken": [20, 60],
+        "callService": 500
     }
     
     costs_obs = {
-        'car.batteryFlat': 20,
-        'oil.noOil': 50,
-        'tank.Empty': 5,
-        'tank.fuelLineBlocked': 60,
-        'starter.starterBroken': 10,
+        "car.batteryFlat": 20,
+        "oil.noOil": 50,
+        "tank.Empty": 5,
+        "tank.fuelLineBlocked": 60,
+        "starter.starterBroken": 10,
         "car.lightsOk": 2,
         "car.noOilLightOn": 1,
         "oil.dipstickLevelOk": 7
@@ -32,16 +32,16 @@ if __name__ == '__main__':
     
     # ... ainsi que des types des noeuds d'un réseau bayésien
     nodes_associations = {
-        'car.batteryFlat': {'repairable', 'observable'},
-        'oil.noOil': {'repairable', 'observable'},
-        'tank.Empty': {'repairable'},
-        'tank.fuelLineBlocked': {'repairable', 'observable'},
-        'starter.starterBroken': {'repairable', 'observable'},
-        "car.lightsOk": {'unrepairable', 'observable'},
-        "car.noOilLightOn": {'unrepairable', 'observable'},
-        "oil.dipstickLevelOk": {'unrepairable', 'observable'},
-        'car.carWontStart': {'problem-defining'},
-        'callService': {'service'}
+        "car.batteryFlat": {"repairable", "observable"},
+        "oil.noOil": {"repairable", "observable"},
+        "tank.Empty": {"repairable"},
+        "tank.fuelLineBlocked": {"repairable", "observable"},
+        "starter.starterBroken": {"repairable", "observable"},
+        "car.lightsOk": {"unrepairable", "observable"},
+        "car.noOilLightOn": {"unrepairable", "observable"},
+        "oil.dipstickLevelOk": {"unrepairable", "observable"},
+        "car.carWontStart": {"problem-defining"},
+        "callService": {"service"}
     }
     # On résoudre le problème de Troubleshooting donné
     tsp = dtt.TroubleShootingProblem(bn_car, [costs_rep, costs_obs], nodes_associations)
