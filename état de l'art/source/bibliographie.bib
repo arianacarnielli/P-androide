@@ -112,21 +112,17 @@
 	address = {New York, NY}
 }
 
-
 @article{howard_information_1966,
-	title = {Information {Value} {Theory}},
+	doi = {10.1109/tssc.1966.300074},
+	url = {https://doi.org/10.1109%2Ftssc.1966.300074},
+	year = 1966,
+	publisher = {Institute of Electrical and Electronics Engineers ({IEEE})},
 	volume = {2},
-	issn = {0536-1567},
-	url = {http://ieeexplore.ieee.org/document/4082064/},
-	doi = {10.1109/TSSC.1966.300074},
-	abstract = {The information theory developed by Shannon was designed to place a quantitative measure on the amount of information involved in any communication. The early developers stressed that the information measure was dependent only on the probabilistic structure of the communication process. For example, if losing all your assets in the stock market and having whale steak for supper have the same probability, then the information associated with the occurrence of either event is the same. Attempts to apply Shannon's information theory to problems beyond communications have, in the large, come to grief. The failure of these attempts could have been predicted because no theory that involves just the probabilities of outcomes without considering their consequences could possibly be adequate in describing the importance of uncertainty to a decision maker. It is necessary to be concerned not only with the probabilistic nature of the uncertainties that surround us, but also with the economic impact that these uncertainties will have on us.},
-	language = {en},
 	number = {1},
-	urldate = {2020-03-10},
-	journal = {IEEE Transactions on Systems Science and Cybernetics},
-	author = {Howard, Ronald},
-	year = {1966},
-	pages = {22--26}
+	pages = {22--26},
+	author = {Ronald Howard},
+	title = {Information Value Theory},
+	journal = {{IEEE} Transactions on Systems Science and Cybernetics}
 }
 
 @inproceedings{chajewska_making_2000,
@@ -157,13 +153,16 @@ series = {EC ’01}
 }
 
 @inproceedings{boutilier_pomdp_2002,
-	title = {A {POMDP} {Formulation} of {Preference} {Elicitation} {Problems}},
-	abstract = {Preference elicitation is a key problem facing the deployment of intelligent systems that make or recommend decisions on the behalf of users. Since not all aspects of a utility function have the same impact on object-level decision quality, determining which information to extract from a user is itself a sequential decision problem, balancing the amount of elicitation effort and time with decision quality. We formulate this problem as a partially-observable Markov decision process (POMDP). Because of the continuous nature of the state and action spaces of this POMDP, standard techniques cannot be used to solve it. We describe methods that exploit the special structure of preference elicitation to deal with parameterized belief states over the continuous state space, and gradient techniques for optimizing parameterized actions. These methods can be used with a number of different belief state representations, including mixture models.},
-	language = {en},
-	author = {Boutilier, Craig},
-	year = {2002},
-	booktitle={AAAI/IAAI},
-	pages={239--246}
+author = {Boutilier, Craig},
+title = {A {POMDP} Formulation of Preference Elicitation Problems},
+year = {2002},
+isbn = {0262511290},
+publisher = {American Association for Artificial Intelligence},
+address = {USA},
+booktitle = {Eighteenth National Conference on Artificial Intelligence},
+pages = {239–246},
+numpages = {8},
+location = {Edmonton, Alberta, Canada}
 }
 
 @inproceedings{braziunas_local_2005,
@@ -181,21 +180,64 @@ series = {UAI'05}
 }
 
 @inproceedings{price_optimal_2005,
-	title = {Optimal {Recommendation} {Sets}: {Covering} {Uncertainty} over {User} {Preferences}},
-	abstract = {We propose an approach to recommendation systems that optimizes over possible sets of recommended alternatives in a decision-theoretic manner. Our approach selects the alternative set that maximizes the expected valuation of the user’s choice from the recommended set. The set-based optimization explicitly recognizes the opportunity for passing residual uncertainty about preferences back to the user to resolve. Implicitly, the approach chooses a set with a diversity of alternatives that optimally covers the uncertainty over possible user preferences. The approach can be used with several preference representations, including utility theory, qualitative preferences models, and informal scoring. We develop a specific formulation for multi-attribute utility theory, which we call maximization of expected max (MEM). We go on to show that this optimization is NP-complete (when user preferences are described by discrete distributions) and suggest two efficient methods for approximating it. These approximations have complexity of the same order as the traditional k-max operator and, for both synthetic and realworld data, perform better than the approach of recommending the k-individually best alternatives (which is not a surprise) and very close to the optimum set (which is less expected).},
-	language = {en},
-	author = {Price, Robert},
-	booktitle={AAAI},
-	year = {2005},
-	pages = {8}
+author = {Price, Bob and Messinger, Paul R.},
+title = {Optimal Recommendation Sets: Covering Uncertainty over User Preferences},
+year = {2005},
+isbn = {157735236x},
+publisher = {AAAI Press},
+booktitle = {Proceedings of the 20th National Conference on Artificial Intelligence - Volume 2},
+pages = {541–548},
+numpages = {8},
+location = {Pittsburgh, Pennsylvania},
+series = {AAAI’05}
 }
 
 @inproceedings{viappiani_optimal_2005,
-	title = {Optimal {Bayesian} {Recommendation} {Sets} and {Myopically} {Optimal} {Choice} {Query} {Sets}},
-	abstract = {Bayesian approaches to utility elicitation typically adopt (myopic) expected value of information (EVOI) as a natural criterion for selecting queries. However, EVOI-optimization is usually computationally prohibitive. In this paper, we examine EVOI optimization using choice queries, queries in which a user is ask to select her most preferred product from a set. We show that, under very general assumptions, the optimal choice query w.r.t. EVOI coincides with the optimal recommendation set, that is, a set maximizing the expected utility of the user selection. Since recommendation set optimization is a simpler, submodular problem, this can greatly reduce the complexity of both exact and approximate (greedy) computation of optimal choice queries. We also examine the case where user responses to choice queries are error-prone (using both constant and mixed multinomial logit noise models) and provide worst-case guarantees. Finally we present a local search technique for query optimization that works extremely well with large outcome spaces.},
-	language = {en},
-	author = {Viappiani, Paolo and Boutilier, Craig},
-	year = {2005},
-	booktitle={Advances in neural information processing systems},
-	pages={2352--2360}
+author = {Viappiani, Paolo and Boutilier, Craig},
+title = {Optimal {B}ayesian Recommendation Sets and Myopically Optimal Choice Query Sets},
+year = {2010},
+publisher = {Curran Associates Inc.},
+address = {Red Hook, NY, USA},
+booktitle = {Proceedings of the 23rd International Conference on Neural Information Processing Systems - Volume 2},
+pages = {2352–2360},
+numpages = {9},
+location = {Vancouver, British Columbia, Canada},
+series = {NIPS’10}
+}
+
+@book {vonNeumann1953Theory,
+    AUTHOR = {von Neumann, John and Morgenstern, Oskar},
+     TITLE = {Theory of games and economic behavior},
+   EDITION = {third},
+ PUBLISHER = {Princeton University Press, Princeton, N.J.},
+      YEAR = {1953}
+}
+
+@incollection{Gonzales_2017,
+	doi = {10.1007/978-3-319-60045-1_20},
+	url = {https://doi.org/10.1007%2F978-3-319-60045-1_20},
+	year = 2017,
+	publisher = {Springer International Publishing},
+	pages = {171--177},
+	author = {Christophe Gonzales and Lionel Torti and Pierre-Henri Wuillemin},
+	title = {{aGrUM}: A Graphical Universal Model Framework},
+	booktitle = {Advances in Artificial Intelligence: From Theory to Practice}
+}
+
+@article {Boutilier2006Constraint,
+    AUTHOR = {Boutilier, Craig and Patrascu, Relu and Poupart, Pascal and
+              Schuurmans, Dale},
+     TITLE = {Constraint-based optimization and utility elicitation using
+              the minimax decision criterion},
+   JOURNAL = {Artificial Intelligence},
+  FJOURNAL = {Artificial Intelligence},
+    VOLUME = {170},
+      YEAR = {2006},
+    NUMBER = {8-9},
+     PAGES = {686--713},
+      ISSN = {0004-3702},
+   MRCLASS = {91B06 (68T20 90C90)},
+  MRNUMBER = {2235210},
+       DOI = {10.1016/j.artint.2006.02.003},
+       URL = {https://doi.org/10.1016/j.artint.2006.02.003},
 }
