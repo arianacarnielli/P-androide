@@ -77,10 +77,10 @@ class MainWindow(QMainWindow):
             
         # On initialise les coûts des réparations et observations
         costsRep = {
-            "car.batteryFlat": 200,
-            "oil.noOil": 100,
+            "car.batteryFlat": [100, 300],
+            "oil.noOil": [50, 100],
             "tank.Empty": [40, 120],
-            "tank.fuelLineBlocked": 150,
+            "tank.fuelLineBlocked": [50, 250],
             "starter.starterBroken": [20, 60],
             "callService": 500
         }
@@ -148,7 +148,7 @@ class MainWindow(QMainWindow):
         
     def callEli(self):
         self.elicitationNode, val = self.tsp.best_EVOI()
-        if not np.allclose(0, val):
+        if not np.allclose(0, val) and val > 0:
             text = "Est-ce que le prix de réparer " + self.elicitationNode + " est plus petit que " + str(self.tsp.costs_rep[self.elicitationNode]) + " ?" 
             self.eli.title.setText(text)
             self.stack.setCurrentWidget(self.eli)       

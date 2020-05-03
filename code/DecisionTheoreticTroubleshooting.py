@@ -325,7 +325,7 @@ class TroubleShootingProblem:
             p = self.bay_lp.posterior(self.problem_defining_node)                
             inst = gum.Instantiation(p)
             inst.chgVal(self.problem_defining_node, "yes")
-            proba_cost = p[inst]
+            proba_cost *= p[inst]
             
             if debug == True:
                 print("noeud choisi dans ce tour de boucle : ", chosen_node)
@@ -518,7 +518,7 @@ class TroubleShootingProblem:
                                      + alpha) / 2
             _, expected_cost_repair_plus = self.simple_solver_obs()
             evoi[noeud] -= expected_cost_repair_plus * 0.5
-            evoi[noeud] = abs(evoi[noeud])
+            #evoi[noeud] = abs(evoi[noeud])
             self.costs_rep[noeud] = alpha
         return evoi
     

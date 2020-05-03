@@ -11,7 +11,7 @@ if __name__ == '__main__':
         
     # On initialise des coûts des réparations et des observations ...
     costs_rep = {
-        "car.batteryFlat": 200,
+        "car.batteryFlat": [100, 300],
         "oil.noOil": [50, 100],
         "tank.Empty": [40, 120],
         "tank.fuelLineBlocked": 150,

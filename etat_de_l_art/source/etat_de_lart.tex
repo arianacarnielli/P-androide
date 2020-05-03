@@ -301,7 +301,7 @@ Si $E u(D \mid \varepsilon)$ est l'utilité espérée lorsque l'on prend la déc
 \label{EsperanceObservation}
 \EVOI(X, \varepsilon) = \max_{D} \sum_{x_i} Eu(D \mid X = x_i, \varepsilon) P(X = x_i \mid \varepsilon) - \max_{D} Eu(D \mid \varepsilon),
 \end{equation}
-donc la différence entre l'utilité espérée maximale si l'on connaît $X$ et celle sans connaître $X$. Selon ce critère, on décide alors de payer pour évidence $X$ si $Eu_X > 0$ et prendre une décision directement sinon. De plus, si l'on avait un choix entre des évidences $X_1, X_2, \dotsc, X_n$, on choisirait celle qui apporterait à $Eu_X$ une valeur maximale toujours en vérifiant que $Eu_X > 0$.
+donc la différence entre l'utilité espérée maximale si l'on connaît $X$ et celle sans connaître $X$. Selon ce critère, on décide alors de payer pour évidence $X$ si $\EVOI(X, \varepsilon) > 0$ et prendre une décision directement sinon. De plus, si l'on avait un choix entre des évidences $X_1, X_2, \dotsc, X_n$, on choisirait celle qui apporterait à $\EVOI(X_i, \varepsilon)$ une valeur maximale toujours en vérifiant que $\EVOI(X_i, \varepsilon) > 0$.
 
 Cette idée est aussi celle utilisée dans l'approche myope décrite dans la Section~\ref{SecMyope}. Après avoir considéré que les paires observation-réparation sont des actions élémentaires, on peut voir l'introduction des observations globales comme des actions pour obtenir plus d'information. Le choix si une de ces actions sera prise ou pas est fait à travers un critère tout à fait analogue à celui décrit par \eqref{EsperanceObservation}.
 
@@ -362,18 +362,27 @@ Ces hypothèses sont trop restrictives car, d'une part, il n'est pas réaliste d
 \label{SecMyope}
 
 Les articles \cite{heckerman1994troubleshooting, Heckerman_1995} présentent un algorithme heuristique pour le problème de \emph{Troubleshooting} qui fait des hypothèses moins restrictives que les précédentes. On suppose désormais qu'il peut y avoir plusieurs composantes en panne mais on restreint les observations que l'on peut faire. Pour les composantes non-observables (c'est-à-dire, qui n'ont pas d'observation locale associée), la seule action disponible est leur réparation. Pour les composantes observables, on impose de toujours faire l'observation locale correspondante avant la réparation, ce qui est appelé une paire observation-réparation. Ainsi, on restreint l'ensemble $\mathcal A$ des actions possibles aux réparations de composantes non-observables et aux paires observation-réparation pour les autres composantes. Le coût de la paire $a = (o_i, r_j)$ est
-\[C^{or}(a, E) = C(o_i) + P(o_i \neq \text{normal} \mid E) C(r_j),\]
+\begin{equation}
+\label{EqCor}
+C^{or}(a, E) = C(o_i) + P(o_i \neq \text{normal} \mid E) C(r_j),
+\end{equation}
 où $E$ représente les informations dont on dispose, et on définit $C^{or}(a, E) = C(r_j)$ dans le cas où $a = r_j$ représente une réparation d'une composante non-observable. L'algorithme suit la même idée que le précédent, en choisissant à chaque étape le plus grand rapport probabilité/coût, mais ces rapports doivent désormais être recalculés à chaque étape car les probabilités et les coûts évoluent en fonction des actions déjà effectuées.
 
-À la fin de l'algorithme, cette heuristique basée sur les observations-réparations donnera une séquence $a_1, \dotsc, a_k$ d'actions à prendre dans l'ordre, où chaque action $a_i$ représente la réparation d'une composante non-observable, la paire observation-réparation d'une composante observable ou l'appel au service. Le coût espéré de réparation associé à cette séquence d'actions calculée à partir les informations initiales $E$, $\ECR(E)$, est alors donné par la formule
-\begin{align*}
+À la fin de l'algorithme, cette heuristique basée sur les observations-réparations donnera une séquence $a_1, \dotsc, a_k$ d'actions à prendre dans l'ordre, où chaque action $a_i$ représente la réparation d'une composante non-observable, la paire observation-réparation d'une composante observable ou l'appel au service. Le coût espéré de réparation associé à cette séquence d'actions calculée à partir des informations initiales $E$, $\ECR(E)$, est alors donné par la formule
+\begin{equation}
+\label{EqECR}
+\begin{aligned}
 \ECR(E) = {} & C^{or}(a_1, E) \\
 & {} + P(o_0 \neq \text{normal} \mid E_1) C^{or}(a_2, E_1) \\
-& {} + P(o_0 \neq \text{normal} \mid E_2) C^{or}(a_3, E_2) \\
+& {} + P(o_0 \neq \text{normal} \mid E_1) P(o_0 \neq \text{normal} \mid E_2) C^{or}(a_3, E_2) \\
 & {} + \dotsb \\
-& {} + P(o_0 \neq \text{normal} \mid E_{k-1}) C^{or}(a_k, E_{k-1}),
-\end{align*}
-où, pour $j \in \{1, \dotsc, k-1\}$, $E_j$ représente les informations à la fin de l'étape $j$, c'est-à-dire $E$ rajouté des informations que les composantes correspondant aux actions $a_1, \dotsc, a_j$ ont été réparés.
+& {} + P(o_0 \neq \text{normal} \mid E_1) P(o_0 \neq \text{normal} \mid E_2) \dotsm P(o_0 \neq \text{normal} \mid E_{k-1}) C^{or}(a_k, E_{k-1}),
+\end{aligned}
+\end{equation}
+où, pour $j \in \{1, \dotsc, k-1\}$, $E_j$ représente les informations à la fin de l'étape $j$, c'est-à-dire $E$ rajouté des informations que les composantes correspondant aux actions $a_1, \dotsc, a_j$ ont été réparés. Cette formule peut aussi s'écrire de façon récursive comme
+\[
+\ECR(E) = C^{or}(a_1, E) + P(o_0 \neq \text{normal} \mid E_1) \ECR(E_1).
+\]
 
 La contribution principale de \cite{heckerman1994troubleshooting, Heckerman_1995} est une autre approche heuristique qui, par rapport au cas précédent, rajoute la possibilité de faire des observations globales en dehors des paires ob\-ser\-va\-tion-ré\-pa\-ra\-tion. Pour éviter la complexité du cas général, ils développent une technique appelée \emph{myope}, qui consiste à calculer l'espérance de coût après une observation globale $o_i$ de façon approchée en supposant qu'aucune autre observation globale ne sera faite dans la suite. Cela donne ainsi l'espérance de coût myope suite à l'observation $o_i$, $\ECO(o_i)$, donnée par
 \[
@@ -455,6 +464,91 @@ et on demande à l'utilisateur de comparer $o_\ast$ et $q_\ast$. La réponse de 
 Pour ce projet, on commence par la réalisation d'un logiciel qui permettra de résoudre des problèmes de \emph{Troubleshooting} différents à partir des leurs modèles donnés sous une forme de réseau Bayésien et en utilisant les algorithmes décrits dans les références ci-dessus, notamment \cite{Heckerman_1995, heckerman1994troubleshooting}. Cette implémentation suppose une connaissance parfaite des paramètres du problème, à savoir les probabilités du réseau Bayésien et les coûts de chaque observation et réparation. La deuxième partie du projet cherche à s'affranchir, au moins partiellement, de ces hypothèses simplificatrices, en supposant par exemple que les coûts ne sont pas parfaitement connus. Notre objectif sera alors d'utiliser des méthodes d'élicitation pour réduire les incertitudes sur les données du problème.
 
 Mots-clés~: Troubleshooting, Value of Information, Elicitation.
+
+\section{Implémentation}
+
+\subsection{Élicitation des couts}
+
+Jusqu'à présent, on a considéré que les paramètres définissant le problème étaient fixes~: tables de probabilité du réseau Bayésien et couts d'observation et de réparation de chaque composante. Dans cette partie, on considère le cas où il y a une incertitude sur les couts, en supposant que l'on peut ne pas connaitre leur valeur exacte mais uniquement un intervalle. Pour simplifier, on considère que seuls les cours de réparation peuvent être incertains, mais que les couts d'observation sont connus. Cette hypothèse simplificatrice facilite l'exposition de la méthode et son implémentation mais on peut facilement adapter ces méthodes au cas de couts d'observation incertains.
+
+Chaque cout de réparation est ainsi représenté par une paire donnant le cout minimal et le cout maximal, et on considère que le vrai cout de réparation est une variable aléatoire de loi uniforme sur cet intervalle. L'espérance d'un cout de réparation est ainsi la moyenne entre les couts minimal et maximal correspondants. Nous avons alors adapté le code précédent pour, dans un premier temps, faire la même approche myope qu'avant mais en prenant en compte dans les calculs les espérances des couts de réparation de chaque composante. L'objectif est alors, dans un second temps, d'utiliser l'élicitation pour améliorer les connaissances sur les couts de réparation, c'est-à-dire diminuer la taille des intervalles de valeur pour chaque cout, afin que l'algorithme de \emph{Troubleshooting} puisse ainsi proposer une séquence d'actions plus adaptée. Pour cela, on utilise la notion de valeur d'information décrite dans la Section~\ref{SecValeurInformation}.
+
+Plus précisément, on considère que le cout $C(r_i)$ de réparer la composante $c_i$ est une variable aléatoire de loi uniforme sur l'intervalle $[C_{\min}(r_i), C_{\max}(r_i)]$. On remarque que cela comprend aussi le cas particulier où le cout $C(r_i)$ est connu de façon exacte car il suffit d'avoir $C_{\min}(r_i) = C_{\max}(r_i)$. On dénote par $\overline C(r_i)$ l'espérance de $C(r_i)$, soit
+\[\overline C(r_i) = \frac{C_{\min}(r_i) + C_{\max}(r_i)}{2}\]
+et on dénote par $\ECR_0$ l'espérance du cout de réparation calculée par la formule \eqref{EqECR} avec les couts $\overline C(r_i)$.
+
+L'objectif est de déterminer quelle question poser en premier à l'utilisateur sur les couts de réparation pour acquérir le plus d'information possible. Dans notre formulation, on choisit de regarder une question par composante, de la forme ``Est-ce que le cout de réparation de la composante $c_i$ est plus petit que $\alpha$~?'', où $\alpha$ est une valeur dans $[C_{\min}(r_i), C_{\max}(r_i)]$. Pour déterminer l'information apportée par la réponse de cette question, on calcule~:
+\begin{itemize}
+\item $\ECR_+(c_i, \alpha)$, qui est le cout espéré de la réparation dans le cas où la réponse à la question est non, calculé en remplaçant $\overline C(r_i)$ par l'espérance de la loi uniforme sur $[\alpha, C_{\max}(r_i)]$, soit $\frac{\alpha + C_{\max}(r_i)}{2}$~;
+\item $\ECR_-(c_i, \alpha)$, qui est le cout espéré de la réparation dans le cas où la réponse à la question est oui, calculé en remplaçant $\overline C(r_i)$ par l'espérance de la loi uniforme sur $[C_{\min}(r_i), \alpha]$, soit $\frac{C_{\min}(r_i) + \alpha}{2}$~;
+\item $\EVOI(c_i, \alpha)$, calculé, selon le principe de la formule \eqref{EsperanceObservation}, par
+\[
+\EVOI(c_i, \alpha) = \ECR_0 - \left[\ECR_+(c_i, \alpha) P(C(r_i) \geq \alpha) + \ECR_-(c_i, \alpha) P(C(r_i) < \alpha)\right].
+\]
+\end{itemize}
+On cherche alors à choisir la question qui maximise $\EVOI(c_i, \alpha)$ afin d'obtenir le plus d'information possible. Par rapport à \eqref{EsperanceObservation}, la formule ci-dessus a un changement de signe, puisque ici il s'agit d'un problème de minimisation de couts, alors que \eqref{EsperanceObservation} a été présentée pour la maximisation d'une utilité. On a la propriété suivante~:
+
+\begin{prop}
+Si les couts espérés de réparation minimaux $\ECR$ sont calculés de façon exacte, alors $\EVOI(c_i, \alpha) \geq 0$ pour tous $c_i$ et $\alpha \in [C_{\min}(r_i), C_{\max}(r_i)]$.
+\end{prop}
+
+\begin{proof}
+Soit $s_0 = (a_1, \dotsc, a_k)$ la séquence d'actions qui donne le cout espéré total $\ECR_0$ avec les couts de réparations individuels $\overline C(r_i)$. On dénote par $\ECR_+(c_i, \alpha, s_0)$ (resp.\ $\ECR_-(c_i, \alpha, s_0)$) le cout espéré de réparation en suivant la même séquence $s_0$ mais avec le cout de réparation de la composante $c_i$ donnée par $\frac{\alpha + C_{\max}(r_i)}{2}$ (resp.\ $\frac{C_{\min}(r_i) + \alpha}{2}$). On fixe une composante $c_i$ et une valeur de $\alpha \in [C_{\min}(r_i), C_{\max}(r_i)]$. La stratégie de la suite de la preuve est la suivante~: on montre d'abord que
+\begin{equation}
+\label{ProofEVOIFirstPart}
+\ECR_0 - \left[\ECR_+(c_i, \alpha, s_0) P(C(r_i) \geq \alpha) + \ECR_-(c_i, \alpha, s_0) P(C(r_i) < \alpha)\right] = 0,
+\end{equation}
+(ce qui veut dire que, si la séquence de réparations ne change pas, la valeur de l'information est nulle) et ensuite que
+\begin{equation}
+\label{ProofEVOISecondPart}
+\ECR_+(c_i, \alpha) \leq \ECR_+(c_i, \alpha, s_0) \qquad \text{ et } \qquad \ECR_-(c_i, \alpha) \leq \ECR_-(c_i, \alpha, s_0).
+\end{equation}
+Cela impliquera alors que
+\[
+\EVOI(c_i, \alpha) = \ECR_0 - \left[\ECR_+(c_i, \alpha) P(C(r_i) \geq \alpha) + \ECR_-(c_i, \alpha) P(C(r_i) < \alpha)\right] \geq 0.
+\]
+
+Commençons par montrer \eqref{ProofEVOIFirstPart}. Soit $a_j$ l'action dans la séquence $s_0$ qui correspond à la composante $c_i$. On peut réécrire la formule \eqref{EqECR} pour le calcul de $\ECR_0$ comme
+\[
+\ECR_0 = C + p C^{or}(a_j, E_{j-1})
+\]
+où $p = P(o_0 \neq \text{normal} \mid E_1) \dotsm P(o_0 \neq \text{normal} \mid E_{j-1})$ et $C$ représente les termes de la formule \eqref{EqECR} correspondant aux actions $a_1, \dotsc, a_{j-1}, a_{j+1}, \dotsc, a_k$. On rappelle aussi que, d'après \eqref{EqCor},
+\[
+C^{or}(a_j, E_{j-1}) = C(o_i) + P(o_i \neq \text{normal} \mid E_{j-1}) \overline C(r_i),
+\]
+ce qui veut dire que
+\[
+\ECR_0 = C + p C(o_i) + p P(o_i \neq \text{normal} \mid E_{j-1}) \overline C(r_i) = \hat C + \hat p \overline C(r_i)
+\]
+avec $\hat C = C + p C(o_i)$ et $\hat p = p P(o_i \neq \text{normal} \mid E_{j-1})$. Comme les couts espérés $\ECR_+(c_i, \alpha, s_0)$ et $\ECR_-(c_i, \alpha, s_0)$ suivent la même séquence d'actions $s_0$ que $\ECR_0$ avec les mêmes couts de réparation sauf celui de $r_i$, les valeurs de $\hat C$ et $\hat p$ restent les mêmes et on a alors
+\begin{align*}
+\ECR_+(c_i, \alpha, s_0) & = \hat C + \hat p \frac{\alpha + C_{\max}(r_i)}{2}, \\
+\ECR_-(c_i, \alpha, s_0) & = \hat C + \hat p \frac{C_{\min}(r_i) + \alpha}{2}.
+\end{align*}
+Comme $C(r_i)$ suit une loi uniforme sur $[C_{\min}(r_i), C_{\max}(r_i)]$ et $\alpha$ appartient à cet intervalle, on a $P(C(r_i) \geq \alpha) = \frac{C_{\max}(r_i) - \alpha}{C_{\max}(r_i) - C_{\min}(r_i)}$ et $P(C(r_i) < \alpha) = \frac{\alpha - C_{\min}(r_i)}{C_{\max}(r_i) - C_{\min}(r_i)}$. En utilisant en plus que $\overline C(r_i) = \frac{C_{\max}(r_i) + C_{\min}(r_i)}{2}$, on a
+\begin{align*}
+& \ECR_+(c_i, \alpha, s_0) P(C(r_i) \geq \alpha) + \ECR_-(c_i, \alpha, s_0) P(C(r_i) < \alpha) \displaybreak[0] \\
+{} = {} & \left(\hat C + \hat p \frac{\alpha + C_{\max}(r_i)}{2}\right) P(C(r_i) \geq \alpha) + \left(\hat C + \hat p \frac{C_{\min}(r_i) + \alpha}{2}\right) P(C(r_i) < \alpha) \displaybreak[0] \\
+{} = {} & \hat C + \hat p \frac{\alpha + C_{\max}(r_i)}{2} P(C(r_i) \geq \alpha) + \hat p \frac{C_{\min}(r_i) + \alpha}{2} P(C(r_i) < \alpha) \displaybreak[0] \\
+{} = {} & \hat C + \hat p \frac{\alpha + C_{\max}(r_i)}{2} \frac{C_{\max}(r_i) - \alpha}{C_{\max}(r_i) - C_{\min}(r_i)} + \hat p \frac{C_{\min}(r_i) + \alpha}{2} \frac{\alpha - C_{\min}(r_i)}{C_{\max}(r_i) - C_{\min}(r_i)} \displaybreak[0] \\
+{} = {} & \hat C + \hat p \frac{(\alpha + C_{\max}(r_i)) (C_{\max}(r_i) - \alpha) + (C_{\min}(r_i) + \alpha) (\alpha - C_{\min}(r_i))}{2 (C_{\max}(r_i) - C_{\min}(r_i))} \displaybreak[0] \\
+{} = {} & \hat C + \hat p \frac{C_{\max}(r_i)^2 - \alpha^2 + \alpha^2 - C_{\min}(r_i)^2}{2 (C_{\max}(r_i) - C_{\min}(r_i))} \displaybreak[0] \\
+{} = {} & \hat C + \hat p \frac{(C_{\max}(r_i) - C_{\min}(r_i)) (C_{\max}(r_i) + C_{\min}(r_i))}{2 (C_{\max}(r_i) - C_{\min}(r_i))} \displaybreak[0] \\
+{} = {} & \hat C + \hat p \frac{C_{\max}(r_i) + C_{\min}(r_i)}{2} = \hat C + \hat p \overline C(r_i) = \ECR_0,
+\end{align*}
+ce qui montre \eqref{ProofEVOIFirstPart}.
+
+Pour montrer \eqref{ProofEVOISecondPart}, on observe que $\ECR_+(c_i, \alpha, s_0)$ donne un cout espéré de réparation si l'on suit la séquence d'actions $s_0$ lorsque la réparation $r_i$ a un cout $\frac{\alpha + C_{\max}(r_i)}{2}$. D'après notre hypothèse, $\ECR_+(c_i, \alpha)$ donne le cout exact, c'est-à-dire le plus petit cout de réparation par rapport à toutes les séquences d'actions possibles. Comme $s_0$ est une séquence d'action possible, on a alors forcément $\ECR_+(c_i, \alpha) \leq \ECR_+(c_i, \alpha, s_0)$. Le même raisonnement montre que $\ECR_-(c_i, \alpha) \leq \ECR_-(c_i, \alpha, s_0)$.
+\end{proof}
+
+Notre implémentation permet à l'utilisateur de choisir à quel moment il veut répondre à des questions sur les couts. Lorsque l'utilisateur le choisit, on calcule les $\EVOI(c_i, \alpha)$ pour tous les composants réparables $c_i$ et, comme d'après la propriété précédente, tous ces $\EVOI$ sont positifs, on choisit celui de plus grande valeur. Si cette valeur est $0$, il n'y a aucune question intéressante à poser et on informe cela à l'utilisateur. Dans le cas contraire, on pose la question correspondante et, en fonction de la réponse de l'utilisateur, on met à jour l'intervalle $[C_{\max}(r_i), C_{\min}(r_i)]$.
+
+La propriété démontrée ci-dessus fait l'hypothèse cruciale que les valeurs de $\ECR$ sont exactes. Or, l'algorithme que l'on utilise, basée sur l'idée de \cite{heckerman1994troubleshooting, Heckerman_1995}, est un algorithme heuristique glouton qui, malgré ses bons résultats pratiques, ne donne pas toujours la séquence de réparation avec le plus petit cout espéré, même si cela est souvent le cas. Ainsi, il se peut que l'on puisse trouver des valeurs négatives dans le calcul des $\EVOI$. En pratique, en testant avec des valeurs aléatoires pour les intervalles des couts $[C_{\min}(r_i), C_{\max}(r_i)]$, on a observé des valeurs négatives pour $\EVOI$ dans $6\%$ des cas, mais cette valeur négative restait toujours petite, de l'ordre au maximum de $10^{-2}$, ce qui illustre d'ailleurs que l'algorithme de \cite{heckerman1994troubleshooting, Heckerman_1995} donne une bonne approximation.
+
+Il reste encore la question de quel $\alpha$ choisir pour chaque composante. Notre implémentation choisit toujours $\alpha = \overline C(r_i)$ pour la question correspondante à la composante $c_i$, ce qui est un choix raisonnable en absence d'autres informations car $\overline C(r_i)$ est l'espérance de la loi uniforme que l'on considère pour le cout $C(r_i)$. L'amélioration de ce choix naïf est une question intéressante qui pourrait permettre de poser des questions plus pertinentes à l'utilisateur. Pour espérer d'améliorer ce choix, il faut avoir plus d'information, ce que l'on pourrait obtenir, par exemple, en regardant ce que l'utilisateur choisit de faire lorsqu'il ne suit pas les recommandations du logiciel. En effet, dans ce cas, le fait que l'utilisateur n'a pas suivi une recommandation du logiciel indique qu'il a une connaissance en plus sur les valeurs de cout, ce que lui a fait de choisir une autre action. L'idée serait alors d'exploiter cette connaissance afin de modifier la loi de probabilité des couts $C(r_i)$.
+
+
+
 
 \bibliographystyle{abbrv}
 \bibliography{bibliographie}
