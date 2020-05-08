@@ -14,4 +14,4 @@ Dernières modifications / Prochains pas :
 
 Le logiciel a une interface graphique interactive implémentant l'algorithme myope avec des intervalles des valeurs pour les prix inconnus de réparation et une élicitation simple sur ces prix. Le code n'est pas encore comenté, on compte le faire dans les prochains jours / semaines. 
 
-L'état de l'art à été modifié pour prendre en consideration les remarques faites par les encadrants. 
+L'état de l'art à été modifié pour prendre en consideration les remarques faites par les encadrants. On a aussi ajouté une partie sur l'élicitation implémenté par notre code.
