@@ -15,6 +15,7 @@ from Action import *
 from Elicitation import *
 from Fin import *
 
+
 class MainWindow(QMainWindow):
 
     def __init__(self, parent = None):
@@ -40,7 +41,7 @@ class MainWindow(QMainWindow):
         self.trouble.eliButton.clicked.connect(self.callEli)
 
         self.obs = Observation()
-        self.obs.cb.textActivated.connect(self.makeObs)
+        self.obs.cb.activated.connect(self.makeObs)
         
         self.act = Action()
         self.act.yesButton.clicked.connect(self.makeAct)
@@ -157,8 +158,8 @@ class MainWindow(QMainWindow):
             error.exec()
             
     def makeObs(self, text):
-        self.currentObs = text
-        self.tsp.change_evidence(self.currentNode, self.currentObs)
+        self.currentObs = self.obs.cb.currentText()
+        self.tsp.add_evidence(self.currentNode, self.currentObs)
         self.recommendation, self.typeNodeRec = self.tsp.myopic_solver()
         self.observables = self.observables - {self.currentNode}
         self.trouble.actButton.setEnabled(False)
@@ -170,9 +171,9 @@ class MainWindow(QMainWindow):
         if self.sender().text() == "No":
             obsoletes = self.tsp.observation_obsolete(self.currentNode) 
             if self.currentNode != "callService":
-                self.tsp.change_evidence(self.currentNode, "no")
+                self.tsp.add_evidence(self.currentNode, "no")
             else:
-                self.tsp.change_evidence(self.currentNode, "yes")  
+                self.tsp.add_evidence(self.currentNode, "yes")  
             for obs in obsoletes:
                 self.tsp.evidences.pop(obs)
             self.tsp.reset_bay_lp(self.tsp.evidences)
@@ -192,26 +193,30 @@ class MainWindow(QMainWindow):
             islower = False
         self.tsp.elicitation(self.elicitationNode, islower)
         self.startTroubleshoot()
-    
-        
+           
     def finish(self):
-        sys.exit()
+        QApplication.exit()
         
     def quit(self):
         box = QMessageBox()
         b = box.question(self, 'Sortir ?', "Vous voulez sortir du logiciel ?", QMessageBox.Yes | QMessageBox.No)
         box.setIcon(QMessageBox.Question)
         if b == QMessageBox.Yes:
-            sys.exit()
+            QApplication.exit()
 
     def closeEvent(self, event):
         event.ignore()
         self.quit()
-
         
-if __name__=="__main__":
-    app = QApplication(sys.argv)
 
-    window = MainWindow()
-    window.show()
-    app.exec_()
+if __name__ == "__main__":
+    def run_app():
+        if not QApplication.instance():        
+            app = QApplication(sys.argv)
+        else:
+            app = QApplication.instance()
+        mainWin = MainWindow()
+        mainWin.show()
+        app.exec_()
+    run_app()
+
