@@ -15,6 +15,7 @@ class Action(QWidget):
         self.yesButton = QPushButton("Yes")
         self.noButton = QPushButton("No")
         
+        
         layout.addWidget(self.title)
         layout.addWidget(self.yesButton)
         layout.addWidget(self.noButton)

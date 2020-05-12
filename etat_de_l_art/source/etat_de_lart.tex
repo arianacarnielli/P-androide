@@ -231,15 +231,35 @@
 
 \pagestyle{plain}
 
-%\title{Projet UE COMPLEX --- MU4IN900 \\ Couverture de graphe}
-%\author{Ariana Carnielli}
-%\date{}
-%\maketitle
+\title{P-Androide~: Diagnostic and Value Of Information}
+\author{Ariana Carnielli et Ivan Kachaikin}
+\date{Encadrants~: Paolo Viappiani et Pierre-Henri Wuillemin}
+\maketitle
 
+\tableofcontents
 
-%\tableofcontents
+%Mots-clés~: Troubleshooting, Value of Information, Elicitation.
+
+\section{Introduction}
+
+Ce document présente les travaux réalisés pour le projet «~Diagnostic and Value of Information~» du master M1 Androide à Sorbonne Université. Il commence par une description de la problématique traitée et les objectifs initiaux à travers le cahier des charges de la Section~\ref{SecCharges}. On donne ensuite un panorama de la littérature disponible sur le sujet dans l'état de l'art de la Section~\ref{SecEtatDeLArt}. La Section~\ref{SecContribution} présente notre contribution à l'étude du problème traité. Une description des implémentations réalisées est donnée dans la Section~\ref{SecImplementation} avant la présentation des résultats dans la Section~\ref{SecResultats}.
+
+\section{Cahier des charges}
+\label{SecCharges}
+
+Des dispositifs tombent souvent en panne~: logiciels, téléphones, ordinateurs, imprimantes, voitures, rames de métro, parmi de nombreux autres dispositifs, peuvent présenter des malfonctionnements empêchant leur utilisation. Dans ces situations, plus qu'identifier l'origine du problème, on cherche à le réparer, de préférence de la façon la moins «~coûteuse~» possible, le coût ici ne se limitant pas au coût financier mais pouvant aussi prendre en compte d'autres facteurs comme le temps de réparation. Ce processus de réparation se passe dans l'incertain, face à plusieurs inconnues comme l'état de fonctionnement des différentes composantes du dispositif, l'origine du problème, mais aussi possiblement l'absence d'informations exactes sur les différents coûts. L'établissement de protocoles et de séquences d'actions sur le dispositif permettant de minimiser la valeur espérée du coût total de sa réparation est la base du problème de \emph{Troubleshooting}, objet d'étude de ce projet.
+
+Ce projet est à l'origine un projet prospectif~: son objectif est de chercher quel apport la théorie de l'élicitation --- qui s'intéresse, face à une situation d'incertitude, à trouver les «~meilleures~» questions à poser, celles qui apportent le plus d'information --- peut avoir sur le problème de \emph{Troubleshooting}, afin d'avoir des meilleures séquences d'actions pour réparer un dispositif.
+
+Le cahier de charges de ce projet est le suivant:
+
+% projet prospectif pour voir si on arrive à melanger ces deux domaines qui ne sont pas melangés maintenant. Est-ce qu'on arrive à utiliser les techniques de l'élicitation dans le problème de troubleshooting dans l'incertain ? Cela a été proposé comme un projet plus théorique que pratique où on serait censé de faire des essais pour voir si on arrive à améliorer ce qui existe déjà ou inventer des nouvelles techniques qui peuvent être reprises après pour une étude plus approfondie. Pour cela, on était censé de faire ....
+% - état de l'art
+% - implémentation de ce qui est déjà fait dans le domaine
+% - 
 
 \section{État de l'art}
+\label{SecEtatDeLArt}
 
 \subsection{Description générale du problème de \emph{Troubleshooting}}
 
@@ -361,34 +381,34 @@ Ces hypothèses sont trop restrictives car, d'une part, il n'est pas réaliste d
 \subsubsection{Approche myope}
 \label{SecMyope}
 
-Les articles \cite{heckerman1994troubleshooting, Heckerman_1995} présentent un algorithme heuristique pour le problème de \emph{Troubleshooting} qui fait des hypothèses moins restrictives que les précédentes. On suppose désormais qu'il peut y avoir plusieurs composantes en panne mais on restreint les observations que l'on peut faire. Pour les composantes non-observables (c'est-à-dire, qui n'ont pas d'observation locale associée), la seule action disponible est leur réparation. Pour les composantes observables, on impose de toujours faire l'observation locale correspondante avant la réparation, ce qui est appelé une paire observation-réparation. Ainsi, on restreint l'ensemble $\mathcal A$ des actions possibles aux réparations de composantes non-observables et aux paires observation-réparation pour les autres composantes. Le coût de la paire $a = (o_i, r_j)$ est
+Les articles \cite{heckerman1994troubleshooting, Heckerman_1995} présentent un algorithme heuristique pour le problème de \emph{Troubleshooting} qui fait des hypothèses moins restrictives que les précédentes. On suppose désormais qu'il peut y avoir plusieurs composantes en panne mais on restreint les observations que l'on peut faire. Pour les composantes non-observables (c'est-à-dire, qui n'ont pas d'observation locale associée), la seule action disponible est leur réparation. Pour les composantes observables, on impose de toujours faire l'observation locale correspondante avant la réparation, ce qui est appelé une paire observation-réparation. Ainsi, on restreint l'ensemble $\mathcal A$ des actions possibles aux réparations de composantes non-observables et aux paires observation-réparation pour les autres composantes. Le coût de la paire $a = (o_i, r_i)$ est
 \begin{equation}
 \label{EqCor}
-C^{or}(a, E) = C(o_i) + P(o_i \neq \text{normal} \mid E) C(r_j),
+C^{or}(a, E) = C(o_i) + P(o_i \neq \text{normal} \mid E) C(r_i),
 \end{equation}
-où $E$ représente les informations dont on dispose, et on définit $C^{or}(a, E) = C(r_j)$ dans le cas où $a = r_j$ représente une réparation d'une composante non-observable. L'algorithme suit la même idée que le précédent, en choisissant à chaque étape le plus grand rapport probabilité/coût, mais ces rapports doivent désormais être recalculés à chaque étape car les probabilités et les coûts évoluent en fonction des actions déjà effectuées.
+où $E$ représente les informations dont on dispose, et on définit $C^{or}(a, E) = C(r_i)$ dans le cas où $a = r_i$ représente une réparation d'une composante non-observable. L'algorithme suit la même idée que le précédent, en choisissant à chaque étape le plus grand rapport probabilité/coût, mais ces rapports doivent désormais être recalculés à chaque étape car les probabilités et les coûts évoluent en fonction des actions déjà effectuées.
 
-À la fin de l'algorithme, cette heuristique basée sur les observations-réparations donnera une séquence $a_1, \dotsc, a_k$ d'actions à prendre dans l'ordre, où chaque action $a_i$ représente la réparation d'une composante non-observable, la paire observation-réparation d'une composante observable ou l'appel au service. Le coût espéré de réparation associé à cette séquence d'actions calculée à partir des informations initiales $E$, $\ECR(E)$, est alors donné par la formule
+À la fin de l'algorithme, cette heuristique basée sur les observations-réparations donnera une séquence d'actions $S^\ast = (a_1, \dotsc, a_k)$ à prendre dans l'ordre, où chaque action $a_i$ représente la réparation d'une composante non-observable, la paire observation-réparation d'une composante observable ou l'appel au service. Le coût espéré de réparation associé à cette séquence d'actions $S^\ast$ calculée à partir des informations initiales $E_0$, $\ECR(E_0, S^\ast)$, est alors donné par la formule
 \begin{equation}
 \label{EqECR}
 \begin{aligned}
-\ECR(E) = {} & C^{or}(a_1, E) \\
+\ECR(E_0, S^\ast) = {} & C^{or}(a_1, E_0) \\
 & {} + P(o_0 \neq \text{normal} \mid E_1) C^{or}(a_2, E_1) \\
 & {} + P(o_0 \neq \text{normal} \mid E_1) P(o_0 \neq \text{normal} \mid E_2) C^{or}(a_3, E_2) \\
 & {} + \dotsb \\
 & {} + P(o_0 \neq \text{normal} \mid E_1) P(o_0 \neq \text{normal} \mid E_2) \dotsm P(o_0 \neq \text{normal} \mid E_{k-1}) C^{or}(a_k, E_{k-1}),
 \end{aligned}
 \end{equation}
-où, pour $j \in \{1, \dotsc, k-1\}$, $E_j$ représente les informations à la fin de l'étape $j$, c'est-à-dire $E$ rajouté des informations que les composantes correspondant aux actions $a_1, \dotsc, a_j$ ont été réparés. Cette formule peut aussi s'écrire de façon récursive comme
+où, pour $j \in \{1, \dotsc, k-1\}$, $E_j$ représente les informations à la fin de l'étape $j$, c'est-à-dire $E_0$ rajouté des informations que les composantes correspondant aux actions $a_1, \dotsc, a_j$ ont été réparés. Cette formule peut aussi s'écrire de façon récursive comme
 \[
-\ECR(E) = C^{or}(a_1, E) + P(o_0 \neq \text{normal} \mid E_1) \ECR(E_1).
+\ECR(E_0, (a_1, \dotsc, a_k)) = C^{or}(a_1, E) + P(o_0 \neq \text{normal} \mid E_1) \ECR(E_1, (a_2, \dotsc, a_k)).
 \]
 
 La contribution principale de \cite{heckerman1994troubleshooting, Heckerman_1995} est une autre approche heuristique qui, par rapport au cas précédent, rajoute la possibilité de faire des observations globales en dehors des paires ob\-ser\-va\-tion-ré\-pa\-ra\-tion. Pour éviter la complexité du cas général, ils développent une technique appelée \emph{myope}, qui consiste à calculer l'espérance de coût après une observation globale $o_i$ de façon approchée en supposant qu'aucune autre observation globale ne sera faite dans la suite. Cela donne ainsi l'espérance de coût myope suite à l'observation $o_i$, $\ECO(o_i)$, donnée par
 \[
-\ECO(o_i, E) = C(o_i) + \sum_{j=1}^{n_i} \ECR(E \cup \{o_i = j\}) P(\{o_i = j\} \mid E),
+\ECO(o_i, E, S^\ast) = C(o_i) + \sum_{j=1}^{n_i} \ECR(E \cup \{o_i = j\}, S^\ast) P(\{o_i = j\} \mid E),
 \]
-où l'on considère que l'ensemble des résultats possibles de l'observation $o_i$ est $\{1, \dotsc, n_i\}$. À chaque étape, on compare ces espérances de coût $\ECO(o_i, E)$ (une pour chaque observation globale) avec l'espérance de coût sans observation $\ECR(E)$ (celle que l'on obtiendrait en appliquant l'algorithme précédent) pour décider s'il est intéressant de réaliser une observation globale à cette étape ou pas. On remarque aussi que la différence entre $\ECO(o_i, E)$ et $\ECR(E)$ peut être vue comme la valeur espérée de l'information myope apportée par l'observation $o_i$, dans le même sens que la formule de $\EVOI$ \eqref{EsperanceObservation} de la Section~\ref{SecValeurInformation}.
+où l'on considère que l'ensemble des résultats possibles de l'observation $o_i$ est $\{1, \dotsc, n_i\}$. À chaque étape, on compare ces espérances de coût $\ECO(o_i, E, S^\ast)$ (une pour chaque observation globale) avec l'espérance de coût sans observation $\ECR(E, S^\ast)$ (celle que l'on obtiendrait en appliquant l'algorithme précédent) pour décider s'il est intéressant de réaliser une observation globale à cette étape ou pas. On remarque aussi que la différence entre $\ECO(o_i, E, S^\ast)$ et $\ECR(E, S^\ast)$ peut être vue comme la valeur espérée de l'information myope apportée par l'observation $o_i$, dans le même sens que la formule de $\EVOI$ \eqref{EsperanceObservation} de la Section~\ref{SecValeurInformation}.
 
 Les travaux \cite{heckerman1994troubleshooting, Heckerman_1995} présentent aussi des méthodes pour calculer les probabilités de réparation en utilisant des réseaux Bayésiens. Pour ce faire, il est nécessaire non seulement de calculer ces probabilités mais aussi de les mettre à jour en fonction des informations acquises lors d'observations et de réparations. Afin de simplifier ce calcul, les articles introduisent la notion de réseaux de réponse, construits à partir d'un réseau Bayésien et d'une action effectuée. Des simplifications supplémentaires sont encore possibles sous l'hypothèse d'indépendance causale. Cet algorithme a été testé et validé pour certains modèles concrets.
 
@@ -463,9 +483,8 @@ et on demande à l'utilisateur de comparer $o_\ast$ et $q_\ast$. La réponse de 
 
 Pour ce projet, on commence par la réalisation d'un logiciel qui permettra de résoudre des problèmes de \emph{Troubleshooting} différents à partir des leurs modèles donnés sous une forme de réseau Bayésien et en utilisant les algorithmes décrits dans les références ci-dessus, notamment \cite{Heckerman_1995, heckerman1994troubleshooting}. Cette implémentation suppose une connaissance parfaite des paramètres du problème, à savoir les probabilités du réseau Bayésien et les coûts de chaque observation et réparation. La deuxième partie du projet cherche à s'affranchir, au moins partiellement, de ces hypothèses simplificatrices, en supposant par exemple que les coûts ne sont pas parfaitement connus. Notre objectif sera alors d'utiliser des méthodes d'élicitation pour réduire les incertitudes sur les données du problème.
 
-Mots-clés~: Troubleshooting, Value of Information, Elicitation.
-
-\section{Implémentation}
+\section{Contribution}
+\label{SecContribution}
 
 \subsection{Élicitation des couts}
 
@@ -547,7 +566,11 @@ La propriété démontrée ci-dessus fait l'hypothèse cruciale que les valeurs 
 
 Il reste encore la question de quel $\alpha$ choisir pour chaque composante. Notre implémentation choisit toujours $\alpha = \overline C(r_i)$ pour la question correspondante à la composante $c_i$, ce qui est un choix raisonnable en absence d'autres informations car $\overline C(r_i)$ est l'espérance de la loi uniforme que l'on considère pour le cout $C(r_i)$. L'amélioration de ce choix naïf est une question intéressante qui pourrait permettre de poser des questions plus pertinentes à l'utilisateur. Pour espérer d'améliorer ce choix, il faut avoir plus d'information, ce que l'on pourrait obtenir, par exemple, en regardant ce que l'utilisateur choisit de faire lorsqu'il ne suit pas les recommandations du logiciel. En effet, dans ce cas, le fait que l'utilisateur n'a pas suivi une recommandation du logiciel indique qu'il a une connaissance en plus sur les valeurs de cout, ce que lui a fait de choisir une autre action. L'idée serait alors d'exploiter cette connaissance afin de modifier la loi de probabilité des couts $C(r_i)$.
 
+\section{Implémentation}
+\label{SecImplementation}
 
+\section{Résultats}
+\label{SecResultats}
 
 
 \bibliographystyle{abbrv}

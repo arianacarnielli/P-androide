@@ -1,0 +1,22 @@
+\babel@toc {french}{}
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
+\contentsline {section}{\numberline {2}Cahier des charges}{2}{section.2}%
+\contentsline {section}{\numberline {3}État de l'art}{2}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Description générale du problème de \emph {Troubleshooting}}{2}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Théorie de la décision et fonctions d'utilité}{2}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Valeur de l'information myope}{4}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Réseaux Bayésiens}{4}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Approches au problème de \emph {Troubleshooting}}{5}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}Approche exacte}{5}{subsubsection.3.5.1}%
+\contentsline {subsubsection}{\numberline {3.5.2}Algorithme exacte sous hypothèses simplificatrices}{5}{subsubsection.3.5.2}%
+\contentsline {subsubsection}{\numberline {3.5.3}Approche myope}{6}{subsubsection.3.5.3}%
+\contentsline {subsubsection}{\numberline {3.5.4}Extensions de l'approche myope}{7}{subsubsection.3.5.4}%
+\contentsline {subsection}{\numberline {3.6}Élicitation}{7}{subsection.3.6}%
+\contentsline {subsubsection}{\numberline {3.6.1}Élicitation dans le \emph {Troubleshooting}}{7}{subsubsection.3.6.1}%
+\contentsline {subsubsection}{\numberline {3.6.2}Approche Bayésienne}{8}{subsubsection.3.6.2}%
+\contentsline {subsubsection}{\numberline {3.6.3}Approche ensembliste}{9}{subsubsection.3.6.3}%
+\contentsline {subsection}{\numberline {3.7}Objectifs du projet}{10}{subsection.3.7}%
+\contentsline {section}{\numberline {4}Contribution}{10}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Élicitation des couts}{10}{subsection.4.1}%
+\contentsline {section}{\numberline {5}Implémentation}{13}{section.5}%
+\contentsline {section}{\numberline {6}Résultats}{13}{section.6}%

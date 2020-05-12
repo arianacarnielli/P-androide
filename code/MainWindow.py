@@ -1,4 +1,5 @@
 import sys
+import re
 import numpy as np
 import pyAgrum as gum
 
@@ -118,34 +119,36 @@ class MainWindow(QMainWindow):
         self.observables = set(self.tsp.observation_nodes).intersection(set(self.tsp.unrepairable_nodes))
         
         self.elicitationNode = ""
-        self.recommendation, self.typeNodeRec = self.tsp.myopic_solver()
+        self.recommendation, self.typeNodeRec, self.eco, self.ecr = self.tsp.ECR_ECO_wrapper()
         self.currentNode =  ""
         self.currentObs = ""
         self.currentAct = ""
-        self.currentPossibilities = []
-        
+        self.currentPossibilities = []       
         
     def startTroubleshoot(self):
-        self.trouble.observationsPossibles(self.observables)  
-        self.trouble.actionsPossibles(self.repairables) 
+        self.trouble.observationsPossibles(self.observables, self.eco)  
+        self.trouble.actionsPossibles(self.repairables, self.ecr) 
         
         if self.typeNodeRec == "obs":
-            text = "On vous recommende d'observez le composant " + self.recommendation 
+            text = "On vous recommende d'observez le composant {} avec ECO : {:.3f}".format(self.recommendation, self.eco[self.recommendation])
         else:
-            text = "On vous recommende de faire l'observation-réparation suivante : " + self.recommendation 
+            text = "On vous recommende de faire l'observation-réparation suivante : {} avec ECR : {:.3f}".format(self.recommendation, self.ecr[self.recommendation])
         self.trouble.recommendation.setText(text)
         self.stack.setCurrentWidget(self.trouble)
-        
-        
+               
     def callObs(self):
-        self.currentNode = self.trouble.listObs.currentItem().text()
+        self.currentNode = re.findall('(\S+) \d+.\d+', self.trouble.listObs.currentItem().text())[0]
         self.currentPossibilities = self.tsp.bayesian_network.variable(self.currentNode).labels()        
         self.obs.resultatsPossibles(self.currentPossibilities)
         self.stack.setCurrentWidget(self.obs)        
         
     def callAct(self):
+        
+        self.currentNode = re.findall('(\S+) \d+.\d+', self.trouble.listAct.currentItem().text())[0]
+        if self.currentNode == self.tsp.service_node:
+                self.act.noButton.setEnabled(False)
+        
         self.stack.setCurrentWidget(self.act)
-        self.currentNode = self.trouble.listAct.currentItem().text()
         
     def callEli(self):
         self.elicitationNode, val = self.tsp.best_EVOI()
@@ -160,7 +163,7 @@ class MainWindow(QMainWindow):
     def makeObs(self, text):
         self.currentObs = self.obs.cb.currentText()
         self.tsp.add_evidence(self.currentNode, self.currentObs)
-        self.recommendation, self.typeNodeRec = self.tsp.myopic_solver()
+        self.recommendation, self.typeNodeRec, self.eco, self.ecr = self.tsp.ECR_ECO_wrapper()
         self.observables = self.observables - {self.currentNode}
         self.trouble.actButton.setEnabled(False)
         self.trouble.obsButton.setEnabled(False)
@@ -178,7 +181,7 @@ class MainWindow(QMainWindow):
                 self.tsp.evidences.pop(obs)
             self.tsp.reset_bay_lp(self.tsp.evidences)
             self.observables.update(obsoletes)
-            self.recommendation, self.typeNodeRec = self.tsp.myopic_solver()
+            self.recommendation, self.typeNodeRec, self.eco, self.ecr = self.tsp.ECR_ECO_wrapper()
             self.repairables = self.repairables - {self.currentNode}
             self.trouble.actButton.setEnabled(False)
             self.trouble.obsButton.setEnabled(False)
@@ -192,6 +195,7 @@ class MainWindow(QMainWindow):
         else:
             islower = False
         self.tsp.elicitation(self.elicitationNode, islower)
+        self.recommendation, self.typeNodeRec, self.eco, self.ecr = self.tsp.ECR_ECO_wrapper()
         self.startTroubleshoot()
            
     def finish(self):
@@ -219,4 +223,3 @@ if __name__ == "__main__":
         mainWin.show()
         app.exec_()
     run_app()
-
