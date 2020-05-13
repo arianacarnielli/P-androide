@@ -251,12 +251,25 @@ Des dispositifs tombent souvent en panne~: logiciels, téléphones, ordinateurs,
 
 Ce projet est à l'origine un projet prospectif~: son objectif est de chercher quel apport la théorie de l'élicitation --- qui s'intéresse, face à une situation d'incertitude, à trouver les «~meilleures~» questions à poser, celles qui apportent le plus d'information --- peut avoir sur le problème de \emph{Troubleshooting}, afin d'avoir des meilleures séquences d'actions pour réparer un dispositif.
 
-Le cahier de charges de ce projet est le suivant:
+Le cahier de charges de ce projet est le suivant~:
+\begin{itemize}
+\item Étude de l'état de l'art sur le problème de \emph{Troubleshooting}.
 
-% projet prospectif pour voir si on arrive à melanger ces deux domaines qui ne sont pas melangés maintenant. Est-ce qu'on arrive à utiliser les techniques de l'élicitation dans le problème de troubleshooting dans l'incertain ? Cela a été proposé comme un projet plus théorique que pratique où on serait censé de faire des essais pour voir si on arrive à améliorer ce qui existe déjà ou inventer des nouvelles techniques qui peuvent être reprises après pour une étude plus approfondie. Pour cela, on était censé de faire ....
-% - état de l'art
-% - implémentation de ce qui est déjà fait dans le domaine
-% - 
+L'objectif est d'étudier le problème de \emph{Troubleshooting} à travers une revue de la littérature dans ce domaine, étudiant en détails les principaux articles fondateurs et quelques articles plus récents. Cela permet de, dans un premier temps, comprendre ce qu'est le \emph{Troubleshooting}, la difficulté de l'utilisation d'algorithmes exacts à cause de leur complexité, et quelles sont les principaux algorithmes approchés utilisés et les heuristiques les motivant. L'état de l'art doit présenter aussi un bref aperçu de la théorie de l'élicitation, avec ses idées principales, afin de comprendre si ses méthodes peuvent être utiles dans un contexte de \emph{Troubleshooting}.
+
+\item Implémentation de techniques classiques de \emph{Troubleshooting}.
+
+Une fois la revue de la littérature complétée, l'objectif suivant de ce projet est de faire une implémentation de méthodes classiques de \emph{Troubleshooting} présents dans les articles étudiés. Cette implémentation a vocation à devenir un outil de support à la recherche qui dépasserait le cadre de ce projet~: elle doit être robuste et bien documentée afin que des travaux futurs sur le \emph{Troubleshooting} puissent s'y appuyer. L'implémentation doit ainsi être une maquette sur laquelle on peut s'appuyer pour faire des changements et voir expérimentalement si des nouvelles idées et heuristiques marchent. On travaille de façon incrémentale en implémentant d'abord les algorithmes plus simples d'abord avant de passer à ceux plus sophistiqués.
+
+\item Utilisation de techniques d'élicitation sur le problème de \emph{Troubleshooting}.
+
+À partir de l'implémentation de techniques classiques de \emph{Troubleshooting}, l'objectif sera d'étudier l'effet de l'utilisation des techniques d'élicitation permettant de réduire des incertitudes concernant les prix de réparation des composantes du dispositif. Il s'agira ainsi, d'une part, de proposer des méthodes d'élicitation permettant de le faire et, d'autre part, de les implémenter dans le module de base de \emph{Troubleshooting} afin de les tester et des les comparer aux techniques existantes.
+
+\item Études expérimentaux et présentation des résultats.
+
+À la fin, le dernier objectif de ce projet sera de présenter les résultats de l'implémentation réalisée sur un cas concret.  Le résultat espéré est que les techniques implémentées avec l'élicitation permettent d'améliorer les techniques existantes dans le cas où les coûts de réparation ne sont pas connus de façon exacte.
+
+\end{itemize}
 
 \section{État de l'art}
 \label{SecEtatDeLArt}
