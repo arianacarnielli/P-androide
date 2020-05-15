@@ -10,6 +10,7 @@ from PyQt5.QtCore import *
 import DecisionTheoreticTroubleshooting as dtt
 
 from Introduction import *
+from Static import *
 from Troubleshoot import *
 from Observation import *
 from Action import *
@@ -23,58 +24,10 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self, parent)
         
 ###################################################
-# Propriétés de la MainWindow                     #
-###################################################
-        
-        self.setWindowTitle("Troubleshooter")
-        self.setFixedSize(600, 500) 
-        
-###################################################
-# Differents widgets                              #
-###################################################
-        
-        self.introduction = Introduction()
-        self.introduction.startButton.clicked.connect(self.startTroubleshoot)
-        
-        self.trouble = Troubleshoot() 
-        self.trouble.obsButton.clicked.connect(self.callObs)
-        self.trouble.actButton.clicked.connect(self.callAct)
-        self.trouble.eliButton.clicked.connect(self.callEli)
-
-        self.obs = Observation()
-        self.obs.cb.activated.connect(self.makeObs)
-        
-        self.act = Action()
-        self.act.yesButton.clicked.connect(self.makeAct)
-        self.act.noButton.clicked.connect(self.makeAct)
-        
-        self.eli =  Elicitation()
-        self.eli.yesButton.clicked.connect(self.makeEli)
-        self.eli.noButton.clicked.connect(self.makeEli)
-        
-        self.fin = Fin()
-        self.fin.finButton.clicked.connect(self.finish)
-        
-###################################################
-# Widget principal                                #
-###################################################
-      
-        self.stack = QStackedWidget()
-        self.stack.addWidget(self.introduction)
-        self.stack.addWidget(self.trouble)
-        self.stack.addWidget(self.obs)
-        self.stack.addWidget(self.act)
-        self.stack.addWidget(self.eli)
-        self.stack.addWidget(self.fin)
-        
-        self.setCentralWidget(self.stack)
-
-
-###################################################
-# Troubleshooter                                  #
+# Bayesian Network                                #
 ###################################################  
 
-        # Le problème est modélisé par un réseau bayésien
+        # Le problème est modélisé par un réseau bayésien de PyAgrum
         bnCar = gum.loadBN("simpleCar2.bif")
             
         # On initialise les coûts des réparations et observations
@@ -111,6 +64,71 @@ class MainWindow(QMainWindow):
             "car.carWontStart": {"problem-defining"},
             "callService": {"service"}
         }
+        
+        #On peut choisir quel algorithme utiliser entre les 4 algorithmes codés
+        self.algos_possibles = [
+            "simple", 
+            "simple avec observations locales", 
+            "myope (avec observations globales)", 
+            "myope avec elicitation"
+        ]
+           
+        
+###################################################
+# Propriétés de la MainWindow                     #
+###################################################
+        
+        self.setWindowTitle("Troubleshooter")
+        self.setFixedSize(600, 500) 
+        
+###################################################
+# Differents widgets                              #
+###################################################
+        
+        self.introduction = Introduction(self.algos_possibles)
+        self.introduction.startButton.clicked.connect(self.startAlgorithme)
+        
+        self.static = Static()
+        self.static.finButton.clicked.connect(self.finish)
+        
+        self.trouble = Troubleshoot() 
+        self.trouble.obsButton.clicked.connect(self.callObs)
+        self.trouble.actButton.clicked.connect(self.callAct)
+        self.trouble.eliButton.clicked.connect(self.callEli)
+
+        self.obs = Observation()
+        self.obs.cb.activated.connect(self.makeObs)
+        
+        self.act = Action()
+        self.act.yesButton.clicked.connect(self.makeAct)
+        self.act.noButton.clicked.connect(self.makeAct)
+        
+        self.eli =  Elicitation()
+        self.eli.yesButton.clicked.connect(self.makeEli)
+        self.eli.noButton.clicked.connect(self.makeEli)
+        
+        self.fin = Fin()
+        self.fin.finButton.clicked.connect(self.finish)
+        
+###################################################
+# Widget principal                                #
+###################################################
+      
+        self.stack = QStackedWidget()
+        self.stack.addWidget(self.introduction)
+        self.stack.addWidget(self.static)
+        self.stack.addWidget(self.trouble)
+        self.stack.addWidget(self.obs)
+        self.stack.addWidget(self.act)
+        self.stack.addWidget(self.eli)
+        self.stack.addWidget(self.fin)
+        
+        self.setCentralWidget(self.stack)
+
+###################################################
+# Troubleshooter                                  #
+################################################### 
+        
         # On crée l'objet pour résoudre le problème
         self.tsp = dtt.TroubleShootingProblem(bnCar, [costsRep, costsObs], nodesAssociations)
 
@@ -123,7 +141,26 @@ class MainWindow(QMainWindow):
         self.currentNode =  ""
         self.currentObs = ""
         self.currentAct = ""
-        self.currentPossibilities = []       
+        self.currentPossibilities = []    
+        
+    def startAlgorithme(self):
+        self.algo = self.introduction.listAlgo.currentItem().text() 
+        if self.algo == self.algos_possibles[0] or \
+        self.algo == self.algos_possibles[1]:
+            self.startStatic()        
+        else:
+            self.startTroubleshoot()
+            
+    def startStatic(self):
+        if self.algo == self.algos_possibles[0]:
+            seq, ecr = self.tsp.simple_solver()
+        elif self.algo == self.algos_possibles[1]:
+            seq, ecr = self.tsp.simple_solver_obs()
+
+        text = "La séquence de réparation recommendée est la suivante, avec un cout esperé de {:.3f}.".format(ecr)
+        self.static.title.setText(text)  
+        self.static.showSequence(seq)
+        self.stack.setCurrentWidget(self.static)
         
     def startTroubleshoot(self):
         self.trouble.observationsPossibles(self.observables, self.eco)  
@@ -134,6 +171,10 @@ class MainWindow(QMainWindow):
         else:
             text = "On vous recommende de faire l'observation-réparation suivante : {} avec ECR : {:.3f}".format(self.recommendation, self.ecr[self.recommendation])
         self.trouble.recommendation.setText(text)
+        
+        if self.algo == self.algos_possibles[2]:
+            self.trouble.eliButton.setEnabled(False)
+        
         self.stack.setCurrentWidget(self.trouble)
                
     def callObs(self):
@@ -142,8 +183,7 @@ class MainWindow(QMainWindow):
         self.obs.resultatsPossibles(self.currentPossibilities)
         self.stack.setCurrentWidget(self.obs)        
         
-    def callAct(self):
-        
+    def callAct(self):     
         self.currentNode = re.findall('(\S+) \d+.\d+', self.trouble.listAct.currentItem().text())[0]
         if self.currentNode == self.tsp.service_node:
                 self.act.noButton.setEnabled(False)
@@ -185,6 +225,7 @@ class MainWindow(QMainWindow):
             self.repairables = self.repairables - {self.currentNode}
             self.trouble.actButton.setEnabled(False)
             self.trouble.obsButton.setEnabled(False)
+            
             self.startTroubleshoot()
         else:
             self.stack.setCurrentWidget(self.fin)
@@ -196,6 +237,7 @@ class MainWindow(QMainWindow):
             islower = False
         self.tsp.elicitation(self.elicitationNode, islower)
         self.recommendation, self.typeNodeRec, self.eco, self.ecr = self.tsp.ECR_ECO_wrapper()
+        
         self.startTroubleshoot()
            
     def finish(self):

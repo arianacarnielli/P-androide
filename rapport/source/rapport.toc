@@ -9,7 +9,7 @@
 \contentsline {subsection}{\numberline {3.5}Approches au probl\IeC {\`e}me de \emph {Troubleshooting}}{6}{subsection.3.5}
 \contentsline {subsubsection}{\numberline {3.5.1}Approche exacte}{6}{subsubsection.3.5.1}
 \contentsline {subsubsection}{\numberline {3.5.2}Algorithme exacte sous hypoth\IeC {\`e}ses simplificatrices}{6}{subsubsection.3.5.2}
-\contentsline {subsubsection}{\numberline {3.5.3}Approche myope}{7}{subsubsection.3.5.3}
+\contentsline {subsubsection}{\numberline {3.5.3}Approche myope}{6}{subsubsection.3.5.3}
 \contentsline {subsubsection}{\numberline {3.5.4}Extensions de l'approche myope}{8}{subsubsection.3.5.4}
 \contentsline {subsection}{\numberline {3.6}\IeC {\'E}licitation}{8}{subsection.3.6}
 \contentsline {subsubsection}{\numberline {3.6.1}\IeC {\'E}licitation dans le \emph {Troubleshooting}}{8}{subsubsection.3.6.1}
@@ -17,6 +17,7 @@
 \contentsline {subsubsection}{\numberline {3.6.3}Approche ensembliste}{10}{subsubsection.3.6.3}
 \contentsline {subsection}{\numberline {3.7}Objectifs du projet}{11}{subsection.3.7}
 \contentsline {section}{\numberline {4}Contribution}{11}{section.4}
-\contentsline {subsection}{\numberline {4.1}\IeC {\'E}licitation des couts}{11}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.1}\IeC {\'E}licitation des co\IeC {\^u}ts}{11}{subsection.4.1}
 \contentsline {section}{\numberline {5}Impl\IeC {\'e}mentation}{14}{section.5}
+\contentsline {subsection}{\numberline {5.1}\IeC {\'E}licitation des co\IeC {\^u}ts}{14}{subsection.5.1}
 \contentsline {section}{\numberline {6}R\IeC {\'e}sultats}{14}{section.6}

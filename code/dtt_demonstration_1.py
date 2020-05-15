@@ -20,14 +20,14 @@ if __name__ == '__main__':
     }
     
     costs_obs = {
-        "car.batteryFlat": 20,
-        "oil.noOil": 50,
-        "tank.Empty": 5,
-        "tank.fuelLineBlocked": 60,
-        "starter.starterBroken": 10,
-        "car.lightsOk": 2,
+        "car.batteryFlat": 1,
+        "oil.noOil": 1,
+        "tank.Empty": 1,
+        "tank.fuelLineBlocked": 1,
+        "starter.starterBroken": 1,
+        "car.lightsOk": 1,
         "car.noOilLightOn": 1,
-        "oil.dipstickLevelOk": 7
+        "oil.dipstickLevelOk": 1
     }
     
     # ... ainsi que des types des noeuds d'un réseau bayésien
