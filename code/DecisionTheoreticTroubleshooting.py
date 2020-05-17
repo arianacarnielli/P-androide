@@ -1,9 +1,8 @@
+# -*- coding: utf-8 -*-
 import pyAgrum as gum
 import StrategyTree as st
 import numpy as np
 from itertools import permutations
-
-
 
 class TroubleShootingProblem:
     """
@@ -198,6 +197,16 @@ class TroubleShootingProblem:
         
     def get_proba(self, node, value):
         """
+        Récupère à partir du réseau bayésien la probabilité que le noeud node
+        ait la valeur value.
+        
+        Args:
+            node : String, nom du noeud de bay_lp dont on veut calculer la
+                probabilité
+            value : String, valeur du noeud dont on veut calculer la
+                probabilité
+        Returns:
+            La probabilité P(node = value)
         """
         p_tab = self.bay_lp.posterior(node)
         inst = gum.Instantiation(p_tab)
@@ -210,7 +219,7 @@ class TroubleShootingProblem:
         On ne prend pas en considèration des observations et on ne révise pas 
         les probabilités, c'est-à-dire on ne met pas à jour les probabilités 
         si on répare une composante.
-        À cause de cela, ce solveur n'est pas iteractive et renvoie l'ordre de 
+        À cause de cela, ce solveur n'est pas iteractif et renvoie l'ordre de 
         réparation entière (jusqu'au appel au service).
         
         Args : 
@@ -258,27 +267,32 @@ class TroubleShootingProblem:
             # On retourne l'évidence du noeud à celle qui ne change pas les 
             # probabilité du départ
             self.remove_evidence(node)
-        # On sort les noeuds par rapport aux efficacités
+        # On trie les noeuds par rapport aux efficacités
         rep_seq = sorted(dic_eff.items(), key = lambda x: x[1], reverse = True)           
-        # On veut que les noeuds, pas les valeurs des efficacités
+        # On ne veut que les noeuds, pas les valeurs des efficacités
         rep_seq = [r[0] for r in rep_seq]
         # On renvoie la liste jusqu'au appel au service, pas plus
-        rep_seq = rep_seq[:rep_seq.index("callService") + 1]
+        rep_seq = rep_seq[:rep_seq.index(self.service_node) + 1]
 
         # On calcule le coût espéré de la sequence de réparation
         # On commence par le cout de réparation du prémier noeud de la séquence
         proba = 1
         exp_cost = self.costs_rep[rep_seq[0]] * proba
-        # Le premier répare n'a pas résolu le problème, on change l'évidence
-        # du noeud pour réfletir cela 
+        
+        # On calcule maintenant la probabilité que la réparation de ce noeud
+        # n'a pas résolu le problème, P(e != Normal | repair(ci), Ei). Comme
+        # on n'a qu'un seul défaut, cela vaut P(ci = Normal | Ei).
         self.add_evidence(self.problem_defining_node, "yes")
         
         if node != self.service_node:
-            p = self.get_proba(rep_seq[0], "yes")
-        else:
             p = self.get_proba(rep_seq[0], "no")
-        proba *= (1 - p)
-        
+        else:
+            p = self.get_proba(rep_seq[0], "yes")
+            
+        proba *= p
+
+        # Le premier répare n'a pas résolu le problème, on change l'évidence
+        # du noeud pour réfletir cela         
         self.add_evidence(rep_seq[0], "no")         
   
         if debug == True:
@@ -290,15 +304,17 @@ class TroubleShootingProblem:
             # On somme le coût de réparation du noeud courant * proba
             exp_cost += self.costs_rep[node] * proba
             
+            # Proba que la réparation de ce noeud n'a pas résolu le problème,
+            # P(e != Normal | repair(ci), Ei) = P(ci = Normal | Ei).
             if node != self.service_node:
-                p = self.get_proba(node, "yes")
-            else:
                 p = self.get_proba(node, "no")
+            else:
+                p = self.get_proba(node, "yes")
         
-            proba *= (1 - p)
+            proba *= p
 
             if debug == True:
-                print("proba p(e != Normal|réparation des toutes les noeuds " \
+                print("proba p(e != Normal|réparation des tous les noeuds " \
                                + "déjà considerés) : ", proba)     
                 print()
                 print("noeud réparé : ", node)
@@ -321,10 +337,10 @@ class TroubleShootingProblem:
         probabilités quand on "répare" une composante avant de calculer le 
         prochaine composante de la séquence. 
         
-        Le solveur n'est pas encore iteractive et renvoie l'ordre de réparation
+        Le solveur n'est pas encore iteractif et renvoie l'ordre de réparation
         entière (jusqu'au appel au service). Cette choix à été fait car on 
-        utilise cette algorithme comme part de l'agorithme plus complexe et 
-        iterative. 
+        utilise cet algorithme comme part de l'agorithme plus complexe et 
+        iteratif. 
          
         Args : 
             debug (facultatif) : si True, affiche des messages montrant le 
@@ -354,7 +370,7 @@ class TroubleShootingProblem:
         # noeuds déjà réparés
         unrep_nodes = self.unrepairable_nodes.copy() | evidence_nodes
         
-        # On itère jusqu'à ce qu'il n'existe plus de noeud que peut être reparé
+        # On itère jusqu'à ce qu'il n'existe plus de noeud qui peut être reparé
         reparables = (self.repairable_nodes | {self.service_node}) \
         - unrep_nodes
         while len(reparables) != 0:  
@@ -372,6 +388,8 @@ class TroubleShootingProblem:
             # tour de boucle.
             dic_costs = {}
             
+            # On crée un dictionnaire avec les probabilités que chaque noeud
+            # soit cassé.
             dic_p = {}
             
             # Pour chaque noeud réparable + service (et qui n'est pas 
@@ -403,20 +421,10 @@ class TroubleShootingProblem:
                 # On récupere le cout pour le calcul de l'ésperance
                 dic_costs[node] = cost
                 
-                # On actualise l'évidence liée au noeud en traitement: 
-                # On dit que le noeud courrant n'est pas cassé 
-                # (On considere qu'il a été réparé)
-                if node != self.service_node:
-                    self.add_evidence(node, "no")
-                else:
-                    self.add_evidence(node, "yes")                    
-               
+                # On calcule alors l'efficacité du noeud
                 dic_eff[node] = dic_p[node] / cost
                 
-                # On retourne l'évidence du noeud à celle qui ne change pas les 
-                # probabilités du départ du tour de boucle actuel
-                self.remove_evidence(node)
-                             
+
                 if debug == True:
                     print("noeud consideré : " + node)
                     print("proba p(node != Normal|Ei) : ",\
@@ -425,7 +433,7 @@ class TroubleShootingProblem:
                     print("éfficacité du noeud : ", dic_eff[node])
                     print()
             
-            # On sort les noeuds par rapport aux efficacités
+            # On trie les noeuds par rapport aux efficacités
             seq = sorted(dic_eff.items(), key = lambda x: x[1], \
                              reverse = True) 
             # Le noeud choisi est ceux avec la meilleure efficacité dans le 
@@ -448,7 +456,7 @@ class TroubleShootingProblem:
                             
             # On garde ce noeud au dictionnaire repares pour qu'on puisse
             # mantenir le reseau à jour a chaque tour de la boucle while 
-            if chosen_node != "callService":
+            if chosen_node != self.service_node:
                 unrep_nodes.add(chosen_node)
                 reparables = (self.repairable_nodes | set([self.service_node]))\
                     - unrep_nodes
@@ -462,6 +470,27 @@ class TroubleShootingProblem:
     
     def myopic_solver(self, debug = False, esp_obs = False):
         """
+        Implémente une étape du solveur myope. Étant donné l'état actuel du
+        réseau, ce solveur utilise dans un premier temps le simple_solver_obs
+        pour déterminer quelle action du type "observation-réparation" serait
+        la meilleure. Ensuite, il calcule les coûts myopes espérés avec chaque
+        observation possible et choisit à la fin la meilleure action à être
+        prise.
+        
+        Cette fonction est itérative et ne fait qu'un seul tour de
+        l'algorithme myope car elle attend des nouvelles informations venues
+        de l'utilisateur (résultat de l'observation si c'est le cas).
+        
+        Args : 
+            debug (facultatif) : si True, affiche des messages montrant le 
+                deroulement de l'algorithme.
+            esp_obs (facultatif) : si True, retourne en plus un dictionnaire
+                indexé par les observations possibles et contenants leurs couts
+                myopes espérés respectifs.
+        Returns :
+            Le meilleur noeud de ce tour et son type ("repair" ou "obs"). Si
+            esp_obs == True, retourne aussi le dictionnaire des couts des
+            observations.
         """
         # Liste des observations generales qu'on peut faire
         nd_obs = self.observation_nodes.intersection(self.unrepairable_nodes)
@@ -506,7 +535,7 @@ class TroubleShootingProblem:
                 # On retourne l'évidence du noeud à celle qui ne change pas les 
                 # probabilités du départ du tour de boucle actuel
                 self.bay_lp.chgEvidence(node,\
-                        [1]*len(self.bayesian_network.variable(node).labels()))
+                    [1]*len(self.bayesian_network.variable(node).labels()))
         
         if debug:
             print(eco)
@@ -532,8 +561,19 @@ class TroubleShootingProblem:
     
     def myopic_wraper(self, debug = False):
         """
+        Interface textuelle pour le solveur myope. Utilise myopic_solver à
+        chaque tour de boucle pour déterminer la meilleure action à prendre.
+        Si c'est une observation, le résultat de l'observation est demandé,
+        sinon on demande juste si l'action a résolu le problème. Les
+        élicitations de couts ne sont pas implémentées. Les entrées de
+        l'utilisateur ne sont pas sécurisées.
+        
+        Args : 
+            debug (facultatif) : si True, affiche des messages montrant le 
+                deroulement de l'algorithme.
         """
-        print("Bienvenue! Suivez les instructions pour réparer votre dispositif")
+        print("Bienvenue! Suivez les instructions pour réparer votre"
+              " dispositif")
         fixed = False
         while not fixed:
             node, type_node = self.myopic_solver(debug) 
@@ -548,96 +588,207 @@ class TroubleShootingProblem:
                 self.add_evidence(node, possibilites[val_obs])
             else:
                 print("Faire l'observation-réparation suivante : " + node)
+                if node == self.service_node:
+                    break
                 print("Problème résolu ? (Y/N)")
                 val_rep = input()
                 if val_rep in "Yy":
                     fixed = True
                 else:
+                    # Après une réparation, certaines observations peuvent
+                    # être devenues obsolètes, il faut les exclure et permettre
+                    # de les refaire.
                     obsoletes = self.observation_obsolete(node) 
-                    if node != "callService":
-                        self.add_evidence(node, "no")
-                    else:
-                        self.add_evidence(node, "yes")  
+                    self.add_evidence(node, "no")
                     for obs in obsoletes:
                         self.evidences.pop(obs)
                     self.reset_bay_lp(self.evidences)
         print("Merci d'avoir utilisé le logiciel !")
-        self.reset_bay_lp()    
+        self.reset_bay_lp()
                 
         
     def noeud_ant(self, node, visites):
         """
+        Détermine tous les noeuds d'observation impactés par un changement
+        du noeud node et qui sont antécesseurs de node, sans visiter les noeuds
+        déjà dans l'ensemble des visites. Cette fonction est auxiliaire et n'a
+        pas vocation à être appellée en dehors de la fonction principale
+        observation_obsolete.
+        
+        Args :
+            node : String, nom du noeud don l'information a changé.
+            visites : Ensemble, contient les noeuds déjà visités.
+            
+        Returns :
+            Ensemble des noeuds d'observation affectés par node et qui sont
+            antecesseurs de node sans être dans visites.
         """
+        # Ensemble des noeuds d'observation impactés
         ant_obs = set()
-        parents = {self.bayesian_network.names()[p] for p in self.bayesian_network.parents(node)}
+        
+        # Parents du noeud courant
+        parents = {self.bayesian_network.names()[p] \
+                   for p in self.bayesian_network.parents(node)}
         parents = parents.difference(visites)
+        
+        # Pour chaque parent non-visité
         for p in parents:
+            # On l'ajoute aux visités
             visites.add(p)
+            
+            # S'il contient une évidence et qu'il est un noeud d'observation
+            # globale, alors on le rajoute à l'ensemble des noeuds
+            # d'observation impactés et on continue de façon récursive sur
+            # ses parents.
             if p in self.evidences:
                 if p in self.unrepairable_nodes and p in self.observation_nodes:
                     ant_obs.add(p)
                     ant_obs.update(self.noeud_ant(p, visites))
                 
+                # S'il contient une évidence mais il n'est pas un noeud
+                # d'observation, on ne fait plus d'appel récusif.
+                
+            # S'il ne contient pas d'évidence, on continue de façon récursive
+            # sur ses parents.
             else:
                 ant_obs.update(self.noeud_ant(p, visites))
         return ant_obs
         
     def observation_obsolete(self, node):
         """
+        Étant donné un noeud dont l'information a changé, on détermine, à
+        partir du réseau bayésien, tous les noeuds d'observation impactés par
+        ce chagement.
+        
+        Args :
+            node : String, nom du noeud dont l'information a changé.
+            
+        Returns :
+            Ensemble contenant les noeuds d'observation impactés.
         """
+        # La racine est visitée
         visites = {node}
+        # Ajout des observations impactées antécesseures de la racine dans
+        # la liste d'observations impactées
         obs = self.noeud_ant(node, visites)
+        
+        # Parcours avec une pile
         stack = [node]
         while stack != []:
             n = stack.pop()
-            enfants = {self.bayesian_network.names()[p] for p in self.bayesian_network.children(n)}
+            
+            # Enfants du noeud courant qui n'ont pas encore été visités
+            enfants = {self.bayesian_network.names()[p]\
+                       for p in self.bayesian_network.children(n)}
             enfants = enfants.difference(visites)
+            
+            # Pour chaque enfant
             for en in enfants:
+                # On le marque comme visité
                 visites.add(en)
+                
+                # S'il contient une évidence et qu'il est un noeud
+                # d'observation, alors on le rajoute dans la liste des
+                # observations impactées et on visite ses enfants.
                 if en in self.evidences:
-                    if en in self.unrepairable_nodes and en in self.observation_nodes:    
+                    if en in self.unrepairable_nodes \
+                        and en in self.observation_nodes:    
                         obs.add(en)
                         stack.append(en)
+                        
+                # S'il contient une évidence mais c'est un noeud de réparation,
+                # cette évidence reste mais les antécesseurs de ce noeud sont
+                # potentiellement impactés, il faut appeler noeud_and en ce
+                # noeud.
                     elif en in self.repairable_nodes:
                         obs.update(self.noeud_ant(en, visites))
+                        
+                # S'il ne contient pas d'évidence, on le rajoute à la pile pour
+                # visiter ses enfants.
                 else:
                     stack.append(en)
         return obs
     
     def compute_EVOIs(self):
         """
+        Calcule les valeurs espérées d'information (EVOIs) correspondant à
+        avoir plus d'information sur l'intervalle de valeur des couts de
+        réparation pour chaque composante réparable.
 
-        Returns
-        -------
-        evoi : TYPE
-            DESCRIPTION.
+        Returns :
+            Dictionnaire indexé par les noeuds réparables contenant la valeur
+            d'une information plus précise du cout de réparation de ces noeuds.
 
-        """               
+        """
+        # Noeuds encore réparables
         nd_rep = (self.repairable_nodes | {self.service_node})
         nd_rep = list(nd_rep.difference(self.evidences.keys()))
+        
+        # Dictionnaire indexé par les noeuds encore réparables contenant
+        # la valeur d'une information plus précise du cout de réparation de
+        # ces noeuds
         evoi = {}
+        
+        # Cout espéré de réparation avec les informations courantes
         _, expected_cost_repair = self.simple_solver_obs()
+        
+        # Boucle sur les noeuds encore réparables
         for noeud in nd_rep:
+            # Initialisation du calcul de l'EVOI
             evoi[noeud] = expected_cost_repair
+            
+            # Espérance courante du cout de réparation
             alpha = self.costs_rep[noeud]
+            
+            # On considère que le cout de réparation est dans l'intervalle
+            # [alpha, Cmax] et on recalcule le cout espéré de réparation avec
+            # cet intervalle
             self.costs_rep[noeud] = (self.costs_rep_interval[noeud][0]\
                                      + alpha) / 2
             _, expected_cost_repair_minus = self.simple_solver_obs()
+            
+            # L'EVOI est mis à jour avec ce cout multiplié par la proba 0.5
+            # d'être dans cet intervalle
             evoi[noeud] -= expected_cost_repair_minus * 0.5
             
+            # On considère que le cout de réparation est dans l'intervalle
+            # [Cmin, alpha] et on recalcule le cout espéré de réparation avec
+            # cet intervalle
             self.costs_rep[noeud] = (self.costs_rep_interval[noeud][1]\
                                      + alpha) / 2
             _, expected_cost_repair_plus = self.simple_solver_obs()
+            
+            # L'EVOI est mis à jour avec ce cout multiplié par la proba 0.5
+            # d'être dans cet intervalle
             evoi[noeud] -= expected_cost_repair_plus * 0.5
-            #evoi[noeud] = abs(evoi[noeud])
+
+            # L'espérance de cout de réparation revient à sa valeur initiale
             self.costs_rep[noeud] = alpha
         return evoi
     
     def best_EVOI(self):
+        """
+        Détermine la composante qui a la plus grande valeur espérée
+        d'information (EVOI) correspondant à avoir plus d'information sur
+        l'intervalle de valeur de son cout.
+        
+        Returns :
+            Tuple avec le nom du noeud de réparation avec la plus grande EVOI
+            et la valeur d'EVOI correspondante.
+        """
         evois = self.compute_EVOIs()
         return sorted(evois.items(), key = lambda x: x[1], reverse = True)[0]
     
     def elicitation(self, noeud, islower):
+        """
+        Met à jour l'intervalle de valeurs de cout pour le noeud et son
+        espérance en fonction de la réponse de l'utilisateur.
+        
+        Args :
+            noeud : String, nom du noeud à mettre à jour.
+            islower : Booléan, représente la réponse à la question : Est-ce que
+                le cout est plus petit que l'espérance courante ?
+        """
         if islower:
             self.costs_rep_interval[noeud][1] = self.costs_rep[noeud]
         else:
@@ -647,12 +798,18 @@ class TroubleShootingProblem:
     
     def ECR_ECO_wrapper(self, debug = False):      
         """
+        Calcule l'ECR myope pour chaque prochaine "observation-réparation"
+        possible et l'ECO pour chaque prochaine observation globale possible.
+        
+        Args :
+            debug (facultatif) : si True, affiche des messages montrant le 
+                deroulement de l'algorithme.
 
-        Parameters
-        ----------
-        debug : TYPE, optional
-            DESCRIPTION. The default is False.
-
+        Returns :
+            chosen_node : noeud choisi par le myopic_solver
+            type_node : type du noeud choisi
+            eco : dictionnaire d'ECOs des noeuds d'observation globale
+            ecr : dictionnaire d'ECRs des noeuds d'"observation-réparation"
         """
         ecr = {}
         chosen_node, type_node, eco = self.myopic_solver(debug, esp_obs = True)     
@@ -691,28 +848,25 @@ class TroubleShootingProblem:
             # plus si le dispositif est en panne ou pas
             self.remove_evidence(self.problem_defining_node)
              
-            # On actualise l'évidence liée au noeud en traitement: 
-            # On dit que le noeud courrant n'est pas cassé 
-            # (On considere qu'il a été réparé)
             if node != self.service_node:
-                self.add_evidence(node, "no") 
-                    
                 # On calcule le ecr du reste de la séquence (étant donné qu'on 
                 # a réparé le noeud actuel en premier)
+                self.add_evidence(node, "no")
                 _, cost_seq = self.simple_solver_obs(debug)
+                self.remove_evidence(node)
                 
                 # On calcule l'esperance de cout en débutant la séquence de
                 # réparation par le noeud actuel:
-                # p(e != Normal|repair(node), Ei) 
-                p = self.get_proba(self.problem_defining_node, "yes")
+                # p(e != Normal|repair(node), Ei) = p(node = Normal | Ei)
+                # (avec l'approximation de single fault)
+                self.add_evidence(self.problem_defining_node, "yes")
+                p = self.get_proba(node, "no")
+                self.remove_evidence(self.problem_defining_node)
 
-                ecr[node] = cost + p[inst] * cost_seq
+                ecr[node] = cost + p * cost_seq
             else:
                 ecr[node] = cost
             
-            # On retourne l'évidence du noeud à celle qui ne change pas les 
-            # probabilités du départ du tour de boucle actuel
-            self.remove_evidence(node)  
 
         return chosen_node, type_node, eco, ecr
             
@@ -844,7 +998,7 @@ class TroubleShootingProblem:
             for node in seq:
                 costs[i] += true_prices[node]
                 # On effectue une réparation
-                if node == "callService":
+                if node == self.service_node:
                     break
                 else:
                     self.add_evidence(node, "no")

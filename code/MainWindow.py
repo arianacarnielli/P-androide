@@ -213,7 +213,7 @@ class MainWindow(QMainWindow):
     def makeAct(self):
         if self.sender().text() == "No":
             obsoletes = self.tsp.observation_obsolete(self.currentNode) 
-            if self.currentNode != "callService":
+            if self.currentNode != self.tsp.service_node:
                 self.tsp.add_evidence(self.currentNode, "no")
             else:
                 self.tsp.add_evidence(self.currentNode, "yes")  
