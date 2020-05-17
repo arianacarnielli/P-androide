@@ -195,8 +195,16 @@ class TroubleShootingProblem:
         # un des noeuds qui ont une vraie evidence, donc on le retire
         # d'evidences
         self.evidences.pop(node, None)
+        
+    def get_proba(self, node, value):
+        """
+        """
+        p_tab = self.bay_lp.posterior(node)
+        inst = gum.Instantiation(p_tab)
+        inst.chgVal(node, value)
+        return p_tab[inst]
 
-    def simple_solver_corrige(self, debug = False):
+    def simple_solver(self, debug = False):
         """
         Solveur simple pour le problème du TroubleShooting.
         On ne prend pas en considèration des observations et on ne révise pas 
@@ -230,24 +238,20 @@ class TroubleShootingProblem:
             # On calcule la probabilité que le noeud actuel soit cassé                              
             # p(node != Normal|Ei)
             # Ei = les informations connues au tour de boucle actuel
-            p_noeud_casse = self.bay_lp.posterior(node)        
-            inst_noeud_casse = gum.Instantiation(p_noeud_casse)
-            
             if node != self.service_node:
-                inst_noeud_casse.chgVal(node, "yes")
+                p_noeud_casse = self.get_proba(node, "yes")
             else:
-                inst_noeud_casse.chgVal(node, "no")
+                p_noeud_casse = self.get_proba(node, "no")
 
             # on ne sait plus si le dispositif est en panne ou pas
             self.remove_evidence(self.problem_defining_node)
             
-            dic_eff[node] =  p_noeud_casse[inst_noeud_casse] \
-                / self.costs_rep[node] 
+            dic_eff[node] =  p_noeud_casse / self.costs_rep[node] 
             
             if debug == True:
                 print("noeud consideré : " + node)
-                print("proba p(e = Normal|repair(noeud)) : ", \
-                      p_noeud_casse[inst_noeud_casse])            
+                print("proba p(node != Normal|Ei) : ", \
+                      p_noeud_casse)            
                 print("éfficacité du noeud : ", dic_eff[node])
                 print()
             
@@ -269,15 +273,11 @@ class TroubleShootingProblem:
         # du noeud pour réfletir cela 
         self.add_evidence(self.problem_defining_node, "yes")
         
-        p_noeud_casse = self.bay_lp.posterior(rep_seq[0])        
-        inst_noeud_casse = gum.Instantiation(p_noeud_casse)
-        
         if node != self.service_node:
-            inst_noeud_casse.chgVal(rep_seq[0], "yes")
+            p = self.get_proba(rep_seq[0], "yes")
         else:
-            inst_noeud_casse.chgVal(rep_seq[0], "no")
-
-        proba *= (1 - p_noeud_casse[inst_noeud_casse])
+            p = self.get_proba(rep_seq[0], "no")
+        proba *= (1 - p)
         
         self.add_evidence(rep_seq[0], "no")         
   
@@ -289,16 +289,13 @@ class TroubleShootingProblem:
         for node in rep_seq[1:]:
             # On somme le coût de réparation du noeud courant * proba
             exp_cost += self.costs_rep[node] * proba
-            p_noeud_casse = self.bay_lp.posterior(node) 
-            
-            inst_noeud_casse = gum.Instantiation(p_noeud_casse)
             
             if node != self.service_node:
-                inst_noeud_casse.chgVal(node, "yes")
+                p = self.get_proba(node, "yes")
             else:
-                inst_noeud_casse.chgVal(node, "no")
+                p = self.get_proba(node, "no")
         
-            proba *= (1 - p_noeud_casse[inst_noeud_casse])
+            proba *= (1 - p)
 
             if debug == True:
                 print("proba p(e != Normal|réparation des toutes les noeuds " \
@@ -315,7 +312,7 @@ class TroubleShootingProblem:
         return rep_seq, exp_cost
            
     
-    def simple_solver_obs_corrige(self, debug = False):
+    def simple_solver_obs(self, debug = False):
         """
         Solveur simple pour le problème du Troubleshooting.
         On prend en considèration des paires "observation-réparation" (cf. 
@@ -386,14 +383,11 @@ class TroubleShootingProblem:
                 # On calcule la probabilité que le noeud actuel soit cassé                              
                 # p(node != Normal|Ei)
                 # Ei = les informations connues au tour de boucle actuel
-                p_noeud_casse = self.bay_lp.posterior(node)        
-                inst_noeud_casse = gum.Instantiation(p_noeud_casse)
-                
                 if node != self.service_node:
-                    inst_noeud_casse.chgVal(node, "yes")
+                    p = self.get_proba(node, "yes")
                 else:
-                    inst_noeud_casse.chgVal(node, "no")
-                dic_p[node] = p_noeud_casse[inst_noeud_casse]
+                    p = self.get_proba(node, "no")
+                dic_p[node] = p
                 
                 # On calcule le cout esperé du pair observation-repair pour le
                 # noeud actuel
@@ -426,7 +420,7 @@ class TroubleShootingProblem:
                 if debug == True:
                     print("noeud consideré : " + node)
                     print("proba p(node != Normal|Ei) : ",\
-                          p_noeud_casse[inst_noeud_casse])
+                          dic_p[node])
                     print("coût esperé du pair observation-repair : ", cost)
                     print("éfficacité du noeud : ", dic_eff[node])
                     print()
@@ -493,10 +487,6 @@ class TroubleShootingProblem:
             p = self.bay_lp.posterior(node)                
             inst = gum.Instantiation(p)
             
-            if debug:
-                print(node)
-                print(p)
-            
             # ECO[node] = cost_obs[node] + somme(ésperance de la séquence 
             # calculé après chaque observation possible du node * probabilité 
             # de chaque observation)
@@ -515,7 +505,8 @@ class TroubleShootingProblem:
                 eco[node] += ecr_node_k * proba_obs
                 # On retourne l'évidence du noeud à celle qui ne change pas les 
                 # probabilités du départ du tour de boucle actuel
-                self.bay_lp.chgEvidence(node, [1]*len(self.bayesian_network.variable(node).labels()))
+                self.bay_lp.chgEvidence(node,\
+                        [1]*len(self.bayesian_network.variable(node).labels()))
         
         if debug:
             print(eco)
@@ -678,51 +669,50 @@ class TroubleShootingProblem:
         - unrep_nodes        
         for node in reparables:
             # On rajoute le fait que le dispositif est en panne
-                self.add_evidence(self.problem_defining_node, "yes")               
-                
-                # On calcule la probabilité que le noeud actuel soit cassé                              
-                # p(node != Normal|Ei)
-                # Ei = les informations connues au tour de boucle actuel
-                p_noeud_casse = self.bay_lp.posterior(node)        
-                inst_noeud_casse = gum.Instantiation(p_noeud_casse)
-                inst_noeud_casse.chgVal(node, "yes")
-                
-                # On calcule le cout esperé du pair observation-repair pour le
-                # noeud actuel
-                if node in self.observation_nodes:
-                    cost = self.costs_obs[node] + \
-                    p_noeud_casse[inst_noeud_casse] * self.costs_rep[node]
-                else:
-                    cost = self.costs_rep[node]
-                
-                # Une fois qu'on aura fait l'observation-repair, on ne sait
-                # plus si le dispositif est en panne ou pas
-                self.remove_evidence(self.problem_defining_node)
-                 
-                # On actualise l'évidence liée au noeud en traitement: 
-                # On dit que le noeud courrant n'est pas cassé 
-                # (On considere qu'il a été réparé)
-                if node != "callService":
-                    self.add_evidence(node, "no") 
-                        
-                    # On calcule le ecr du reste de la séquence (étant donné qu'on 
-                    # a réparé le noeud actuel en premier)
-                    _, cost_seq = self.simple_solver_obs(debug)
+            self.add_evidence(self.problem_defining_node, "yes")               
+            
+            # On calcule la probabilité que le noeud actuel soit cassé                              
+            # p(node != Normal|Ei)
+            # Ei = les informations connues au tour de boucle actuel
+            if node != self.service_node:
+                p_noeud_casse = self.get_proba(node, "yes")
+            else:
+                p_noeud_casse = self.get_proba(node, "no")
+            
+            # On calcule le cout esperé du pair observation-repair pour le
+            # noeud actuel
+            if node in self.observation_nodes:
+                cost = self.costs_obs[node] + \
+                p_noeud_casse * self.costs_rep[node]
+            else:
+                cost = self.costs_rep[node]
+            
+            # Une fois qu'on aura fait l'observation-repair, on ne sait
+            # plus si le dispositif est en panne ou pas
+            self.remove_evidence(self.problem_defining_node)
+             
+            # On actualise l'évidence liée au noeud en traitement: 
+            # On dit que le noeud courrant n'est pas cassé 
+            # (On considere qu'il a été réparé)
+            if node != self.service_node:
+                self.add_evidence(node, "no") 
                     
-                    # On calcule l'esperance de cout en débutant la séquence de
-                    # réparation par le noeud actuel:
-                    # p(e != Normal|repair(node), Ei) 
-                    p = self.bay_lp.posterior(self.problem_defining_node)                
-                    inst = gum.Instantiation(p)
-                    inst.chgVal(self.problem_defining_node, "yes")    
-    
-                    ecr[node] = cost + p[inst] * cost_seq
-                else:
-                    ecr[node] = cost
+                # On calcule le ecr du reste de la séquence (étant donné qu'on 
+                # a réparé le noeud actuel en premier)
+                _, cost_seq = self.simple_solver_obs(debug)
                 
-                # On retourne l'évidence du noeud à celle qui ne change pas les 
-                # probabilités du départ du tour de boucle actuel
-                self.remove_evidence(node)  
+                # On calcule l'esperance de cout en débutant la séquence de
+                # réparation par le noeud actuel:
+                # p(e != Normal|repair(node), Ei) 
+                p = self.get_proba(self.problem_defining_node, "yes")
+
+                ecr[node] = cost + p[inst] * cost_seq
+            else:
+                ecr[node] = cost
+            
+            # On retourne l'évidence du noeud à celle qui ne change pas les 
+            # probabilités du départ du tour de boucle actuel
+            self.remove_evidence(node)  
 
         return chosen_node, type_node, eco, ecr
             
@@ -840,255 +830,6 @@ class TroubleShootingProblem:
 # =============================================================================
 # Méthodes pas encore fonctionnelles            
 # =============================================================================
-
-    def simple_solver(self, debug = False):
-        """
-        Solveur simple pour le problème du TroubleShooting.
-        On ne prend pas en considèration des observations et on ne révise pas 
-        les probabilités, c'est-à-dire on ne met pas à jour les probabilités 
-        si on répare une composante.
-        À cause de cela, ce solveur n'est pas iteractive et renvoie l'ordre de 
-        réparation entière (jusqu'au appel au service).
-        
-        Args : 
-            debug (facultatif) : si True, affiche des messages montrant le 
-                deroulement de l'algorithme.
-        Returns :
-            Un tuple avec la séquence des noeuds à être réparés dans l'ordre et
-            l'esperance du coût de réparation de cette séquence.
-        """     
-        # On crée un dictionnaire avec les efficacités liées à chaque noeud 
-        # réparable + service
-        dic_eff = {}
-        
-        # On copie les évidences actuelles pour remettre le réseau à son état
-        # de départ
-        evid = self.evidences.copy()
-        
-        # Pour chaque noeud réparable + service (et qui n'est pas irréparable):
-        for node in (self.repairable_nodes|{self.service_node}) - \
-        (self.unrepairable_nodes):
-            # On actualise l'évidence liée au noeud en traitement: 
-            # On dit que le noeud courrant n'est pas cassé 
-            # (On considere qu'il a été réparé)
-            if node != "callService":
-                self.add_evidence(node, "no")
-            else:
-                self.add_evidence(node, "yes")
-            
-            # On calcule l'efficacité du noeud :
-            # p(e = Normal|repair(noeud)) / coût(repair(noeud))
-            p = self.bay_lp.posterior(self.problem_defining_node)
-            
-            # On utilise une instantiation pour récuperer la bonne probabilité 
-            # gardé en p sans avoir besoin d'un indice
-            inst = gum.Instantiation(p)
-            inst.chgVal(self.problem_defining_node, "no")
-            dic_eff[node] = p[inst] / self.costs_rep[node] 
-            
-            if debug == True:
-                print("noeud consideré : " + node)
-                print("proba p(e = Normal|repair(noeud)) : ", p[inst])            
-                print("éfficacité du noeud : ", dic_eff[node])
-                print()
-            
-            # On retourne l'évidence du noeud à celle qui ne change pas les 
-            # probabilité du départ
-            self.remove_evidence(node)
-        # On sort les noeuds par rapport aux efficacités
-        rep_seq = sorted(dic_eff.items(), key = lambda x: x[1], reverse = True)           
-        # On veut que les noeuds, pas les valeurs des efficacités
-        rep_seq = [r[0] for r in rep_seq]
-        # On renvoie la liste jusqu'au appel au service, pas plus
-        rep_seq = rep_seq[:rep_seq.index("callService") + 1]
-
-        # On calcule le coût espéré de la sequence de réparation
-        # On commence par le cout de réparation du prémier noeud de la séquence
-        exp_cost = self.costs_rep[rep_seq[0]]
-        # Le premier répare n'a pas résolu le problème, on change l'évidence
-        # du noeud pour réfletir cela 
-        self.add_evidence(rep_seq[0], "no")         
-  
-        if debug == True:
-            print("Calcul de l'esperance de coût \n")
-            print ("premier noeud réparé : ", rep_seq[0])
-            print("esperance partiel du coût de la séquence : ", exp_cost)
-
-        for node in rep_seq[1:]:
-            # On récupere la probabilité que le problème persiste après les 
-            # réparations des noeuds déjà pris en considération
-            # p = p(e != Normal|repair(tous les noeuds déjà considerés)) 
-            p = self.bay_lp.posterior(self.problem_defining_node)
-            # On utilise une instantion pour récuperer la bonne probabilité 
-            # gardé en p sans avoir besoin d'un indice
-            inst = gum.Instantiation(p)
-            inst.chgVal(self.problem_defining_node, "yes")
-            # On somme le coût de réparation du noeud courant * p
-            exp_cost += self.costs_rep[node] * p[inst]
-            if debug == True:
-                print("proba p(e != Normal|réparation des toutes les noeuds " \
-                               + "déjà considerés) : ", p[inst])     
-                print()
-                print("noeud réparé : ", node)
-                print("esperance partiel du coût de la séquence : ", exp_cost)
-            # On actualise l'évidence du noeud concerné
-            self.add_evidence(node, "no")  
-
-        # On remet le reseau à l'état de départ
-        self.reset_bay_lp(evid)
-        
-        return rep_seq, exp_cost
-
-    def simple_solver_obs(self, debug = False):
-        """
-        Solveur simple pour le problème du Troubleshooting.
-        On prend en considèration des paires "observation-réparation" (cf. 
-        définition dans l'état de l'art) mais pas les observations globales 
-        et on révise les probabilités, c'est-à-dire on met à jour les 
-        probabilités quand on "répare" une composante avant de calculer le 
-        prochaine composante de la séquence. 
-        
-        Le solveur n'est pas encore iteractive et renvoie l'ordre de réparation
-        entière (jusqu'au appel au service). Cette choix à été fait car on 
-        utilise cette algorithme comme part de l'agorithme plus complexe et 
-        iterative. 
-         
-        Args : 
-            debug (facultatif) : si True, affiche des messages montrant le 
-                deroulement de l'algorithme.
-        Returns :
-            Un tuple avec la séquence des noeuds à être réparés dans l'ordre et
-            l'esperance du coût de réparation de cette séquence.
-        """
-        # On initialise la sequence de réparation vide
-        rep_seq = []
-        
-        # On initialise l'esperance de cout de la réparation en 0
-        exp_cost = 0
-        
-        # proba_cost est la probabilité que le système ne fonctionne pas à 
-        # l'étape actuel. Commence à 1 car on sait que le système est en panne
-        proba_cost = 1
-        
-        # On copie les évidences actuelles pour remettre le réseau à son état
-        # de départ
-        evid = self.evidences.copy()
-        
-        # On recupère les noeuds qui ont des évidences
-        evidence_nodes = {k for k in self.evidences}
-        
-        # On recopie les noeuds qui ne sont pas reparables et on ajoute les
-        # noeuds déjà réparés
-        unrep_nodes = self.unrepairable_nodes.copy() | evidence_nodes
-        
-        # On itère jusqu'à ce qu'il n'existe plus de noeud que peut être reparé
-        reparables = (self.repairable_nodes | {self.service_node}) \
-        - unrep_nodes
-        while len(reparables) != 0:  
-            if debug == True:
-                print("Les noeuds considerés dans ce tour de boucle : ",\
-                      reparables)
-                    
-            # On crée un dictionnaire avec les efficacités liées à chaque noeud 
-            # réparable + service dans ce tour de boucle
-            dic_eff = {}  
-             
-            # On crée un dictionnaire avec les couts utilisés pour calculer 
-            # l'esperance de cout de la séquence.
-            # On se sert que du cout lié au noeud choisi à la fin de chaque 
-            # tour de boucle.
-            dic_costs = {}
-            
-            # Pour chaque noeud réparable + service (et qui n'est pas 
-            # irréparable):
-            for node in reparables:   
-                # On rajoute le fait que le dispositif est en panne
-                self.add_evidence(self.problem_defining_node, "yes")               
-                
-                # On calcule la probabilité que le noeud actuel soit cassé                              
-                # p(node != Normal|Ei)
-                # Ei = les informations connues au tour de boucle actuel
-                p_noeud_casse = self.bay_lp.posterior(node)        
-                inst_noeud_casse = gum.Instantiation(p_noeud_casse)
-                inst_noeud_casse.chgVal(node, "yes")
-                
-                # On calcule le cout esperé du pair observation-repair pour le
-                # noeud actuel
-                if node in self.observation_nodes:
-                    cost = self.costs_obs[node] + \
-                    p_noeud_casse[inst_noeud_casse] * self.costs_rep[node]
-                else:
-                    cost = self.costs_rep[node]
-                
-                # Une fois qu'on aura fait l'observation-repair, on ne sait
-                # plus si le dispositif est en panne ou pas
-                self.remove_evidence(self.problem_defining_node)
-                # On récupere le cout pour le calcul de l'ésperance
-                dic_costs[node] = cost
-                
-                # On actualise l'évidence liée au noeud en traitement: 
-                # On dit que le noeud courrant n'est pas cassé 
-                # (On considere qu'il a été réparé)
-                if node != "callService":
-                    self.add_evidence(node, "no")
-                else:
-                    self.add_evidence(node, "yes")  
-                    
-                # On calcule l'efficacité du noeud:
-                # p(e = Normal|repair(node), Ei) / cost(node)
-                p = self.bay_lp.posterior(self.problem_defining_node)                
-                inst = gum.Instantiation(p)
-                inst.chgVal(self.problem_defining_node, "no")    
-                dic_eff[node] = p[inst] / cost
-                
-                # On retourne l'évidence du noeud à celle qui ne change pas les 
-                # probabilités du départ du tour de boucle actuel
-                self.remove_evidence(node)
-                             
-                if debug == True:
-                    print("noeud consideré : " + node)
-                    print("proba p(node != Normal|Ei) : ",\
-                          p_noeud_casse[inst_noeud_casse])
-                    print("proba p(e = Normal|repair(node), Ei) : ", p[inst]) 
-                    print("coût esperé du pair observation-repair : ", cost)
-                    print("éfficacité du noeud : ", dic_eff[node])
-                    print()
-            
-            # On sort les noeuds par rapport aux efficacités
-            seq = sorted(dic_eff.items(), key = lambda x: x[1], \
-                             reverse = True) 
-            # Le noeud choisi est ceux avec la meilleure efficacité dans le 
-            # tour de boucle actuel
-            chosen_node = seq[0][0]
-            rep_seq.append(chosen_node)
-            
-            # On calcule la contribution à l'ésperance du cout de la sequence
-            # de ce noeud
-            exp_cost += dic_costs[chosen_node] * proba_cost
-            p = self.bay_lp.posterior(self.problem_defining_node)                
-            inst = gum.Instantiation(p)
-            inst.chgVal(self.problem_defining_node, "yes")
-            proba_cost *= p[inst]
-            
-            if debug == True:
-                print("noeud choisi dans ce tour de boucle : ", chosen_node)
-                print("contribution à l'ésperance du coût de la séquence : ",\
-                      dic_costs[chosen_node])
-                print("ésperance du coût partiel : ", exp_cost)
-                print()
-                            
-            # On garde ce noeud au dictionnaire repares pour qu'on puisse
-            # mantenir le reseau à jour a chaque tour de la boucle while 
-            if chosen_node != "callService":
-                unrep_nodes.add(chosen_node)
-                reparables = (self.repairable_nodes | set([self.service_node]))\
-                    - unrep_nodes
-                self.add_evidence(chosen_node, "no")
-            else:
-                break
-        # On retourne aux évidences du début
-        self.reset_bay_lp(evid)           
-        return rep_seq, exp_cost
 
 
 
