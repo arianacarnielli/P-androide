@@ -1,3 +1,5 @@
+from graphviz import Digraph
+
 class NodeST:
 
     """
@@ -137,11 +139,11 @@ class NodeST:
             other : un autre noeud à comparer avec celui-ci, objet du type NodeST.
 
         Returns :
-            comp_res : True, si self._id == other._id ; False, sinon.
+            comp_res : True, si self._id == other._id ET si self et other ont le même type ; False, sinon.
         """
         if (self is None and other is not None) or (self is not None and other is None):
             return False
-        return self._id == other._id
+        return self._id == other._id and isinstance(other, type(self))
 
     def __str__(self):
         """
@@ -151,6 +153,16 @@ class NodeST:
             corr_str : une représentation d'un noeud sous une forme de str, objet du type str.
         """
         return '(' + self._id + ': ' + str(self._cost) + ', ' + self._name + ')'
+
+    def bn_labels_children_association(self):
+        """
+        Une méthode abstraite qui retournera un dictionnaire des associations entre des labels d'un réseau
+        bayésien et des enfants d'un noeud.
+
+        Returns :
+            da : un dictionnaire des associations concerné.
+        """
+        raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
 
 class Repair(NodeST):
@@ -162,11 +174,13 @@ class Repair(NodeST):
         _id : identificateur unique d'un noeud, objet du type str.
         _cost : un attribut qui correspond à "coût" d'un noeud, objet du type float.
         _name : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été passé, on pose que
-                _name = _id.
+            _name = _id.
         _child : un enfant d'un noeud, c'est-à-dire, un noeud suivant dans un arbre ; objet du type NodeST.
+        _obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
+            représente une couple observation-réparation ou pas
     """
 
-    def __init__(self, id, cost, name=None, child=None):
+    def __init__(self, id, cost, name=None, child=None, obs_rep_couples=False):
         """
         Un constructeur qui crée un objet de type Repair(NodeST) initialisant ses attributs par des valeurs fournies.
 
@@ -176,9 +190,12 @@ class Repair(NodeST):
             name (facultatif) : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été soumis,
                 on pose que _name = _id.
             child (facultatif) : un enfant d'un noeud, objet du type NodeST.
+            obs_rep_couples (facultatif) : un attribut sous la forme d'une variable boléenne qui indique si le noeud
+                représente une couple observation-réparation ou pas.
         """
         super().__init__(id, cost, name)
         self._child = child
+        self._obs_rep_couples = obs_rep_couples
 
     def set_child(self, child=None):
         """
@@ -197,6 +214,26 @@ class Repair(NodeST):
             _child : un enfant d'un noeud, objet du type NodeST.
         """
         return self._child
+
+    def set_obs_rep_couples(self, obs_rep_couples):
+        """
+        Setter d'un attribut _obs_rep_couples
+
+        Args :
+            obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
+                représente une couple observation-réparation ou pas.
+        """
+        self._obs_rep_couples = obs_rep_couples
+
+    def get_obs_rep_couples(self):
+        """
+        Getter d'un attribut _obs_rep_couples
+
+        Returns :
+            _obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
+                représente une couple observation-réparation ou pas
+        """
+        return self._obs_rep_couples
 
     def get_child_by_attribute(self, attr):
         """
@@ -254,8 +291,19 @@ class Repair(NodeST):
         Returns :
             copy : une copie superficielle d'un noeud, objet du type Repair(NodeST).
         """
-        new_node = Repair(self._id, self._cost, self._name, self._child.copy() if self._child is not None else None)
+        new_node = Repair(self._id, self._cost, self._name, self._child.copy() if self._child is not None else None,
+                          self._obs_rep_couples)
         return new_node
+
+    def bn_labels_children_association(self):
+        """
+        Une méthode plutôt auxiliare qui retourne un dictionnaire des associations entre des labels d'un réseau
+        bayésien et des enfants d'un noeud.
+
+        Returns :
+            da : un dictionnaire des associations concerné.
+        """
+        return {'': self.get_child()}
 
 
 class Observation(NodeST):
@@ -873,3 +921,23 @@ class StrategyTree:
         # On ajoute un arc entre root_with_subtree et cet arbre
         res.add_edge(res._root, self_root, root_child_type)
         return res
+
+    def visualize(self, filename='last_best_strategy_tree.gv'):
+        """
+        Une méthode qui nous permet d'afficher cet arbre de stratégie via un module graphviz. L'image construit est
+        sauvegardé dans un fichier 'filename.pdf'.
+
+        Args :
+            filename : un nom de fichier où il faut sauvegarder une image obtenue.
+        """
+        vst = Digraph()
+        for node in self._nodes:
+            node_type = ('Obs-Rep' if isinstance(node, Repair) and node.get_obs_rep_couples()
+                         else ('Repair' if isinstance(node, Repair) else 'Observation'))
+            vst.node(node.get_id(), '%s (n%s) : %s' % (node.get_name(), node.get_id(), node_type))
+        for par in self._adj_dict.keys():
+            for ch in self._adj_dict[par]:
+                for attr in self.get_node(par).bn_labels_children_association().keys():
+                    if self.get_node(ch) == self.get_node(par).bn_labels_children_association()[attr]:
+                        vst.edge(par, ch, label=attr)
+        vst.render(filename, view=True)
