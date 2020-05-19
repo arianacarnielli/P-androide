@@ -34,8 +34,8 @@ class MainWindow(QMainWindow):
         costsRep = {
             "car.batteryFlat": [100, 300],
             "oil.noOil": [50, 100],
-            "tank.Empty": [40, 120],
-            "tank.fuelLineBlocked": [50, 250],
+            "tank.Empty": [40, 60],
+            "tank.fuelLineBlocked": 150,
             "starter.starterBroken": [20, 60],
             "callService": 500
         }

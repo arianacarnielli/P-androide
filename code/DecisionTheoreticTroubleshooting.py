@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import copy
 import pyAgrum as gum
 import StrategyTree as st
 import numpy as np
+from tqdm import tqdm
 from itertools import permutations
 
 class TroubleShootingProblem:
@@ -212,6 +214,17 @@ class TroubleShootingProblem:
         inst = gum.Instantiation(p_tab)
         inst.chgVal(node, value)
         return p_tab[inst]
+
+    def draw_true_prices(self):
+        """
+        Tire au hasard des prix de réparation selon des lois uniformes sur les
+        intervalles stockés dans self.costs_rep_interval.
+        
+        Returns :
+            Dictionnaire avec prix de réparation.
+        """
+        return {n: np.random.uniform(*self.costs_rep_interval[n])\
+                for n in self.costs_rep_interval}
 
     def simple_solver(self, debug = False):
         """
@@ -458,7 +471,7 @@ class TroubleShootingProblem:
             # mantenir le reseau à jour a chaque tour de la boucle while 
             if chosen_node != self.service_node:
                 unrep_nodes.add(chosen_node)
-                reparables = (self.repairable_nodes | set([self.service_node]))\
+                reparables = (self.repairable_nodes |set([self.service_node]))\
                     - unrep_nodes
                 self.add_evidence(chosen_node, "no")
             else:
@@ -641,7 +654,8 @@ class TroubleShootingProblem:
             # d'observation impactés et on continue de façon récursive sur
             # ses parents.
             if p in self.evidences:
-                if p in self.unrepairable_nodes and p in self.observation_nodes:
+                if p in self.unrepairable_nodes\
+                    and p in self.observation_nodes:
                     ant_obs.add(p)
                     ant_obs.update(self.noeud_ant(p, visites))
                 
@@ -867,9 +881,320 @@ class TroubleShootingProblem:
             else:
                 ecr[node] = cost
             
-
         return chosen_node, type_node, eco, ecr
+
+    def simple_solver_tester(self, true_prices, nb_repetitions = 200):
+        """
+        Test empirique de la méthode simple_solver. Cette méthode calcule la
+        séquence d'actions à l'aide de simple_solver et réalise nb_repetitions
+        d'un système tiré au hasard : à chaque fois qu'on a une probabilité
+        qu'une action résoud le problème, on tire au hasard pour déterminer si
+        le problème a effectivement été résolu ou pas suite à cette action.
+        Elle calcule aussi les couts empiriques de réparation, en utilisant
+        pour cela true_prices. Cette méthode utilise la single fault
+        assumption.
+        
+        Args :
+            true_prices : Dictionnaire de prix de réparation des composantes
+                réparables
+            nb_repetitions : Entier, nombre de répétitions à être realisées
             
+        Returns :
+            moyenne des couts observés
+            tableau de taille nb_repetitions avec le nombre de composantes
+                réparées à chaque répétition
+        """
+        
+        costs = np.zeros(nb_repetitions)
+        cpt_repair = np.zeros(nb_repetitions)
+        # Comme la sequence ne change pas, on peut la calculer en dehors de 
+        # la boucle
+        seq, _ = self.simple_solver()
+        # On fait nb_repetitions tests
+        for i in tqdm(range(nb_repetitions)):
+            self.reset_bay_lp()
+            for node in seq:
+                costs[i] += true_prices[node]
+                cpt_repair[i] += 1
+                # On effectue une réparation
+                if node == self.service_node:
+                    break
+                else:
+                    # on récupere une probabilité:
+                    # proba_sys = p(e = Normal| repair(node), Ei)
+                    # = p(node != Normal | Ei)
+                    self.add_evidence(self.problem_defining_node, "yes")
+                    p = self.get_proba(node, "yes")
+                    self.remove_evidence(self.problem_defining_node)
+
+                    # On teste pour voir si le système marche 
+                    if np.random.rand() <= p:
+                        break
+                    # Le noeud node marche surement
+                    self.add_evidence(node, "no")
+        self.reset_bay_lp()
+        return costs.mean(), cpt_repair
+
+    def simple_solver_obs_tester(self, true_prices, nb_repetitions = 200):
+        """
+        Test empirique de la méthode simple_solver_obs. Cette méthode calcule
+        la séquence d'actions à l'aide de simple_solver_obs et réalise
+        nb_repetitions d'un système tiré au hasard : si on a une paire
+        "observation-réparation", on tire au hasard si la composante
+        correspondante marche ou pas. Si oui, on ajoute juste le cout de
+        l'observation et on continue, si non, on ajoute les couts d'observation
+        et de réparation et on s'arrête (single fault assumption). Si on a
+        une réparation simple sans observation associée, on ajoute directement
+        le cout de réparation de la composante. La fonction calcule les couts
+        empiriques de réparation, en utilisant pour cela true_prices.
+        
+        Args :
+            true_prices : Dictionnaire de prix de réparation des composantes
+                réparables
+            nb_repetitions : Entier, nombre de répétitions à être realisées
+            
+        Returns :
+            moyenne des couts observés
+            tableau de taille nb_repetitions avec le nombre de composantes
+                réparées à chaque répétition
+        """
+        costs = np.zeros(nb_repetitions)
+        cpt_repair = np.zeros(nb_repetitions)
+        # Comme la sequence ne change pas, on peut la calculer en dehors de 
+        # la boucle
+        seq, _ = self.simple_solver_obs()
+        # On fait nb_repetitions tests
+        for i in tqdm(range(nb_repetitions)):
+            self.reset_bay_lp()
+            for node in seq:
+                # On fait l'observation du noeud si possible, sinon, on le 
+                # repare
+                if node in self.observation_nodes: 
+                    costs[i] += self.costs_obs[node]
+                else:
+                    costs[i] += true_prices[node]
+                cpt_repair[i] += 1
+                
+                # On effectue un pair observation-réparation
+                if node == self.service_node:
+                    break
+                else:
+                    # on récupere une probabilité:
+                    # proba_sys = p(e = Normal| repair(node), Ei)
+                    # = p(node != Normal | Ei)
+                    self.add_evidence(self.problem_defining_node, "yes")
+                    p = self.get_proba(node, "yes")
+                    self.remove_evidence(self.problem_defining_node)
+
+                    # On teste pour voir si le système marche 
+                    if np.random.rand() <= p:
+                        # Si le noeud était cassé et est observable, 
+                        # on somme son cout de réparation
+                        if node in self.observation_nodes: 
+                            costs[i] += true_prices[node]
+                        break
+
+                    # Le noeud node marche surement
+                    self.add_evidence(node, "no")
+        self.reset_bay_lp()
+        return costs.mean(), cpt_repair
+
+
+    def myopic_solver_tester(self, true_prices, nb_repetitions = 200,\
+                             debug = False):
+        """
+        Test empirique de la méthode myopic_solver. Cette méthode calcule
+        la séquence d'actions itérativement à l'aide de myopic_solver et
+        réalise nb_repetitions d'un système tiré au hasard. À chaque
+        observation globale, son résultat est tiré au hasard. Pour les paires
+        "observation-réparation", on tire au hasard si la composante
+        correspondante marche ou pas. Si oui, on ajoute juste le cout de
+        l'observation et on continue, si non, on ajoute les couts d'observation
+        et de réparation et on s'arrête (single fault assumption). Si on a
+        une réparation simple sans observation associée, on ajoute directement
+        le cout de réparation de la composante. La fonction calcule les couts
+        empiriques de réparation, en utilisant pour cela true_prices.
+        
+        Args :
+            true_prices : Dictionnaire de prix de réparation des composantes
+                réparables
+            nb_repetitions : Entier, nombre de répétitions à être realisées
+            debug (facultatif) : si True, affiche des messages montrant le 
+                deroulement de l'algorithme.
+                
+        Returns :
+            moyenne des couts observés
+            tableau de taille nb_repetitions avec le nombre de composantes
+                réparées à chaque répétition
+            tableau de taille nb_repetitions avec le nombre d'observations
+                globales faites à chaque répétition
+        """
+        costs = np.zeros(nb_repetitions)
+        cpt_obs = np.zeros(nb_repetitions)
+        cpt_repair = np.zeros(nb_repetitions)
+ 
+        # On fait nb_repetitions tests
+        for i in tqdm(range(nb_repetitions)):
+            self.reset_bay_lp()
+            while True:
+                node, type_node = self.myopic_solver()
+                if debug:
+                    print("Noeud suggéré :", node)
+                if type_node == "obs":
+                    costs[i] += self.costs_obs[node]
+                    obs_res = self.bay_lp.posterior(node).draw()
+                    self.add_evidence(node, obs_res)
+                    cpt_obs[i] += 1
+                    if debug:
+                        labels = self.bayesian_network.variable(node).labels()
+                        print("Résultat de l'observation :", labels[obs_res])
+                else:
+                    # On fait l'observation du noeud si possible, sinon, on le 
+                    # repare
+                    if node in self.observation_nodes: 
+                        costs[i] += self.costs_obs[node]
+                    else:
+                        costs[i] += true_prices[node]
+                    cpt_repair[i] += 1
+                    
+                    # On effectue un pair observation-réparation
+                    if node == self.service_node:
+                        break
+                    else:
+                        # on récupere une probabilité:
+                        # proba_sys = p(e = Normal| repair(node), Ei)
+                        # = p(node != Normal | Ei)
+                        self.add_evidence(self.problem_defining_node, "yes")
+                        p = self.get_proba(node, "yes")
+                        self.remove_evidence(self.problem_defining_node)
+    
+                        # On teste pour voir si le système marche 
+                        if np.random.rand() <= p:
+                            # Si le noeud était cassé et est observable, 
+                            # on somme son cout de réparation
+                            if node in self.observation_nodes: 
+                                costs[i] += true_prices[node]
+                            break
+    
+                        # Après une réparation, certaines observations peuvent
+                        # être devenues obsolètes, il faut les exclure et
+                        # permettre de les refaire.
+                        obsoletes = self.observation_obsolete(node) 
+                        self.add_evidence(node, "no")
+                        for obs in obsoletes:
+                            self.evidences.pop(obs)
+                        self.reset_bay_lp(self.evidences)
+        self.reset_bay_lp()
+        return costs.mean(), cpt_repair, cpt_obs
+    
+    def elicitation_solver_tester(self, true_prices, nb_repetitions = 200,\
+                                  debug = False):
+        """
+        Test empirique de la résolution avec élicitation. À chaque fois qu'on
+        doit prendre une action, on vérifie d'abord s'il y a des questions à
+        répondre et, si oui, on les répond toutes correctement selon
+        true_prices. Ensuite, la méthode calcule la séquence d'actions
+        itérativement à l'aide de myopic_solver et réalise nb_repetitions d'un
+        système tiré au hasard, le tirage au hasard étant identique à celui de
+        myopic_solver_tester. La fonction calcule les couts empiriques de
+        réparation, en utilisant pour cela true_prices.
+        
+        Args :
+            true_prices : Dictionnaire de prix de réparation des composantes
+                réparables
+            nb_repetitions : Entier, nombre de répétitions à être realisées
+            debug (facultatif) : si True, affiche des messages montrant le 
+                deroulement de l'algorithme.
+                
+        Returns :
+            moyenne des couts observés
+            tableau de taille nb_repetitions avec le nombre de composantes
+                réparées à chaque répétition
+            tableau de taille nb_repetitions avec le nombre d'observations
+                globales faites à chaque répétition
+            tableau de taille nb_repetitions avec le nombre de questions
+                répondues à chaque répétition
+        """
+        costs = np.zeros(nb_repetitions)
+        cpt_obs = np.zeros(nb_repetitions)
+        cpt_repair = np.zeros(nb_repetitions)
+        cpt_questions = np.zeros(nb_repetitions)
+        
+        costs_rep_save = self.costs_rep.copy()
+        costs_rep_interval_save = copy.deepcopy(self.costs_rep_interval)
+ 
+        # On fait nb_repetitions tests
+        for i in tqdm(range(nb_repetitions)):
+            self.reset_bay_lp()
+            while True:
+                has_ques = True
+                while has_ques:
+                    # On teste s'il y a une question disponible
+                    eli_nd, val = self.best_EVOI()
+                    if not np.allclose(0, val) and val > 0:
+                        if debug:
+                            print("Question sur :",eli_nd)
+                        cpt_questions[i] += 1
+                        # On doit répondre correctement à la question
+                        lower = (true_prices[eli_nd] < self.costs_rep[eli_nd])
+                        if debug:
+                            print("Réponse :", lower)
+                        self.elicitation(eli_nd, lower)
+                    else:
+                        has_ques = False
+                
+                node, type_node = self.myopic_solver()
+                if debug:
+                    print("Noeud suggéré :", node)
+                if type_node == "obs":
+                    costs[i] += self.costs_obs[node]
+                    obs_res = self.bay_lp.posterior(node).draw()
+                    self.add_evidence(node, obs_res)
+                    cpt_obs[i] += 1
+                    if debug:
+                        labels = self.bayesian_network.variable(node).labels()
+                        print("Résultat de l'observation :", labels[obs_res])
+                else:
+                    # On fait l'observation du noeud si possible, sinon, on le 
+                    # repare
+                    if node in self.observation_nodes: 
+                        costs[i] += self.costs_obs[node]
+                    else:
+                        costs[i] += true_prices[node]
+                    cpt_repair[i] += 1
+                    
+                    # On effectue un pair observation-réparation
+                    if node == self.service_node:
+                        break
+                    else:
+                        # on récupere une probabilité:
+                        # proba_sys = p(e = Normal| repair(node), Ei)
+                        # = p(node != Normal | Ei)
+                        self.add_evidence(self.problem_defining_node, "yes")
+                        p = self.get_proba(node, "yes")
+                        self.remove_evidence(self.problem_defining_node)
+    
+                        # On teste pour voir si le système marche 
+                        if np.random.rand() <= p:
+                            # Si le noeud était cassé et est observable, 
+                            # on somme son cout de réparation
+                            if node in self.observation_nodes: 
+                                costs[i] += true_prices[node]
+                            break
+    
+                        # Après une réparation, certaines observations peuvent
+                        # être devenues obsolètes, il faut les exclure et
+                        # permettre de les refaire.
+                        obsoletes = self.observation_obsolete(node) 
+                        self.add_evidence(node, "no")
+                        for obs in obsoletes:
+                            self.evidences.pop(obs)
+                        self.reset_bay_lp(self.evidences)
+            self.costs_rep = costs_rep_save.copy()
+            self.costs_rep_interval = copy.deepcopy(costs_rep_interval_save)
+
+        self.reset_bay_lp()
+        return costs.mean(), cpt_repair, cpt_obs, cpt_questions            
 
 # =============================================================================
 # Calcul Exacte
@@ -984,43 +1309,6 @@ class TroubleShootingProblem:
 # =============================================================================
 # Méthodes pas encore fonctionnelles            
 # =============================================================================
-
-
-
-    def simple_solver_tester(self, true_prices, nb_repetitions = 200):
-        costs = np.zeros(nb_repetitions)
-        # Comme la sequence ne change pas, on peut la calculer en dehors de 
-        # la boucle
-        seq, _ = self.simple_solver()
-        # On fait nb_repetitions tests
-        for i in range(nb_repetitions):
-            self.reset_bay_lp()
-            for node in seq:
-                costs[i] += true_prices[node]
-                # On effectue une réparation
-                if node == self.service_node:
-                    break
-                else:
-                    self.add_evidence(node, "no")
-                    # on récupere une probabilité:
-                    # proba_sys = p(e = Normal| les informations actuelles)
-                    p = self.bay_lp.posterior(self.problem_defining_node)
-                    # On utilise une instantion pour récuperer la bonne 
-                    # probabilité 
-                    inst = gum.Instantiation(p)
-                    inst.chgVal(self.problem_defining_node, "no")
-                    proba_sys = p[inst]
-
-                    # On teste pour voir si le système marche 
-                    if np.random.rand() <= proba_sys:
-                        break
-        self.reset_bay_lp()
-        return costs.sum()/nb_repetitions  
-
-
-
-
-    
 
     # Une méthode qui implémente un algorithme le plus simple de résolution du problème de Troubleshooting
     def solve_static(self):
