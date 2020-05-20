@@ -914,35 +914,41 @@ class TroubleShootingProblem:
             
         return chosen_node, type_node, eco, ecr
 
-    def simple_solver_tester(self, true_prices, nb_repetitions = 200):
+    def simple_solver_tester(self, true_prices, epsilon, nb_min = 100, \
+                             nb_max = 200):
         """
         Test empirique de la méthode simple_solver. Cette méthode calcule la
-        séquence d'actions à l'aide de simple_solver et réalise nb_repetitions
-        d'un système tiré au hasard : à chaque fois qu'on a une probabilité
-        qu'une action résoud le problème, on tire au hasard pour déterminer si
-        le problème a effectivement été résolu ou pas suite à cette action.
-        Elle calcule aussi les couts empiriques de réparation, en utilisant
-        pour cela true_prices. Cette méthode utilise la single fault
-        assumption.
+        séquence d'actions à l'aide de simple_solver et réalise au plus nb_max
+        repétitions d'un système tiré au hasard : à chaque fois qu'on a une 
+        probabilité qu'une action résoud le problème, on tire au hasard pour 
+        déterminer si le problème a effectivement été résolu ou pas suite à 
+        cette action. Si après nb_min repétitions l'erreur estimée est plus
+        petite que epsilon, on fait une sortie anticipée. La fonction calcule
+        aussi les couts empiriques de réparation, en utilisant pour cela
+        true_prices. Cette méthode utilise la single fault assumption.
+        
         
         Args :
             true_prices : Dictionnaire de prix de réparation des composantes
                 réparables
-            nb_repetitions : Entier, nombre de répétitions à être realisées
+            epsilon : Tolerance de la moyenne
+            nb_min : Entier, nombre minimum de répétitions à être realisées
+            nb_max : Entier, nombre maximum de répétitions à être realisées
             
         Returns :
+            booléeen, True en cas de sortie anticipée, False sinon
             moyenne des couts observés
-            tableau de taille nb_repetitions avec le nombre de composantes
-                réparées à chaque répétition
+            tableau avec le nombre de composantes réparées à chaque répétition
         """
         
-        costs = np.zeros(nb_repetitions)
-        cpt_repair = np.zeros(nb_repetitions)
+        costs = np.zeros(nb_max)
+        cpt_repair = np.zeros(nb_max)
+        sortie_anti = False
         # Comme la sequence ne change pas, on peut la calculer en dehors de 
         # la boucle
         seq, _ = self.simple_solver()
-        # On fait nb_repetitions tests
-        for i in tqdm(range(nb_repetitions)):
+        # On fait au plus nb_max tests
+        for i in tqdm(range(nb_max)):
             self.reset_bay_lp()
             for node in seq:
                 costs[i] += true_prices[node]
@@ -963,39 +969,51 @@ class TroubleShootingProblem:
                         break
                     # Le noeud node marche surement
                     self.add_evidence(node, "no")
+                    
+            if i >= nb_min\
+                and 1.96 * costs[:i + 1].std()/np.sqrt(i + 1) < epsilon:
+                sortie_anti = True
+                break
+            
         self.reset_bay_lp()
-        return costs.mean(), cpt_repair
+        return sortie_anti, costs[:i + 1].mean(), cpt_repair[:i + 1]
 
-    def simple_solver_obs_tester(self, true_prices, nb_repetitions = 200):
+    def simple_solver_obs_tester(self, true_prices, epsilon, nb_min = 100, \
+                             nb_max = 200):
         """
         Test empirique de la méthode simple_solver_obs. Cette méthode calcule
-        la séquence d'actions à l'aide de simple_solver_obs et réalise
-        nb_repetitions d'un système tiré au hasard : si on a une paire
+        la séquence d'actions à l'aide de simple_solver_obs et réalise au plus
+        nb_max répétitions d'un système tiré au hasard : si on a une paire
         "observation-réparation", on tire au hasard si la composante
         correspondante marche ou pas. Si oui, on ajoute juste le cout de
         l'observation et on continue, si non, on ajoute les couts d'observation
         et de réparation et on s'arrête (single fault assumption). Si on a
         une réparation simple sans observation associée, on ajoute directement
-        le cout de réparation de la composante. La fonction calcule les couts
-        empiriques de réparation, en utilisant pour cela true_prices.
+        le cout de réparation de la composante. Si après nb_min repétitions
+        l'erreur estimée est plus petite que epsilon, on fait une sortie
+        anticipée. La fonction calcule les couts empiriques de réparation, en
+        utilisant pour cela true_prices.
         
         Args :
             true_prices : Dictionnaire de prix de réparation des composantes
                 réparables
-            nb_repetitions : Entier, nombre de répétitions à être realisées
+            epsilon : Tolerance de la moyenne
+            nb_min : Entier, nombre minimum de répétitions à être realisées
+            nb_max : Entier, nombre maximum de répétitions à être realisées
             
         Returns :
+            booléeen, True en cas de sortie anticipée, False sinon
             moyenne des couts observés
-            tableau de taille nb_repetitions avec le nombre de composantes
-                réparées à chaque répétition
+            tableau avec le nombre de composantes réparées à chaque répétition
         """
-        costs = np.zeros(nb_repetitions)
-        cpt_repair = np.zeros(nb_repetitions)
+        costs = np.zeros(nb_max)
+        cpt_repair = np.zeros(nb_max)
+        sortie_anti = False
         # Comme la sequence ne change pas, on peut la calculer en dehors de 
         # la boucle
         seq, _ = self.simple_solver_obs()
-        # On fait nb_repetitions tests
-        for i in tqdm(range(nb_repetitions)):
+        # On fait au plus nb_max tests
+        for i in tqdm(range(nb_max)):
             self.reset_bay_lp()
             for node in seq:
                 # On fait l'observation du noeud si possible, sinon, on le 
@@ -1027,45 +1045,55 @@ class TroubleShootingProblem:
 
                     # Le noeud node marche surement
                     self.add_evidence(node, "no")
+            if i >= nb_min\
+                and 1.96 * costs[:i + 1].std()/np.sqrt(i + 1) < epsilon:
+                sortie_anti = True
+                break
         self.reset_bay_lp()
-        return costs.mean(), cpt_repair
+        return sortie_anti, costs[:i + 1].mean(), cpt_repair[:i + 1]
 
 
-    def myopic_solver_tester(self, true_prices, nb_repetitions = 200,\
-                             debug = False):
+    def myopic_solver_tester(self, true_prices, epsilon, nb_min = 100, \
+                             nb_max = 200, debug = False):
         """
         Test empirique de la méthode myopic_solver. Cette méthode calcule
         la séquence d'actions itérativement à l'aide de myopic_solver et
-        réalise nb_repetitions d'un système tiré au hasard. À chaque
-        observation globale, son résultat est tiré au hasard. Pour les paires
-        "observation-réparation", on tire au hasard si la composante
+        réalise au plus nb_max repetitions d'un système tiré au hasard. À
+        chaque observation globale, son résultat est tiré au hasard. Pour les
+        paires "observation-réparation", on tire au hasard si la composante
         correspondante marche ou pas. Si oui, on ajoute juste le cout de
         l'observation et on continue, si non, on ajoute les couts d'observation
         et de réparation et on s'arrête (single fault assumption). Si on a
         une réparation simple sans observation associée, on ajoute directement
-        le cout de réparation de la composante. La fonction calcule les couts
-        empiriques de réparation, en utilisant pour cela true_prices.
+        le cout de réparation de la composante. Si après nb_min repétitions
+        l'erreur estimée est plus petite que epsilon, on fait une sortie
+        anticipée. La fonction calcule les couts empiriques de réparation, en
+        utilisant pour cela true_prices.
         
         Args :
             true_prices : Dictionnaire de prix de réparation des composantes
                 réparables
-            nb_repetitions : Entier, nombre de répétitions à être realisées
+            epsilon : Tolerance de la moyenne
+            nb_min : Entier, nombre minimum de répétitions à être realisées
+            nb_max : Entier, nombre maximum de répétitions à être realisées
             debug (facultatif) : si True, affiche des messages montrant le 
                 deroulement de l'algorithme.
                 
         Returns :
+            booléeen, True en cas de sortie anticipée, False sinon
             moyenne des couts observés
-            tableau de taille nb_repetitions avec le nombre de composantes
-                réparées à chaque répétition
-            tableau de taille nb_repetitions avec le nombre d'observations
-                globales faites à chaque répétition
+            tableau avec le nombre de composantes réparées à chaque répétition
+            tableau avec le nombre d'observations globales faites à chaque
+                répétition
         """
-        costs = np.zeros(nb_repetitions)
-        cpt_obs = np.zeros(nb_repetitions)
-        cpt_repair = np.zeros(nb_repetitions)
+        costs = np.zeros(nb_max)
+        cpt_obs = np.zeros(nb_max)
+        cpt_repair = np.zeros(nb_max)
+        
+        sortie_anti = False
  
-        # On fait nb_repetitions tests
-        for i in tqdm(range(nb_repetitions)):
+        # On fait au plus nb_max tests
+        for i in tqdm(range(nb_max)):
             self.reset_bay_lp()
             while True:
                 node, type_node = self.myopic_solver()
@@ -1115,47 +1143,58 @@ class TroubleShootingProblem:
                         for obs in obsoletes:
                             self.evidences.pop(obs)
                         self.reset_bay_lp(self.evidences)
+            if i >= nb_min\
+                and 1.96 * costs[:i + 1].std()/np.sqrt(i + 1) < epsilon:
+                sortie_anti = True
+                break
         self.reset_bay_lp()
-        return costs.mean(), cpt_repair, cpt_obs
+        
+        return sortie_anti, costs[:i + 1]/mean(), cpt_repair[:i + 1],\
+            cpt_obs[:i + 1]
     
-    def elicitation_solver_tester(self, true_prices, nb_repetitions = 200,\
-                                  debug = False):
+    def elicitation_solver_tester(self, true_prices, epsilon, nb_min = 100, \
+                             nb_max = 200, debug = False):
         """
         Test empirique de la résolution avec élicitation. À chaque fois qu'on
         doit prendre une action, on vérifie d'abord s'il y a des questions à
         répondre et, si oui, on les répond toutes correctement selon
         true_prices. Ensuite, la méthode calcule la séquence d'actions
-        itérativement à l'aide de myopic_solver et réalise nb_repetitions d'un
-        système tiré au hasard, le tirage au hasard étant identique à celui de
-        myopic_solver_tester. La fonction calcule les couts empiriques de
-        réparation, en utilisant pour cela true_prices.
-        
+        itérativement à l'aide de myopic_solver et réalise au plus nb_max
+        repetitions d'un système tiré au hasard, le tirage au hasard étant
+        identique à celui de myopic_solver_tester. Si après nb_min repétitions
+        l'erreur estimée est plus petite que epsilon, on fait une sortie
+        anticipée. La fonction calcule les couts empiriques de réparation, en
+        utilisant pour cela true_prices.
+
         Args :
             true_prices : Dictionnaire de prix de réparation des composantes
                 réparables
-            nb_repetitions : Entier, nombre de répétitions à être realisées
+            epsilon : Tolerance de la moyenne
+            nb_min : Entier, nombre minimum de répétitions à être realisées
+            nb_max : Entier, nombre maximum de répétitions à être realisées
             debug (facultatif) : si True, affiche des messages montrant le 
                 deroulement de l'algorithme.
                 
         Returns :
+            booléeen, True en cas de sortie anticipée, False sinon
             moyenne des couts observés
-            tableau de taille nb_repetitions avec le nombre de composantes
-                réparées à chaque répétition
-            tableau de taille nb_repetitions avec le nombre d'observations
-                globales faites à chaque répétition
-            tableau de taille nb_repetitions avec le nombre de questions
-                répondues à chaque répétition
+            tableau avec le nombre de composantes réparées à chaque répétition
+            tableau avec le nombre d'observations globales faites à chaque
+                répétition        
+            tableau avec le nombre de questions répondues à chaque répétition
         """
-        costs = np.zeros(nb_repetitions)
-        cpt_obs = np.zeros(nb_repetitions)
-        cpt_repair = np.zeros(nb_repetitions)
-        cpt_questions = np.zeros(nb_repetitions)
+        costs = np.zeros(nb_max)
+        cpt_obs = np.zeros(nb_max)
+        cpt_repair = np.zeros(nb_max)
+        cpt_questions = np.zeros(nb_max)
+        
+        sortie_anti = False
         
         costs_rep_save = self.costs_rep.copy()
         costs_rep_interval_save = copy.deepcopy(self.costs_rep_interval)
  
-        # On fait nb_repetitions tests
-        for i in tqdm(range(nb_repetitions)):
+        # On fait au plus nb_max tests
+        for i in tqdm(range(nb_max)):
             self.reset_bay_lp()
             while True:
                 has_ques = True
@@ -1223,9 +1262,15 @@ class TroubleShootingProblem:
                         self.reset_bay_lp(self.evidences)
             self.costs_rep = costs_rep_save.copy()
             self.costs_rep_interval = copy.deepcopy(costs_rep_interval_save)
+            if i >= nb_min\
+                and 1.96 * costs[:i + 1].std()/np.sqrt(i + 1) < epsilon:
+                sortie_anti = True
+                break
 
         self.reset_bay_lp()
-        return costs.mean(), cpt_repair, cpt_obs, cpt_questions            
+        
+        return sortie_anti, costs[:i + 1].mean(), cpt_repair[:i + 1],\
+            cpt_obs[:i + 1], cpt_questions[:i + 1]
 
 # =============================================================================
 # Calcul Exacte
