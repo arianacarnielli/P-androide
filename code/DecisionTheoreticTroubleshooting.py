@@ -9,24 +9,61 @@ from numpy import inf
 
 
 def shallow_copy_list_of_copyable(l):
+    """
+    Une méthode statique du module qui crée une copie superficielle d'une liste passée en remplissant de plus chaque
+    élément d'une nouvelle liste par un appel de méthode copy() d'un élément corespondant de la liste donnée.
+
+    Args :
+        l : une liste dont la copie il faut créer, objet du type list<Copyable> où Copyable est une interface abstraite
+            qui dispose d'une méthode copy().
+
+    Returns :
+        cl : une copie superficielle d'une liste donnée qu'il fallait créer, objet du type list<Copyable>.
+    """
     if l is None:
         return None
     return [subl.copy() for subl in l]
 
 
 def shallow_copy_parent(parent):
+    """
+    Une méthode statique auxiliaire qui crée une copie superficielle d'un `` parent '' (cf une méthode
+    TroubleShootingProblem._evaluate_all_st ci-dessous).
+
+    Args :
+        parent : un parent dont la copie il faut créer, objet du type list<tuple<NodeST, NodeST, StrategyTree>>.
+
+    Returns :
+        parent_copy : une copie superficielle d'un parent passé, objet du type
+            list<tuple<NodeST, NodeST, StrategyTree>>.
+    """
     if parent is None:
         return None
     return [tuple([elem.copy() if elem is not None else None for elem in par]) for par in parent]
 
 
 def merge_dicts(left, right):
+    """
+    Uné méthode qui fusionne deux dictionnaire passés ne pas les changeant. Une couple (clé, valeur) de dictionnaire
+    right est plus prioritaire que celle de left ; c'est-à-dire, s'il existe une valeur associée à la même clé k dans
+    tous les deux dictionnaire, on ajoute dans le résultat celle qui appartient à right.
+
+    Args :
+        left : l'un de dictionnaires à fusionner, celui qui est moins prioritaire, objet du type dict.
+        right : l'un autre dictionnaire à fusionner, celui qui est plus prioritaire, objet du type dict.
+
+    Returns :
+        res : le résultat de la fusion, objet du type dict.
+    """
     res = left.copy()
     res.update(right)
     return res
 
 
 class bcolors:
+    """
+    Une classe statique auxiliare qui n'est utilisé que pour stocker des couleurs différentes.
+    """
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
@@ -1276,12 +1313,19 @@ class TroubleShootingProblem:
 # Calcul Exacte
 # =============================================================================      
 
-    # Une fonction qui calcule un coût espéré de réparation à partir d'une séquence d'actions donnée
-    # Ici on utilise une formule
-    # ECR = coût(C1) +
-    #       (1 - P(e = Normal | C1 = Normal)) * coût(C2) +
-    #       (1 - P(e = Normal | C1 = Normal, C2 = Normal)) * coût(C3) + ...
     def expected_cost_of_repair_seq_of_actions(self, seq):
+        """
+        Une fonction qui calcule un coût espéré de réparation à partir d'une séquence d'actions donnée.
+        Ici on utilise une formule
+        ECR = coût(C1) + (1 - P(e = Normal | C1 = Normal)) * coût(C2) +
+              (1 - P(e = Normal | C1 = Normal, C2 = Normal)) * coût(C3) + ...
+
+        Args :
+            seq : une séquence d'actions de réparations dont le coût espéré il faut calculer, objet du type list<str>.
+
+        Returns :
+            ecr : le coût espéré de réparations d'une séquence soumise, objet du type float.
+        """
 
         ecr = 0.0
         prob = 1.0
@@ -1306,35 +1350,72 @@ class TroubleShootingProblem:
 
         return ecr
 
-    # Une fonction qui cherche une séquence optimale de réparation par une recherche exhaustive en choisissant
-    # une séquence de meilleur ECR
     def brute_force_solver_actions_only(self, debug=False):
+        """
+        Une fonction qui cherche une séquence optimale de réparation par une recherche exhaustive en choisissant
+        une séquence de meilleur ECR. Pour le cas où on ne considère que les actions de réparation il suffit de
+        dénombrer toutes les permutations possibles d'un ensemble des actions admissibles.
+
+        Args :
+            debug (facultatif) : un flag qui indique s'il faut afficher des séquences intermédiaires ou pas,
+                objet du type bool.
+
+        Returns :
+            min_seq : une séquence optimale trouvée dont le coût est le plus petit que possible ;
+                objet du type list<str>.
+            min_ecr : le côut espéré de réparation correspondant à min_seq, objet du type float.
+        """
         min_seq = [self.service_node] + list(self.repairable_nodes).copy()
         min_ecr = self.expected_cost_of_repair_seq_of_actions(min_seq)
 
         # Parcours par toutes les permutations de l'union de noeuds réparables avec un noeud de service
         for seq in [list(t) for t in permutations(list(self.repairable_nodes) + [self.service_node])]:
             ecr = self.expected_cost_of_repair_seq_of_actions(seq)
+            if debug:
+                print("seq : {0}\necr : {1}\n\n".format(seq, ecr))
+            # Si on trouve une séquence meilleure que celle courante on la sauvegarde
             if ecr < min_ecr:
                 min_ecr = ecr
                 min_seq = seq.copy()
 
         return min_seq, min_ecr
 
-    # Une méthode qui calcule le coût espéré de réparation étant donné un arbre de décision
     def expected_cost_of_repair(self, strategy_tree, obs_rep_couples=False):
+        """
+        Une méthode qui calcule le coût espéré de réparation étant donné un arbre de décision.
+
+        Args :
+            strategy_tree : un arbre de stratégie dont le côut il faut calculer, objet du type StrategyTree.
+            obs_rep_couples (facultatif) : une variable boléenne qui indique si on suppose l'existance de couples
+            ``observation-réparation'' dans un arbre de stratégie soumis, objet du type bool.
+
+        Returns :
+            ecr : le côut espéré de réparation d'un arbre de stratégie fourni, objet du type float.
+        """
         ecr = self._expected_cost_of_repair_internal(strategy_tree, obs_rep_couples=obs_rep_couples)
         self.bay_lp.setEvidence({})
         self._start_bay_lp()
         self.reset_bay_lp()
         return ecr
 
-    # Une partie récursive d'une fonction expected_cost_of_repair ci-dessus
     def _expected_cost_of_repair_internal(self, strategy_tree, evid_init=None, obs_rep_couples=False):
+        """
+        Une partie récursive d'une fonction expected_cost_of_repair au-dessus
 
+        Args :
+            strategy_tree : un arbre de stratégie dont le côut il faut calculer, objet du type StrategyTree.
+            evid_init (facultatif) : un dictionnaire d'évidences utilisé dans les appels récursifs mais vide par
+                défaut, objet du type dict<str, str>.
+            obs_rep_couples (facultatif): une variable boléenne qui indique si on suppose l'existance de couples
+                ``observation-réparation'' dans un arbre de stratégie soumis, objet du type bool.
+
+        Returns :
+            ecr : le côut espéré de réparation d'un arbre de stratégie fourni, objet du type float.
+        """
         if not isinstance(strategy_tree, st.StrategyTree):
             raise TypeError('strategy_tree must have type StrategyTre')
 
+        # On ajoute dans ECR un terme lié à la racine d'un arbre donné
         ecr = 0.0
         evidence = evid_init if isinstance(evid_init, dict) else {}
         self.bay_lp.setEvidence(evidence)
@@ -1342,9 +1423,8 @@ class TroubleShootingProblem:
         node = strategy_tree.get_root()
         node_name = strategy_tree.get_root().get_name()
         aelem = 0.0
-        # cost = node.get_cost()
         if obs_rep_couples and node_name in self.repairable_nodes.intersection(self.observation_nodes):
-            cost = self.costs_obs[node_name]  # + self.prob_val(node_name, 'yes') * self.costs_rep[node_name]
+            cost = self.costs_obs[node_name]
             self.bay_lp.setEvidence(merge_dicts(evidence, {node_name: 'yes'}))
             prob_next = 1 - self.prob_val(self.problem_defining_node, 'no')
             self.bay_lp.setEvidence(evidence)
@@ -1353,14 +1433,18 @@ class TroubleShootingProblem:
             cost = self.costs_rep[node_name] if isinstance(node, st.Repair) else self.costs_obs[node_name]
         ecr += prob * cost + aelem
 
+        # On relance récursivement cette fonction-là pour chaque sous-arbre qui a un enfant (s'il en existe)
+        # d'une racine courante pour sa propre racine
         if len(node.get_list_of_children()) == 0:
             return ecr
         if isinstance(node, st.Repair):
+            # Généralement un enfant pour une action de réparation puisque on les suppose parfaites ...
             ecr += self._expected_cost_of_repair_internal(
                 strategy_tree.get_sub_tree(node.get_child()),
                 merge_dicts(evidence, {node_name: 'yes' if node_name == self.service_node else 'no'}), obs_rep_couples)
             self.bay_lp.setEvidence(evidence)
         else:
+            # ... et plusieurs enfants pour des observations
             for obs_label in self.bayesian_network.variable(node_name).labels():
                 child = node.bn_labels_children_association()[obs_label]
                 new_evidence = (merge_dicts(evidence, {node_name: obs_label})
@@ -1373,16 +1457,42 @@ class TroubleShootingProblem:
 
         return ecr
 
-    # Une méthode auxiliare qui retourne une probabilité posterioiri qu'une variable var égal à value
+    # En fait, la même méthode que get_proba au-dessus
+    # On a donc implémenté de manière indépendante deux méthodes similaires :)
     def prob_val(self, var, value):
-        tmp = self.bay_lp.hardEvidenceNodes()
+        """
+        Une méthode auxiliare qui retourne une probabilité à posteriori qu'une variable var égal à value sachant une
+        évidence courante de notre réseau bayésien (cette évidence doit être mise en place en dehors de cette fonction).
+
+        Args :
+            var : un label d'une variable aléatoire, objet du type str.
+            value : une valeur d'une variable aléatoire, objet du type str.
+
+        Returns :
+            prob : une probabilité que var égal à value sachant une évidence courante de notre réseau bayésien, ie
+                prob = P(var = value | E), où E est une évidence courante.
+        """
         pot_var = self.bay_lp.posterior(var)
         inst_var = gum.Instantiation(pot_var)
         inst_var.chgVal(var, value)
         return pot_var[inst_var]
 
-    # Une méthode auxiliare qui crée des noeuds de StrategyTree à partir de leurs noms dans un modèle
     def _create_nodes(self, names, rep_string='_repair', obs_string='_observation', obs_rep_couples=False):
+        """
+        Une méthode auxiliaire qui crée des noeuds de StrategyTree à partir de leurs noms dans un modèle.
+
+        Args :
+            names : des noms des réparations/observations/observations-réparations dans un modèle à partir desquels
+                il faut créer des noeuds ; objet du type list<str>.
+            rep_string (facultatif) : dans le cas où on ne considère pas des couples, on utilise ce paramètre comme
+                un suffixe pour les noeuds de réparation pour les séparer de ceux d'observation, objet du type str.
+            obs_string (facultatif) : un suffixe pour les noeuds d'observation, objet du type str.
+            obs_rep_couples (facultatif): une variable boléenne qui indique si on suppose l'existance de couples
+                ``observation-réparation'' dans un arbre de stratégie soumis, objet du type bool.
+
+        Returns :
+            nodes : une liste de noeuds qu'il faut créer, objet du type list<NodeST>
+        """
         nodes = []
         temp = self.observation_nodes.intersection(self.repairable_nodes)
         for name, i in zip(names, range(len(names))):
