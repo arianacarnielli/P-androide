@@ -941,3 +941,9 @@ class StrategyTree:
                     if self.get_node(ch) == self.get_node(par).bn_labels_children_association()[attr]:
                         vst.edge(par, ch, label=attr)
         vst.render(filename, view=True)
+
+    def delete_unnecessary_nodes(self, call_service):
+        pass
+
+    def transform_obs_rep_to_standard(self):
+        pass

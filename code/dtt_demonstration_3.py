@@ -51,12 +51,19 @@ if __name__ == '__main__':
     # Initialisation courante qui est raccourcie pour ne pas surcharger un algo de recherche exhaustive
     nodes_associations = {
         'car.batteryFlat': {'repairable', 'observable'},
-        'tank.Empty': {'repairable', 'observable'},
+        'tank.Empty': {'repairable'},
         'oil.dipstickLevelOk': {'unrepairable', 'observable'},
         'car.lightsOk': {'unrepairable', 'observable'},
         'car.carWontStart': {'problem-defining'},
         'callService': {'service'}
     }
+
+    # Une variable boléenne qui indique si on considère des couples observation-réparation ou pas
+    obs_rep_couples = False
+    # Un nombre maximal de simulations
+    nb_max = 10000
+    # Une erreur permise
+    epsilon = 0.01
 
     # Configs pour sauvegarder
     #
@@ -82,20 +89,30 @@ if __name__ == '__main__':
     tsp = dtt.TroubleShootingProblem(bn_car, [costs_rep, costs_obs], nodes_associations)
 
     # Un lancement de l'algo avec le dénombrement complet de tous les arbres possibles
-    # best_tree, best_ecr = tsp.brute_force_solver(debug=(True, False), obs_rep_couples=True)
+    # best_tree, best_ecr = tsp.brute_force_solver(debug=(True, False), obs_rep_couples=obs_rep_couples)
     # print('\n\nLes meilleurs résultats pour ALL\n\n')
     # print('ECR : %f' % best_ecr)
     # print('Arbre : %s' % best_tree)
     # plb.pdfize(bn_car, "test")
+    # best_tree.visualize("last_best_ST_full.gv")
 
     # Un lancement de l'algo qui utilise une programmation dynamique
-    best_tree_dp, best_ecr_dp = tsp.brute_force_solver(debug=(True, False), mode='dp', obs_rep_couples=True)
+    best_tree_dp, best_ecr_dp = tsp.brute_force_solver(debug=(True, False), mode='dp', obs_rep_couples=obs_rep_couples)
 
     print('\n\nLes meilleurs résultats pour DP\n\n')
     print('ECR : %f' % best_ecr_dp)
     print('Arbre : %s' % best_tree_dp)
-    print('ECR ALT : %.16f' % tsp.expected_cost_of_repair(best_tree_dp, obs_rep_couples=True))
+    print('ECR ALT : %.16f' % tsp.expected_cost_of_repair(best_tree_dp, obs_rep_couples=obs_rep_couples))
     best_tree_dp.visualize()
+
+    res_dp = tsp.brute_force_solver_tester(
+        costs_rep, epsilon, obs_rep_couples=obs_rep_couples, nb_max=nb_max,
+        strategy_tree=best_tree_dp
+    )
+    print('Le coût moyen pour une approche exacte : %f' % res_dp[1])
+
+    res_myopic = tsp.myopic_solver_tester(costs_rep, epsilon, nb_max=nb_max)
+    print('Le coût moyen pour une approche myope : %f' % res_myopic[1])
 
     # L'un des arbres optimales pour une config #1 qui est différent de celui retourné si obs_rep_couples=False
     # n0 = st.Observation('0', tsp.costs_obs['oil.dipstickLevelOk'], 'oil.dipstickLevelOk')

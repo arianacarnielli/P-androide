@@ -1186,7 +1186,7 @@ class TroubleShootingProblem:
                 break
         self.reset_bay_lp()
         
-        return sortie_anti, costs[:i + 1]/mean(), cpt_repair[:i + 1],\
+        return sortie_anti, costs[:i + 1].mean(), cpt_repair[:i + 1],\
             cpt_obs[:i + 1]
     
     def elicitation_solver_tester(self, true_prices, epsilon, nb_min = 100, \
@@ -1419,23 +1419,14 @@ class TroubleShootingProblem:
         ecr = 0.0
         evidence = evid_init if isinstance(evid_init, dict) else {}
         self.bay_lp.setEvidence(evidence)
-        prob = 1.0 if evidence == {} else (1 - self.prob_val(self.problem_defining_node, 'no'))
         node = strategy_tree.get_root()
         node_name = strategy_tree.get_root().get_name()
-        aelem = 0.0
-        if obs_rep_couples and node_name in self.repairable_nodes.intersection(self.observation_nodes):
-            cost = self.costs_obs[node_name]
-            self.bay_lp.setEvidence(merge_dicts(evidence, {node_name: 'yes'}))
-            prob_next = 1 - self.prob_val(self.problem_defining_node, 'no')
-            self.bay_lp.setEvidence(evidence)
-            aelem = prob_next * self.prob_val(node_name, 'yes') * self.costs_rep[node_name]
-        else:
-            cost = self.costs_rep[node_name] if isinstance(node, st.Repair) else self.costs_obs[node_name]
+        prob, cost, aelem = self._get_prob_cost_aelem(evidence, node, obs_rep_couples)
         ecr += prob * cost + aelem
 
         # On relance récursivement cette fonction-là pour chaque sous-arbre qui a un enfant (s'il en existe)
         # d'une racine courante pour sa propre racine
-        if len(node.get_list_of_children()) == 0:
+        if len(node.get_list_of_children()) == 0 or node_name == self.service_node:
             return ecr
         if isinstance(node, st.Repair):
             # Généralement un enfant pour une action de réparation puisque on les suppose parfaites ...
@@ -1449,13 +1440,27 @@ class TroubleShootingProblem:
                 child = node.bn_labels_children_association()[obs_label]
                 new_evidence = (merge_dicts(evidence, {node_name: obs_label})
                                 if evidence.get(node_name) is None else evidence.copy())
-                ecr += (self.prob_val(node_name, obs_label) *
-                        self._expected_cost_of_repair_internal(strategy_tree.get_sub_tree(child), new_evidence,
-                                                               obs_rep_couples)
-                        )
+                prob_label = self.prob_val(node_name, obs_label)
+                self.bay_lp.setEvidence(evidence)
+                ecr += (prob_label * self._expected_cost_of_repair_internal(
+                    strategy_tree.get_sub_tree(child), new_evidence, obs_rep_couples))
                 self.bay_lp.setEvidence(evidence)
 
         return ecr
+
+    def _get_prob_cost_aelem(self, evidence, node, obs_rep_couples):
+        prob = 1.0 if len(evidence.keys()) == 0 else (1 - self.prob_val(self.problem_defining_node, 'no'))
+        aelem = 0.0
+        if obs_rep_couples and node.get_name() in self.repairable_nodes.intersection(self.observation_nodes):
+            cost = self.costs_obs[node.get_name()]
+            self.bay_lp.setEvidence(merge_dicts(evidence, {node.get_name(): 'yes'}))
+            prob_next = 1 - self.prob_val(self.problem_defining_node, 'no')
+            self.bay_lp.setEvidence(evidence)
+            aelem = prob_next * self.prob_val(node.get_name(), 'yes') * self.costs_rep[node.get_name()]
+        else:
+            cost = self.costs_rep[node.get_name()] if isinstance(node, st.Repair) else self.costs_obs[node.get_name()]
+
+        return prob, cost, aelem
 
     # En fait, la même méthode que get_proba au-dessus
     # On a donc implémenté de manière indépendante deux méthodes similaires :)
@@ -1680,7 +1685,6 @@ class TroubleShootingProblem:
             evidence = {}
 
         self.bay_lp.setEvidence(evidence)
-        prob_ev = 1.0 if len(evidence.keys()) == 0 else (1 - self.prob_val(self.problem_defining_node, 'no'))
 
         call_service_node = st.Repair(self._next_node_id(), self.costs_rep[self.service_node], self.service_node)
         best_tree = st.StrategyTree(call_service_node, [call_service_node])
@@ -1693,41 +1697,30 @@ class TroubleShootingProblem:
             node = feasible_nodes[i].copy()
             node.set_id(self._next_node_id())
             strat_tree = st.StrategyTree(root=node)
-            aelem = 0.0
-            # cost = node.get_cost()
-            if obs_rep_couples and node.get_name() in self.repairable_nodes.intersection(self.observation_nodes):
-                cost = self.costs_obs[node.get_name()]
-                # + self.prob_val(node.get_name(), 'yes') * self.costs_rep[node.get_name()]
-                self.bay_lp.setEvidence(merge_dicts(evidence, {node.get_name(): 'yes'}))
-                prob_next = 1 - self.prob_val(self.problem_defining_node, 'no')
-                self.bay_lp.setEvidence(evidence)
-                aelem = prob_next * self.prob_val(node.get_name(), 'yes') * self.costs_rep[node.get_name()]
-            else:
-                cost = (
-                    self.costs_rep[node.get_name()]
-                    if isinstance(node, st.Repair)
-                    else self.costs_obs[node.get_name()]
-                )
+            prob_ev, cost, aelem = self._get_prob_cost_aelem(evidence, node, obs_rep_couples)
             ecr = prob_ev * cost + aelem
-            for label in (self.bayesian_network.variable(node.get_name()).labels()
-            if isinstance(node, st.Observation)
-            else (['yes'] if node.get_name() == self.service_node else ['no'])):
-                if isinstance(node, st.Observation) and evidence.get(node.get_name()) is not None:
-                    new_evidence = evidence.copy()
-                else:
-                    new_evidence = merge_dicts(evidence, {node.get_name(): label})
-                best_sub_tree, best_sub_ecr = self.dynamic_programming_solver(
-                    feasible_nodes[:i] + feasible_nodes[i + 1:], new_evidence, debug_iter, debug_st, obs_rep_couples
-                )
-                self.bay_lp.setEvidence(evidence)
-                if best_sub_tree is not None:
-                    strat_tree = best_sub_tree.connect(strat_tree, label)
-                else:
-                    strat_tree.remove_sub_tree(strat_tree.get_root().get_child_by_attribute(label))
-                if isinstance(node, st.Observation):
-                    ecr += self.prob_val(node.get_name(), label) * best_sub_ecr
-                elif isinstance(node, st.Repair):
-                    ecr += best_sub_ecr
+            if node.get_name() != self.service_node:
+                for label in (self.bayesian_network.variable(node.get_name()).labels()
+                              if isinstance(node, st.Observation)
+                              else (['yes'] if node.get_name() == self.service_node else ['no'])):
+                    if isinstance(node, st.Observation) and evidence.get(node.get_name()) is not None:
+                        new_evidence = evidence.copy()
+                    else:
+                        new_evidence = merge_dicts(evidence, {node.get_name(): label})
+                    best_sub_tree, best_sub_ecr = self.dynamic_programming_solver(
+                        feasible_nodes[:i] + feasible_nodes[i + 1:], new_evidence, debug_iter, debug_st, obs_rep_couples
+                    )
+                    self.bay_lp.setEvidence(evidence)
+                    if best_sub_tree is not None:
+                        strat_tree = best_sub_tree.connect(strat_tree, label)
+                    else:
+                        strat_tree.remove_sub_tree(strat_tree.get_root().get_child_by_attribute(label))
+                    if isinstance(node, st.Observation):
+                        prob_label = self.prob_val(node.get_name(), label)
+                        self.bay_lp.setEvidence(evidence)
+                        ecr += prob_label * best_sub_ecr
+                    elif isinstance(node, st.Repair):
+                        ecr += best_sub_ecr
             if ecr < best_ecr:
                 best_tree = strat_tree.copy()
                 best_ecr = ecr
@@ -1742,6 +1735,107 @@ class TroubleShootingProblem:
             print(best_ecr)
 
         return best_tree, best_ecr
+
+    def brute_force_solver_tester(self, true_prices, epsilon, nb_min=100, nb_max=200, strategy_tree=None, mode='dp',
+                                  obs_rep_couples=False, true_prices_obs=None):
+        """
+        Test empirique de la méthode brute_force_solver.
+
+        Args :
+            true_prices : dictionnaire de prix de réparation des composantes réparables.
+            epsilon : tolerance de la moyenne, objet du type float.
+            nb_min (facultatif) : entier, nombre minimum de répétitions à être realisées.
+            nb_max (facultatif) : entier, nombre maximum de répétitions à être realisées.
+            strategy_tree (facultatif) : un arbre de stratégie qu'il faut tester ; si rien passé, on calcule un arbre à
+                nouveau avec une méthode brute_force_solver ; objet du type StrategyTree.
+            mode (facultatif) : un paramètre d'une méthode brute_force_solver si jamais on devait l'exécuter ; une mode
+                de recherche exhaustive à utiliser, objet du type str ; soit 'all' pour le dénombrement complet, soit
+                'dp' pour une programmation dynamique.
+            obs_rep_couples (facultatif): un paramètre d'une méthode brute_force_solver si jamais on devait l'exécuter ;
+                une variable boléenne qui indique si on suppose l'existance de couples ``observation-réparation'' dans
+                un arbre de stratégie soumis, objet du type bool.
+             true_prices_obs (facultatif) : dictionnaire de prix d'observations des composantes observables.
+
+        Returns :
+            sortie_anti : booléeen, True en cas de sortie anticipée, False sinon.
+            costs_mean : moyenne des couts observés, objet du type float.
+            cpt_repair : tableau avec le nombre de composantes réparées à chaque répétition, objet du type np.ndarray.
+            cpt_obs : tableau avec le nombre de composantes observées à chaque répétition, objet du type np.ndarray.
+        """
+
+        costs = np.zeros(nb_max)
+        cpt_repair = np.zeros(nb_max)
+        cpt_obs = np.zeros(nb_max)
+        sortie_anti = False
+        if strategy_tree is None:
+            strategy_tree, _ = self.brute_force_solver(mode=mode, obs_rep_couples=obs_rep_couples)
+        self._nodes_ids_db_brute_force = [node.get_id() for node in strategy_tree.get_nodes()]
+        if true_prices_obs is None:
+            true_prices_obs = self.costs_obs.copy()
+        last_index = nb_max-1
+        for i in tqdm(range(nb_max)):
+            evidence = {}
+            self.bay_lp.setEvidence(evidence)
+            node = strategy_tree.get_root().copy()
+            obs_rep_nodes = self.repairable_nodes.intersection(self.observation_nodes) if obs_rep_couples else set()
+            while node is not None:
+                if isinstance(node, st.Observation):
+                    costs[i] += true_prices_obs[node.get_name()]
+                    cpt_obs[i] += 1
+                    self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
+                    p = []
+                    for label in self.bayesian_network.variable(node.get_name()).labels():
+                        p.append(self.prob_val(node.get_name(), label))
+                    label = self.bayesian_network.variable(node.get_name()).labels()[
+                        np.nonzero(np.random.rand() < np.cumsum(p))[0][0]]
+                    evidence = (merge_dicts(evidence, {node.get_name(): label})
+                                if not node.get_name() in evidence.keys() else evidence)
+                    self.bay_lp.setEvidence(evidence)
+                    node = (strategy_tree.get_node(node).get_child_by_attribute(label).copy()
+                            if strategy_tree.get_node(node) is not None else node.get_child_by_attribute(label))
+
+                elif obs_rep_couples and node.get_name() in obs_rep_nodes:
+                    obs_rep_nodes.remove(node.get_name())
+                    node_obs = st.Observation(
+                        self._next_node_id(), true_prices_obs[node.get_name()], node.get_name()
+                    )
+                    node_rep = st.Repair(
+                        self._next_node_id(), true_prices[node.get_name()], node.get_name()
+                    )
+                    node_rep.set_child(strategy_tree.get_node(node).get_child().copy())
+                    node_obs.set_no_child(strategy_tree.get_node(node).get_child().copy())
+                    node_obs.set_yes_child(node_rep)
+                    node = node_obs
+                elif node.get_name() == self.service_node:
+                    costs[i] += true_prices[node.get_name()]
+                    cpt_repair[i] += 1
+                    break
+                else:
+                    costs[i] += true_prices[node.get_name()]
+                    cpt_repair[i] += 1
+                    self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
+                    p = self.prob_val(node.get_name(), 'yes')
+
+                    if np.random.rand() <= p:
+                        break
+
+                    evidence = merge_dicts(evidence, {node.get_name(): 'no'})
+                    self.bay_lp.setEvidence(evidence)
+                    node = (strategy_tree.get_node(node).get_child_by_attribute(label).copy()
+                            if strategy_tree.get_node(node) is not None else node.get_child_by_attribute(label))
+            if i >= nb_min \
+                    and 1.96 * costs[:i + 1].std() / np.sqrt(i + 1) < epsilon:
+                sortie_anti = True
+                last_index = i
+                break
+
+        self._nodes_ids_db_brute_force = []
+        self.bay_lp.setEvidence({})
+        self._start_bay_lp()
+        self.reset_bay_lp()
+
+        return sortie_anti, costs[:last_index+1].mean(), np.array(cpt_repair[:last_index+1], dtype=int),\
+               np.array(cpt_obs[:last_index+1], dtype=int)
 
 # =============================================================================
 # Méthodes pas encore fonctionnelles            
