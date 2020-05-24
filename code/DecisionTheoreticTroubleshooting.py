@@ -1398,7 +1398,7 @@ class TroubleShootingProblem:
         self.reset_bay_lp()
         return ecr
 
-    def _expected_cost_of_repair_internal(self, strategy_tree, evid_init=None, obs_rep_couples=False):
+    def _expected_cost_of_repair_internal(self, strategy_tree, evid_init=None, obs_rep_couples=False, prob=1.0):
         """
         Une partie récursive d'une fonction expected_cost_of_repair au-dessus
 
@@ -1421,18 +1421,23 @@ class TroubleShootingProblem:
         self.bay_lp.setEvidence(evidence)
         node = strategy_tree.get_root()
         node_name = strategy_tree.get_root().get_name()
-        prob, cost, aelem = self._get_prob_cost_aelem(evidence, node, obs_rep_couples)
-        ecr += prob * cost + aelem
+        cost = self.costs_rep[node_name] if isinstance(node, st.Repair) else self.costs_obs[node_name]
+        ecr += prob * cost
 
         # On relance récursivement cette fonction-là pour chaque sous-arbre qui a un enfant (s'il en existe)
         # d'une racine courante pour sa propre racine
-        if len(node.get_list_of_children()) == 0 or node_name == self.service_node:
+        if len(node.get_list_of_children()) == 0 or node_name == self.service_node or np.abs(prob) < 1e-12:
             return ecr
         if isinstance(node, st.Repair):
             # Généralement un enfant pour une action de réparation puisque on les suppose parfaites ...
-            ecr += self._expected_cost_of_repair_internal(
+            self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
+            prob_next = self.prob_val(node_name, 'no')
+            self.bay_lp.setEvidence(evidence)
+            ecr += prob * self._expected_cost_of_repair_internal(
                 strategy_tree.get_sub_tree(node.get_child()),
-                merge_dicts(evidence, {node_name: 'yes' if node_name == self.service_node else 'no'}), obs_rep_couples)
+                merge_dicts(evidence, {node_name: 'yes' if node_name == self.service_node else 'no'}), obs_rep_couples,
+                prob_next
+            )
             self.bay_lp.setEvidence(evidence)
         else:
             # ... et plusieurs enfants pour des observations
@@ -1440,27 +1445,15 @@ class TroubleShootingProblem:
                 child = node.bn_labels_children_association()[obs_label]
                 new_evidence = (merge_dicts(evidence, {node_name: obs_label})
                                 if evidence.get(node_name) is None else evidence.copy())
-                prob_label = self.prob_val(node_name, obs_label)
+                self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
+                prob_next = self.prob_val(node_name, obs_label)
                 self.bay_lp.setEvidence(evidence)
-                ecr += (prob_label * self._expected_cost_of_repair_internal(
-                    strategy_tree.get_sub_tree(child), new_evidence, obs_rep_couples))
+                ecr += prob * self._expected_cost_of_repair_internal(
+                    strategy_tree.get_sub_tree(child), new_evidence, obs_rep_couples, prob_next
+                )
                 self.bay_lp.setEvidence(evidence)
 
         return ecr
-
-    def _get_prob_cost_aelem(self, evidence, node, obs_rep_couples):
-        prob = 1.0 if len(evidence.keys()) == 0 else (1 - self.prob_val(self.problem_defining_node, 'no'))
-        aelem = 0.0
-        if obs_rep_couples and node.get_name() in self.repairable_nodes.intersection(self.observation_nodes):
-            cost = self.costs_obs[node.get_name()]
-            self.bay_lp.setEvidence(merge_dicts(evidence, {node.get_name(): 'yes'}))
-            prob_next = 1 - self.prob_val(self.problem_defining_node, 'no')
-            self.bay_lp.setEvidence(evidence)
-            aelem = prob_next * self.prob_val(node.get_name(), 'yes') * self.costs_rep[node.get_name()]
-        else:
-            cost = self.costs_rep[node.get_name()] if isinstance(node, st.Repair) else self.costs_obs[node.get_name()]
-
-        return prob, cost, aelem
 
     # En fait, la même méthode que get_proba au-dessus
     # On a donc implémenté de manière indépendante deux méthodes similaires :)
@@ -1502,7 +1495,7 @@ class TroubleShootingProblem:
         temp = self.observation_nodes.intersection(self.repairable_nodes)
         for name, i in zip(names, range(len(names))):
             if obs_rep_couples and name in self.observation_nodes.intersection(self.repairable_nodes):
-                node = st.Repair(str(i), -1, name, obs_rep_couples=obs_rep_couples)
+                node = st.Observation(str(i), -1, name, obs_rep_couples=obs_rep_couples)
             elif name.endswith(rep_string) or name == self.service_node:
                 node = st.Repair(str(i), self.costs_rep[name.replace(rep_string, '')], name.replace(rep_string, ''))
             else:
@@ -1678,7 +1671,7 @@ class TroubleShootingProblem:
             return
 
     def dynamic_programming_solver(self, feasible_nodes, evidence=None, debug_iter=False, debug_st=False,
-                                   obs_rep_couples=False):
+                                   obs_rep_couples=False, prob=1.0):
         if len(feasible_nodes) == 0:
             return None, 0.0
         if evidence is None:
@@ -1697,30 +1690,28 @@ class TroubleShootingProblem:
             node = feasible_nodes[i].copy()
             node.set_id(self._next_node_id())
             strat_tree = st.StrategyTree(root=node)
-            prob_ev, cost, aelem = self._get_prob_cost_aelem(evidence, node, obs_rep_couples)
-            ecr = prob_ev * cost + aelem
+            cost = self.costs_rep[node.get_name()] if isinstance(node, st.Repair) else self.costs_obs[node.get_name()]
+            ecr = prob * cost
             if node.get_name() != self.service_node:
                 for label in (self.bayesian_network.variable(node.get_name()).labels()
-                              if isinstance(node, st.Observation)
-                              else (['yes'] if node.get_name() == self.service_node else ['no'])):
+                              if isinstance(node, st.Observation) else ['no']):
                     if isinstance(node, st.Observation) and evidence.get(node.get_name()) is not None:
                         new_evidence = evidence.copy()
                     else:
                         new_evidence = merge_dicts(evidence, {node.get_name(): label})
+                    self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
+                    prob_next = self.prob_val(node.get_name(), label)
+                    self.bay_lp.setEvidence(evidence)
                     best_sub_tree, best_sub_ecr = self.dynamic_programming_solver(
-                        feasible_nodes[:i] + feasible_nodes[i + 1:], new_evidence, debug_iter, debug_st, obs_rep_couples
+                        feasible_nodes[:i] + feasible_nodes[i + 1:], new_evidence, debug_iter, debug_st,
+                        obs_rep_couples, prob_next
                     )
                     self.bay_lp.setEvidence(evidence)
                     if best_sub_tree is not None:
                         strat_tree = best_sub_tree.connect(strat_tree, label)
                     else:
                         strat_tree.remove_sub_tree(strat_tree.get_root().get_child_by_attribute(label))
-                    if isinstance(node, st.Observation):
-                        prob_label = self.prob_val(node.get_name(), label)
-                        self.bay_lp.setEvidence(evidence)
-                        ecr += prob_label * best_sub_ecr
-                    elif isinstance(node, st.Repair):
-                        ecr += best_sub_ecr
+                    ecr += prob * best_sub_ecr
             if ecr < best_ecr:
                 best_tree = strat_tree.copy()
                 best_ecr = ecr
@@ -1793,19 +1784,6 @@ class TroubleShootingProblem:
                     self.bay_lp.setEvidence(evidence)
                     node = (strategy_tree.get_node(node).get_child_by_attribute(label).copy()
                             if strategy_tree.get_node(node) is not None else node.get_child_by_attribute(label))
-
-                elif obs_rep_couples and node.get_name() in obs_rep_nodes:
-                    obs_rep_nodes.remove(node.get_name())
-                    node_obs = st.Observation(
-                        self._next_node_id(), true_prices_obs[node.get_name()], node.get_name()
-                    )
-                    node_rep = st.Repair(
-                        self._next_node_id(), true_prices[node.get_name()], node.get_name()
-                    )
-                    node_rep.set_child(strategy_tree.get_node(node).get_child().copy())
-                    node_obs.set_no_child(strategy_tree.get_node(node).get_child().copy())
-                    node_obs.set_yes_child(node_rep)
-                    node = node_obs
                 elif node.get_name() == self.service_node:
                     costs[i] += true_prices[node.get_name()]
                     cpt_repair[i] += 1

@@ -176,11 +176,9 @@ class Repair(NodeST):
         _name : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été passé, on pose que
             _name = _id.
         _child : un enfant d'un noeud, c'est-à-dire, un noeud suivant dans un arbre ; objet du type NodeST.
-        _obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
-            représente une couple observation-réparation ou pas
     """
 
-    def __init__(self, id, cost, name=None, child=None, obs_rep_couples=False):
+    def __init__(self, id, cost, name=None, child=None):
         """
         Un constructeur qui crée un objet de type Repair(NodeST) initialisant ses attributs par des valeurs fournies.
 
@@ -190,12 +188,9 @@ class Repair(NodeST):
             name (facultatif) : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été soumis,
                 on pose que _name = _id.
             child (facultatif) : un enfant d'un noeud, objet du type NodeST.
-            obs_rep_couples (facultatif) : un attribut sous la forme d'une variable boléenne qui indique si le noeud
-                représente une couple observation-réparation ou pas.
         """
         super().__init__(id, cost, name)
         self._child = child
-        self._obs_rep_couples = obs_rep_couples
 
     def set_child(self, child=None):
         """
@@ -214,26 +209,6 @@ class Repair(NodeST):
             _child : un enfant d'un noeud, objet du type NodeST.
         """
         return self._child
-
-    def set_obs_rep_couples(self, obs_rep_couples):
-        """
-        Setter d'un attribut _obs_rep_couples
-
-        Args :
-            obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
-                représente une couple observation-réparation ou pas.
-        """
-        self._obs_rep_couples = obs_rep_couples
-
-    def get_obs_rep_couples(self):
-        """
-        Getter d'un attribut _obs_rep_couples
-
-        Returns :
-            _obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
-                représente une couple observation-réparation ou pas
-        """
-        return self._obs_rep_couples
 
     def get_child_by_attribute(self, attr):
         """
@@ -291,8 +266,7 @@ class Repair(NodeST):
         Returns :
             copy : une copie superficielle d'un noeud, objet du type Repair(NodeST).
         """
-        new_node = Repair(self._id, self._cost, self._name, self._child.copy() if self._child is not None else None,
-                          self._obs_rep_couples)
+        new_node = Repair(self._id, self._cost, self._name, self._child.copy() if self._child is not None else None)
         return new_node
 
     def bn_labels_children_association(self):
@@ -315,12 +289,14 @@ class Observation(NodeST):
         _id : identificateur unique d'un noeud, objet du type str.
         _cost : un attribut qui correspond à "coût" d'un noeud, objet du type float.
         _name : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été passé, on pose que
-                _name = _id.
+            _name = _id.
         _yes_child : un enfant d'un noeud qui correspond à une branche "yes", objet du type NodeST.
         _no_child : un enfant d'un noeud qui correspond à une branche "no", objet du type NodeST.
+        _obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
+            représente une couple observation-réparation ou pas
     """
 
-    def __init__(self, id, cost, name=None, yes_child=None, no_child=None):
+    def __init__(self, id, cost, name=None, yes_child=None, no_child=None, obs_rep_couples=False):
         """
         Un constructeur qui crée un objet de type Observation(NodeST) initialisant ses attributs par des valeurs
         fournies.
@@ -331,11 +307,14 @@ class Observation(NodeST):
             name (facultatif) : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été soumis,
                 on pose que _name = _id.
             yes_child (facultatif) : un enfant d'un noeud qui correspond à une branche "yes", objet du type NodeST.
-            no_child : un enfant d'un noeud qui correspond à une branche "no", objet du type NodeST.
+            no_child (facultatif): un enfant d'un noeud qui correspond à une branche "no", objet du type NodeST.
+            obs_rep_couples (facultatif) : un attribut sous la forme d'une variable boléenne qui indique si le noeud
+                représente une couple observation-réparation ou pas.
         """
         super().__init__(id, cost, name)
         self._yes_child = yes_child
         self._no_child = no_child
+        self._obs_rep_couples = obs_rep_couples
 
     def set_yes_child(self, yes_child=None):
         """
@@ -372,6 +351,26 @@ class Observation(NodeST):
             _no_child : un enfant d'un noeud qui correspond à une branche "no", objet du type NodeST.
         """
         return self._no_child
+
+    def set_obs_rep_couples(self, obs_rep_couples):
+        """
+        Setter d'un attribut _obs_rep_couples
+
+        Args :
+            obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
+                représente une couple observation-réparation ou pas.
+        """
+        self._obs_rep_couples = obs_rep_couples
+
+    def get_obs_rep_couples(self):
+        """
+        Getter d'un attribut _obs_rep_couples
+
+        Returns :
+            _obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
+                représente une couple observation-réparation ou pas
+        """
+        return self._obs_rep_couples
 
     def get_child_by_attribute(self, attr):
         """
@@ -454,7 +453,8 @@ class Observation(NodeST):
         """
         new_node = Observation(self._id, self._cost, self._name,
                                self._yes_child.copy() if self._yes_child is not None else None,
-                               self._no_child.copy() if self._no_child is not None else None)
+                               self._no_child.copy() if self._no_child is not None else None,
+                               self._obs_rep_couples)
         return new_node
 
     def bn_labels_children_association(self):
@@ -932,8 +932,7 @@ class StrategyTree:
         """
         vst = Digraph()
         for node in self._nodes:
-            node_type = ('Obs-Rep' if isinstance(node, Repair) and node.get_obs_rep_couples()
-                         else ('Repair' if isinstance(node, Repair) else 'Observation'))
+            node_type = 'Repair' if isinstance(node, Repair) else 'Observation'
             vst.node(node.get_id(), '%s (n%s) : %s' % (node.get_name(), node.get_id(), node_type))
         for par in self._adj_dict.keys():
             for ch in self._adj_dict[par]:
