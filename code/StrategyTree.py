@@ -1,5 +1,6 @@
 from graphviz import Digraph
 
+
 class NodeST:
 
     """
@@ -942,7 +943,4 @@ class StrategyTree:
         vst.render(filename, view=True)
 
     def delete_unnecessary_nodes(self, call_service):
-        pass
-
-    def transform_obs_rep_to_standard(self):
         pass

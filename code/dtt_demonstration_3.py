@@ -51,14 +51,15 @@ if __name__ == '__main__':
     # Initialisation courante qui est raccourcie pour ne pas surcharger un algo de recherche exhaustive
     nodes_associations = {
         'car.batteryFlat': {'repairable', 'observable'},
-        'tank.Empty': {'repairable'},
+        'tank.Empty': {'repairable', 'observable'},
         'oil.dipstickLevelOk': {'unrepairable', 'observable'},
+        'car.lightsOk': {'unrepairable', 'observable'},
         'car.carWontStart': {'problem-defining'},
         'callService': {'service'}
     }
 
     # Une variable boléenne qui indique si on considère des couples observation-réparation ou pas
-    obs_rep_couples = False
+    obs_rep_couples = True
     # Un nombre maximal de simulations
     nb_max = 1000
     # Une erreur permise
@@ -106,7 +107,7 @@ if __name__ == '__main__':
     print('\n\nLes meilleurs résultats pour DP\n\n')
     print('ECR : %f' % best_ecr_dp)
     print('Arbre : %s' % best_tree_dp)
-    print('ECR ALT : %.16f' % tsp.expected_cost_of_repair(best_tree_dp, obs_rep_couples=obs_rep_couples))
+    print('ECR ALT : %.16f' % tsp.expected_cost_of_repair(best_tree_dp))
     best_tree_dp.visualize()
 
     res_dp = tsp.brute_force_solver_tester(
@@ -114,8 +115,8 @@ if __name__ == '__main__':
     )
     print('Le coût moyen pour une approche exacte (DP): %f' % res_dp[1])
 
-    # res_myopic = tsp.myopic_solver_tester(costs_rep, epsilon, nb_max=nb_max)
-    # print('Le coût moyen pour une approche myope : %f' % res_myopic[1])
+    res_myopic = tsp.myopic_solver_tester(costs_rep, epsilon, nb_max=nb_max)
+    print('Le coût moyen pour une approche myope : %f' % res_myopic[1])
 
     # L'un des arbres optimales pour une config #1 qui est différent de celui retourné si obs_rep_couples=False
     # n0 = st.Observation('0', tsp.costs_obs['oil.dipstickLevelOk'], 'oil.dipstickLevelOk')
@@ -151,29 +152,7 @@ if __name__ == '__main__':
     # print('%.16f' % tsp.expected_cost_of_repair(test_opt_tree))
     # test_opt_tree.visualize('test_opt_tree.gv')
 
-    # TODO COMMENT HERE
-    # n280 = st.Observation('280', tsp.costs_obs['oil.dipstickLevelOk'], 'oil.dipstickLevelOk')
-    # n304 = st.Repair('304', tsp.costs_rep['callService'], 'callService')
-    # n380 = st.Observation('380', tsp.costs_obs['car.batteryFlat'], 'car.batteryFlat')
-    # n389 = st.Repair('389', tsp.costs_rep['tank.Empty'], 'tank.Empty')
-    # n394 = st.Repair('394', tsp.costs_rep['callService'], 'callService')
-    # n396 = st.Repair('396', tsp.costs_rep['car.batteryFlat'], 'car.batteryFlat')
-    # n401 = st.Repair('401', tsp.costs_rep['callService'], 'callService')
-    #
-    # n396.set_child(n401)
-    # n389.set_child(n394)
-    # n380.set_no_child(n389)
-    # n380.set_yes_child(n396)
-    # n280.set_no_child(n304)
-    # n280.set_yes_child(n380)
-    #
-    # test_opt_tree_2 = st.StrategyTree(root=n280, nodes=[n280, n304, n380, n389, n394, n396, n401])
-    # test_opt_tree_2.visualize('test_opt_tree_2.gv')
-    # print(tsp.expected_cost_of_repair(test_opt_tree_2))
-    # res_test_ot2 = tsp.brute_force_solver_tester(costs_rep, epsilon, nb_max=nb_max, strategy_tree=test_opt_tree_2)
-    # print(res_test_ot2[1])
-
-    # TODO COMMENT HERE
+    # Un arbre construit à partir d'une solution retournée par une approche myope
     # n0 = st.Observation('0', tsp.costs_obs['oil.dipstickLevelOk'], 'oil.dipstickLevelOk')
     # n1 = st.Repair('1', tsp.costs_rep['callService'], 'callService')
     # n2 = st.Observation('2', tsp.costs_obs['car.batteryFlat'], 'car.batteryFlat')
