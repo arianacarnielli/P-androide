@@ -350,6 +350,7 @@ class TroubleShootingProblem:
             self.remove_evidence(node)
         # On trie les noeuds par rapport aux efficacités
         rep_seq = sorted(dic_eff.items(), key = lambda x: x[1], reverse = True)           
+
         # On ne veut que les noeuds, pas les valeurs des efficacités
         rep_seq = [r[0] for r in rep_seq]
         # On renvoie la liste jusqu'au appel au service, pas plus
@@ -365,11 +366,11 @@ class TroubleShootingProblem:
         # on n'a qu'un seul défaut, cela vaut P(ci = Normal | Ei).
         self.add_evidence(self.problem_defining_node, "yes")
         
-        if node != self.service_node:
+        if rep_seq[0] != self.service_node:
             p = self.get_proba(rep_seq[0], "no")
         else:
             p = self.get_proba(rep_seq[0], "yes")
-            
+        
         proba *= p
 
         # Le premier répare n'a pas résolu le problème, on change l'évidence
@@ -380,6 +381,7 @@ class TroubleShootingProblem:
             print("Calcul de l'esperance de coût \n")
             print ("premier noeud réparé : ", rep_seq[0])
             print("esperance partiel du coût de la séquence : ", exp_cost)
+            print("P(e != Normal | repair(ci), Ei) =", proba)
 
         for node in rep_seq[1:]:
             # On somme le coût de réparation du noeud courant * proba
@@ -395,11 +397,10 @@ class TroubleShootingProblem:
             proba *= p
 
             if debug == True:
-                print("proba p(e != Normal|réparation des tous les noeuds " \
-                               + "déjà considerés) : ", proba)     
                 print()
                 print("noeud réparé : ", node)
                 print("esperance partiel du coût de la séquence : ", exp_cost)
+                print("P(e != Normal | repair(ci), Ei) =", proba)
             # On actualise l'évidence du noeud concerné
             self.add_evidence(node, "no")  
 
@@ -594,8 +595,10 @@ class TroubleShootingProblem:
         # coût quand on fait l'observation
         for node in nd_obs:
             # On récupere les probabilités des valeurs possibles du noeud
+            self.add_evidence(self.problem_defining_node, "yes")
             p = self.bay_lp.posterior(node)                
             inst = gum.Instantiation(p)
+            self.remove_evidence(self.problem_defining_node)
             
             # ECO[node] = cost_obs[node] + somme(ésperance de la séquence 
             # calculé après chaque observation possible du node * probabilité 
@@ -608,15 +611,16 @@ class TroubleShootingProblem:
                 # On recupere la probabilité de la valeur actuelle
                 proba_obs = p[inst]
                 # On dit qu'on a observé la valeur actuelle
-                self.bay_lp.chgEvidence(node, k)
+                self.add_evidence(node, k)
+                
                 # On calcule l'ésperance de coût de la séquence generé avec
                 # l'observation du noeud avec la valeur actuel
                 _, ecr_node_k = self.simple_solver_obs()
                 eco[node] += ecr_node_k * proba_obs
+                
                 # On retourne l'évidence du noeud à celle qui ne change pas les 
                 # probabilités du départ du tour de boucle actuel
-                self.bay_lp.chgEvidence(node,\
-                    [1]*len(self.bayesian_network.variable(node).labels()))
+                self.remove_evidence(node)
         
         if debug:
             print(eco)
@@ -1140,7 +1144,9 @@ class TroubleShootingProblem:
                     print("Noeud suggéré :", node)
                 if type_node == "obs":
                     costs[i] += self.costs_obs[node]
+                    self.add_evidence(self.problem_defining_node, "yes")
                     obs_res = self.bay_lp.posterior(node).draw()
+                    self.remove_evidence(self.problem_defining_node)
                     self.add_evidence(node, obs_res)
                     cpt_obs[i] += 1
                     if debug:
@@ -1257,7 +1263,9 @@ class TroubleShootingProblem:
                     print("Noeud suggéré :", node)
                 if type_node == "obs":
                     costs[i] += self.costs_obs[node]
+                    self.add_evidence(self.problem_defining_node, "yes")
                     obs_res = self.bay_lp.posterior(node).draw()
+                    self.remove_evidence(self.problem_defining_node)
                     self.add_evidence(node, obs_res)
                     cpt_obs[i] += 1
                     if debug:

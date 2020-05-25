@@ -46,5 +46,5 @@ if __name__ == '__main__':
     }
     # On résoudre le problème de Troubleshooting donné
     tsp = dtt.TroubleShootingProblem(bn_car, [costs_rep, costs_obs], nodes_associations)
-    #print(tsp.solve_static())
+    print(tsp.simple_solver_obs())
     #plb.pdfize(bn_car, "test")
