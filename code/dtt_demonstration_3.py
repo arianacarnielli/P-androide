@@ -58,6 +58,13 @@ if __name__ == '__main__':
         'callService': {'service'}
     }
 
+    # Une variable boléenne qui indique si on considère des couples observation-réparation ou pas
+    obs_rep_couples = True
+    # Un nombre maximal de simulations
+    nb_max = 1000
+    # Une erreur permise
+    epsilon = 0.01
+
     # Configs pour sauvegarder
     #
     # Celles pour lesquelles obs_rep_couples change une solution
@@ -82,20 +89,34 @@ if __name__ == '__main__':
     tsp = dtt.TroubleShootingProblem(bn_car, [costs_rep, costs_obs], nodes_associations)
 
     # Un lancement de l'algo avec le dénombrement complet de tous les arbres possibles
-    # best_tree, best_ecr = tsp.brute_force_solver(debug=(True, False), obs_rep_couples=True)
-    # print('\n\nLes meilleurs résultats pour ALL\n\n')
-    # print('ECR : %f' % best_ecr)
-    # print('Arbre : %s' % best_tree)
-    # plb.pdfize(bn_car, "test")
+    best_tree, best_ecr = tsp.brute_force_solver(debug=(True, False), obs_rep_couples=obs_rep_couples)
+    print('\n\nLes meilleurs résultats pour ALL\n\n')
+    print('ECR : %f' % best_ecr)
+    print('Arbre : %s' % best_tree)
+    plb.pdfize(bn_car, "test")
+    best_tree.visualize("last_best_ST_full.gv")
+
+    res_all = tsp.brute_force_solver_tester(
+        costs_rep, epsilon, obs_rep_couples=obs_rep_couples, nb_max=nb_max, strategy_tree=best_tree
+    )
+    print('Le coût moyen pour une approche exacte (ALL): %f' % res_all[1])
 
     # Un lancement de l'algo qui utilise une programmation dynamique
-    best_tree_dp, best_ecr_dp = tsp.brute_force_solver(debug=(True, False), mode='dp', obs_rep_couples=True)
+    best_tree_dp, best_ecr_dp = tsp.brute_force_solver(debug=(True, False), mode='dp', obs_rep_couples=obs_rep_couples)
 
     print('\n\nLes meilleurs résultats pour DP\n\n')
     print('ECR : %f' % best_ecr_dp)
     print('Arbre : %s' % best_tree_dp)
-    print('ECR ALT : %.16f' % tsp.expected_cost_of_repair(best_tree_dp, obs_rep_couples=True))
+    print('ECR ALT : %.16f' % tsp.expected_cost_of_repair(best_tree_dp))
     best_tree_dp.visualize()
+
+    res_dp = tsp.brute_force_solver_tester(
+        costs_rep, epsilon, obs_rep_couples=obs_rep_couples, nb_max=nb_max, strategy_tree=best_tree_dp
+    )
+    print('Le coût moyen pour une approche exacte (DP): %f' % res_dp[1])
+
+    res_myopic = tsp.myopic_solver_tester(costs_rep, epsilon, nb_max=nb_max)
+    print('Le coût moyen pour une approche myope : %f' % res_myopic[1])
 
     # L'un des arbres optimales pour une config #1 qui est différent de celui retourné si obs_rep_couples=False
     # n0 = st.Observation('0', tsp.costs_obs['oil.dipstickLevelOk'], 'oil.dipstickLevelOk')
@@ -130,3 +151,27 @@ if __name__ == '__main__':
     # print('ECR of this tree')
     # print('%.16f' % tsp.expected_cost_of_repair(test_opt_tree))
     # test_opt_tree.visualize('test_opt_tree.gv')
+
+    # Un arbre construit à partir d'une solution retournée par une approche myope
+    # n0 = st.Observation('0', tsp.costs_obs['oil.dipstickLevelOk'], 'oil.dipstickLevelOk')
+    # n1 = st.Repair('1', tsp.costs_rep['callService'], 'callService')
+    # n2 = st.Observation('2', tsp.costs_obs['car.batteryFlat'], 'car.batteryFlat')
+    # n3 = st.Observation('3', tsp.costs_obs['tank.Empty'], 'tank.Empty')
+    # n4 = st.Repair('4', tsp.costs_rep['car.batteryFlat'], 'car.batteryFlat')
+    # n5 = st.Repair('5', tsp.costs_rep['callService'], 'callService')
+    # n6 = st.Repair('6', tsp.costs_rep['tank.Empty'], 'tank.Empty')
+    # n7 = st.Repair('7', tsp.costs_rep['callService'], 'callService')
+    # n8 = st.Repair('8', tsp.costs_rep['callService'], 'callService')
+    #
+    # n6.set_child(n8)
+    # n4.set_child(n7)
+    # n2.set_yes_child(n4)
+    # n2.set_no_child(n6)
+    # n0.set_yes_child(n2)
+    # n0.set_no_child(n1)
+    #
+    # test_myopic_tree = st.StrategyTree(root=n0, nodes=[n0, n1, n2, n4, n6, n7, n8])
+    # test_myopic_tree.visualize('myopic_st.gv')
+    # print(tsp.expected_cost_of_repair(test_myopic_tree))
+    # res_myopic_test = tsp.brute_force_solver_tester(costs_rep, epsilon, nb_max=nb_max, strategy_tree=test_myopic_tree)
+    # print(res_myopic_test[1])
