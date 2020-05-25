@@ -888,13 +888,13 @@ class TroubleShootingProblem:
                 deroulement de l'algorithme.
 
         Returns :
-            chosen_node : noeud choisi par le myopic_solver
+            chosen_node : noeud choisi
             type_node : type du noeud choisi
-            eco : dictionnaire d'ECOs des noeuds d'observation globale
-            ecr : dictionnaire d'ECRs des noeuds d'"observation-réparation"
+            list_ecr : liste d'ECRs des noeuds d'"observation-réparation"
+            list_eco : liste d'ECOs des noeuds d'observation globale
         """
         ecr = {}
-        chosen_node, type_node, eco = self.myopic_solver(debug, esp_obs = True)     
+        _, _, eco = self.myopic_solver(debug, esp_obs = True)     
         
         # On recupère les noeuds qui ont des évidences
         evidence_nodes = {k for k in self.evidences}
@@ -936,20 +936,22 @@ class TroubleShootingProblem:
                 self.add_evidence(node, "no")
                 _, cost_seq = self.simple_solver_obs(debug)
                 self.remove_evidence(node)
-                
-                # On calcule l'esperance de cout en débutant la séquence de
-                # réparation par le noeud actuel:
-                # p(e != Normal|repair(node), Ei) = p(node = Normal | Ei)
-                # (avec l'approximation de single fault)
-                self.add_evidence(self.problem_defining_node, "yes")
-                p = self.get_proba(node, "no")
-                self.remove_evidence(self.problem_defining_node)
 
-                ecr[node] = cost + p * cost_seq
+                ecr[node] = cost + (1 - p_noeud_casse) * cost_seq
             else:
                 ecr[node] = cost
+                
+        list_eco = sorted(eco.items(), key = lambda x: x[1])
+        list_ecr = sorted(ecr.items(), key = lambda x: x[1])
+        
+        if list_eco != [] and list_eco[0][1] < list_ecr[0][1]:
+            chosen_node = list_eco[0][0]
+            type_node = "obs"
+        else:
+            chosen_node = list_ecr[0][0]
+            type_node = "repair"
             
-        return chosen_node, type_node, eco, ecr
+        return chosen_node, type_node, list_ecr, list_eco
 
     def simple_solver_tester(self, true_prices, epsilon, nb_min = 100, \
                              nb_max = 200):
@@ -1186,7 +1188,7 @@ class TroubleShootingProblem:
                 break
         self.reset_bay_lp()
         
-        return sortie_anti, costs[:i + 1]/mean(), cpt_repair[:i + 1],\
+        return sortie_anti, costs[:i + 1].mean(), cpt_repair[:i + 1],\
             cpt_obs[:i + 1]
     
     def elicitation_solver_tester(self, true_prices, epsilon, nb_min = 100, \

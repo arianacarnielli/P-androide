@@ -42,15 +42,15 @@ class Troubleshoot(QWidget):
         self.eliButton = QPushButton("Repondre à des questions")
         self.layoutPrincipal.addWidget(self.eliButton)
       
-    def observationsPossibles(self, observables, eco):
+    def observationsPossibles(self, eco):
         self.listObs.clear()
-        for node in observables:
-            self.listObs.addItem(QListWidgetItem("{} {:.3f}".format(node, eco[node])))
+        for node, value in eco:
+            self.listObs.addItem(QListWidgetItem("{} {:.3f}".format(node, value)))
     
-    def actionsPossibles(self, actions, ecr):
+    def actionsPossibles(self, ecr):
         self.listAct.clear()
-        for node in actions:
-            self.listAct.addItem(QListWidgetItem("{} {:.3f}".format(node, ecr[node])))
+        for node, value in ecr:
+            self.listAct.addItem(QListWidgetItem("{} {:.3f}".format(node, value)))
             
     def obsButtonActivate(self):
         self.obsButton.setEnabled(True)

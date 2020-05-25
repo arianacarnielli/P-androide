@@ -132,12 +132,8 @@ class MainWindow(QMainWindow):
         # On crée l'objet pour résoudre le problème
         self.tsp = dtt.TroubleShootingProblem(bnCar, [costsRep, costsObs], nodesAssociations)
 
-        self.repairables = self.tsp.repairable_nodes.copy()
-        self.repairables.add(self.tsp.service_node)
-        self.observables = set(self.tsp.observation_nodes).intersection(set(self.tsp.unrepairable_nodes))
-        
         self.elicitationNode = ""
-        self.recommendation, self.typeNodeRec, self.eco, self.ecr = self.tsp.ECR_ECO_wrapper()
+        self.recommendation, self.typeNodeRec, self.ecr, self.eco = self.tsp.ECR_ECO_wrapper()
         self.currentNode =  ""
         self.currentObs = ""
         self.currentAct = ""
@@ -163,13 +159,13 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentWidget(self.static)
         
     def startTroubleshoot(self):
-        self.trouble.observationsPossibles(self.observables, self.eco)  
-        self.trouble.actionsPossibles(self.repairables, self.ecr) 
+        self.trouble.observationsPossibles(self.eco)  
+        self.trouble.actionsPossibles(self.ecr) 
         
         if self.typeNodeRec == "obs":
-            text = "On vous recommende d'observez le composant {} avec ECO : {:.3f}".format(self.recommendation, self.eco[self.recommendation])
+            text = "On vous recommende d'observez le composant {} avec ECO : {:.3f}".format(self.recommendation, self.eco[0][1])
         else:
-            text = "On vous recommende de faire l'observation-réparation suivante : {} avec ECR : {:.3f}".format(self.recommendation, self.ecr[self.recommendation])
+            text = "On vous recommende de faire l'observation-réparation suivante : {} avec ECR : {:.3f}".format(self.recommendation, self.ecr[0][1])
         self.trouble.recommendation.setText(text)
         
         if self.algo == self.algos_possibles[2]:
@@ -203,8 +199,7 @@ class MainWindow(QMainWindow):
     def makeObs(self, text):
         self.currentObs = self.obs.cb.currentText()
         self.tsp.add_evidence(self.currentNode, self.currentObs)
-        self.recommendation, self.typeNodeRec, self.eco, self.ecr = self.tsp.ECR_ECO_wrapper()
-        self.observables = self.observables - {self.currentNode}
+        self.recommendation, self.typeNodeRec, self.ecr, self.eco = self.tsp.ECR_ECO_wrapper()
         self.trouble.actButton.setEnabled(False)
         self.trouble.obsButton.setEnabled(False)
         
@@ -220,9 +215,7 @@ class MainWindow(QMainWindow):
             for obs in obsoletes:
                 self.tsp.evidences.pop(obs)
             self.tsp.reset_bay_lp(self.tsp.evidences)
-            self.observables.update(obsoletes)
-            self.recommendation, self.typeNodeRec, self.eco, self.ecr = self.tsp.ECR_ECO_wrapper()
-            self.repairables = self.repairables - {self.currentNode}
+            self.recommendation, self.typeNodeRec, self.ecr, self.eco = self.tsp.ECR_ECO_wrapper()
             self.trouble.actButton.setEnabled(False)
             self.trouble.obsButton.setEnabled(False)
             
@@ -236,7 +229,7 @@ class MainWindow(QMainWindow):
         else:
             islower = False
         self.tsp.elicitation(self.elicitationNode, islower)
-        self.recommendation, self.typeNodeRec, self.eco, self.ecr = self.tsp.ECR_ECO_wrapper()
+        self.recommendation, self.typeNodeRec, self.ecr, self.eco = self.tsp.ECR_ECO_wrapper()
         
         self.startTroubleshoot()
            
