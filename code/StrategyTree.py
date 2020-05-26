@@ -766,6 +766,8 @@ class StrategyTree:
         Returns :
             sub_tree : un sous-arbre de cet arbre dont la racine est sub_root ; objet du type StrategyTree.
         """
+        if sub_root is None:
+            return None
         # Pour récupérer un sous-arbre demandé on effectue un parcours de l'arbre en largeur
         # nodes : les noeuds déjà traités et alors déjà ajoutés dans un sous-arbre
         nodes = [sub_root]

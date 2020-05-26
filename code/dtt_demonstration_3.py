@@ -11,6 +11,8 @@ if __name__ == '__main__':
     bn_car = gum.loadBN('simpleCar2.bif')
 
     # On initialise des coûts des réparations et des observations ...
+
+    # Config de coûts #1
     costs_rep = {
         'car.batteryFlat': 200,
         'oil.noOil': 100,
@@ -32,6 +34,28 @@ if __name__ == '__main__':
         "oil.dipstickLevelOk": 7
     }
 
+    # Config de coûts #2
+    # costs_rep = {
+    #     'car.batteryFlat': 200,
+    #     'oil.noOil': 75,
+    #     'tank.Empty': 50,
+    #     'tank.fuelLineBlocked': 150,
+    #     'starter.starterBroken': 40,
+    #     'callService': 500,
+    #     'oil.dipstickLevelOk': 7
+    # }
+    #
+    # costs_obs = {
+    #     'car.batteryFlat': 20,
+    #     'oil.noOil': 50,
+    #     'tank.Empty': 5,
+    #     'tank.fuelLineBlocked': 60,
+    #     'starter.starterBroken': 10,
+    #     "car.lightsOk": 2,
+    #     "car.noOilLightOn": 1,
+    #     "oil.dipstickLevelOk": 7
+    # }
+
     # ... ainsi que des types des noeuds d'un réseau bayésien
 
     # Initialisation complète
@@ -51,15 +75,21 @@ if __name__ == '__main__':
     # Initialisation courante qui est raccourcie pour ne pas surcharger un algo de recherche exhaustive
     nodes_associations = {
         'car.batteryFlat': {'repairable', 'observable'},
-        'tank.Empty': {'repairable', 'observable'},
-        'oil.dipstickLevelOk': {'unrepairable', 'observable'},
+        'oil.noOil': {'repairable', 'observable'},
+        'tank.Empty': {'repairable'},
+        'tank.fuelLineBlocked': {'repairable', 'observable'},
+        'starter.starterBroken': {'repairable', 'observable'},
         'car.lightsOk': {'unrepairable', 'observable'},
+        'car.noOilLightOn': {'unrepairable', 'observable'},
+        'oil.dipstickLevelOk': {'unrepairable', 'observable'},
         'car.carWontStart': {'problem-defining'},
         'callService': {'service'}
     }
 
     # Une variable boléenne qui indique si on considère des couples observation-réparation ou pas
     obs_rep_couples = True
+    # TODO COMMENTAIRE
+    obs_obsolete = True
     # Un nombre maximal de simulations
     nb_max = 1000
     # Une erreur permise
@@ -67,7 +97,6 @@ if __name__ == '__main__':
 
     # Configs pour sauvegarder
     #
-    # Celles pour lesquelles obs_rep_couples change une solution
     # Config #1
     # nodes_associations = {
     #     'car.batteryFlat': {'repairable', 'observable'},
@@ -89,17 +118,18 @@ if __name__ == '__main__':
     tsp = dtt.TroubleShootingProblem(bn_car, [costs_rep, costs_obs], nodes_associations)
 
     # Un lancement de l'algo avec le dénombrement complet de tous les arbres possibles
-    best_tree, best_ecr = tsp.brute_force_solver(debug=(True, False), obs_rep_couples=obs_rep_couples)
-    print('\n\nLes meilleurs résultats pour ALL\n\n')
-    print('ECR : %f' % best_ecr)
-    print('Arbre : %s' % best_tree)
-    plb.pdfize(bn_car, "test")
-    best_tree.visualize("last_best_ST_full.gv")
-
-    res_all = tsp.brute_force_solver_tester(
-        costs_rep, epsilon, obs_rep_couples=obs_rep_couples, nb_max=nb_max, strategy_tree=best_tree
-    )
-    print('Le coût moyen pour une approche exacte (ALL): %f' % res_all[1])
+    # best_tree, best_ecr = tsp.brute_force_solver(
+    #     debug=(True, False), obs_rep_couples=obs_rep_couples, obs_obsolete=obs_obsolete)
+    # print('\n\nLes meilleurs résultats pour ALL\n\n')
+    # print('ECR : %f' % best_ecr)
+    # print('Arbre : %s' % best_tree)
+    # plb.pdfize(bn_car, "test")
+    # best_tree.visualize("last_best_ST_full.gv")
+    #
+    # res_all = tsp.brute_force_solver_tester(
+    #     costs_rep, epsilon, obs_rep_couples=obs_rep_couples, nb_max=nb_max, strategy_tree=best_tree
+    # )
+    # print('Le coût moyen pour une approche exacte (ALL): %f' % res_all[1])
 
     # Un lancement de l'algo qui utilise une programmation dynamique
     best_tree_dp, best_ecr_dp = tsp.brute_force_solver(debug=(True, False), mode='dp', obs_rep_couples=obs_rep_couples)
@@ -175,3 +205,40 @@ if __name__ == '__main__':
     # print(tsp.expected_cost_of_repair(test_myopic_tree))
     # res_myopic_test = tsp.brute_force_solver_tester(costs_rep, epsilon, nb_max=nb_max, strategy_tree=test_myopic_tree)
     # print(res_myopic_test[1])
+
+    # Petit test de l'algo simple pour l'initialisation complète
+    # nodes_associations = {
+    #     'car.batteryFlat': {'repairable', 'observable'},
+    #     'oil.noOil': {'repairable', 'observable'},
+    #     'tank.Empty': {'repairable'},
+    #     'tank.fuelLineBlocked': {'repairable', 'observable'},
+    #     'starter.starterBroken': {'repairable', 'observable'},
+    #     'car.lightsOk': {'unrepairable', 'observable'},
+    #     'car.noOilLightOn': {'unrepairable', 'observable'},
+    #     'oil.dipstickLevelOk': {'unrepairable', 'observable'},
+    #     'car.carWontStart': {'problem-defining'},
+    #     'callService': {'service'}
+    # }
+    # tsp = dtt.TroubleShootingProblem(bn_car, [costs_rep, costs_obs], nodes_associations)
+    # res_simple = tsp.simple_solver_tester(costs_rep, epsilon, nb_max=nb_max)
+    # print('Le coût moyen pour une approche la plus simple : %f' % res_simple[1])
+
+    # Test d'une méthode myopic_solver_st
+    # nodes_associations = {
+    #     'car.batteryFlat': {'repairable', 'observable'},
+    #     'oil.noOil': {'repairable', 'observable'},
+    #     'tank.Empty': {'repairable'},
+    #     'tank.fuelLineBlocked': {'repairable', 'observable'},
+    #     'starter.starterBroken': {'repairable', 'observable'},
+    #     'car.lightsOk': {'unrepairable', 'observable'},
+    #     'car.noOilLightOn': {'unrepairable', 'observable'},
+    #     'oil.dipstickLevelOk': {'unrepairable', 'observable'},
+    #     'car.carWontStart': {'problem-defining'},
+    #     'callService': {'service'}
+    # }
+    # tsp = dtt.TroubleShootingProblem(bn_car, [costs_rep, costs_obs], nodes_associations)
+    # myopic_st = tsp.myopic_solver_st()
+    # myopic_st.visualize('test_myopic_solver_st.gv')
+    # res_myopic_st = tsp.brute_force_solver_tester(costs_rep, epsilon, nb_max=nb_max, strategy_tree=myopic_st)
+    # print('Le coût moyen pour un arbre généré par l\'approche myope : %f' % res_myopic_st[1])
+    # print(tsp.expected_cost_of_repair(myopic_st))

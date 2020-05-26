@@ -60,6 +60,14 @@ def merge_dicts(left, right):
     return res
 
 
+def diff_dicts(left, right):
+    res = left.copy()
+    for k in right.keys():
+        if k in res.keys():
+            res.pop(k)
+    return res
+
+
 class bcolors:
     """
     Une classe statique auxiliare qui n'est utilisé que pour stocker des couleurs différentes.
@@ -349,7 +357,7 @@ class TroubleShootingProblem:
             # probabilité du départ
             self.remove_evidence(node)
         # On trie les noeuds par rapport aux efficacités
-        rep_seq = sorted(dic_eff.items(), key = lambda x: x[1], reverse = True)           
+        rep_seq = sorted(dic_eff.items(), key = lambda x: x[1], reverse = True)
 
         # On ne veut que les noeuds, pas les valeurs des efficacités
         rep_seq = [r[0] for r in rep_seq]
@@ -370,7 +378,7 @@ class TroubleShootingProblem:
             p = self.get_proba(rep_seq[0], "no")
         else:
             p = self.get_proba(rep_seq[0], "yes")
-        
+
         proba *= p
 
         # Le premier répare n'a pas résolu le problème, on change l'évidence
@@ -596,7 +604,7 @@ class TroubleShootingProblem:
         for node in nd_obs:
             # On récupere les probabilités des valeurs possibles du noeud
             self.add_evidence(self.problem_defining_node, "yes")
-            p = self.bay_lp.posterior(node)                
+            p = self.bay_lp.posterior(node)
             inst = gum.Instantiation(p)
             self.remove_evidence(self.problem_defining_node)
             
@@ -612,12 +620,12 @@ class TroubleShootingProblem:
                 proba_obs = p[inst]
                 # On dit qu'on a observé la valeur actuelle
                 self.add_evidence(node, k)
-                
+
                 # On calcule l'ésperance de coût de la séquence generé avec
                 # l'observation du noeud avec la valeur actuel
                 _, ecr_node_k = self.simple_solver_obs()
                 eco[node] += ecr_node_k * proba_obs
-                
+
                 # On retourne l'évidence du noeud à celle qui ne change pas les 
                 # probabilités du départ du tour de boucle actuel
                 self.remove_evidence(node)
@@ -690,8 +698,7 @@ class TroubleShootingProblem:
                     self.reset_bay_lp(self.evidences)
         print("Merci d'avoir utilisé le logiciel !")
         self.reset_bay_lp()
-                
-        
+
     def noeud_ant(self, node, visites):
         """
         Détermine tous les noeuds d'observation impactés par un changement
@@ -898,7 +905,7 @@ class TroubleShootingProblem:
             list_eco : liste d'ECOs des noeuds d'observation globale
         """
         ecr = {}
-        _, _, eco = self.myopic_solver(debug, esp_obs = True)     
+        _, _, eco = self.myopic_solver(debug, esp_obs = True)
         
         # On recupère les noeuds qui ont des évidences
         evidence_nodes = {k for k in self.evidences}
@@ -944,17 +951,17 @@ class TroubleShootingProblem:
                 ecr[node] = cost + (1 - p_noeud_casse) * cost_seq
             else:
                 ecr[node] = cost
-                
+
         list_eco = sorted(eco.items(), key = lambda x: x[1])
         list_ecr = sorted(ecr.items(), key = lambda x: x[1])
-        
+
         if list_eco != [] and list_eco[0][1] < list_ecr[0][1]:
             chosen_node = list_eco[0][0]
             type_node = "obs"
         else:
             chosen_node = list_ecr[0][0]
             type_node = "repair"
-            
+
         return chosen_node, type_node, list_ecr, list_eco
 
     def simple_solver_tester(self, true_prices, epsilon, nb_min = 100, \
@@ -1390,7 +1397,7 @@ class TroubleShootingProblem:
 
         return min_seq, min_ecr
 
-    def expected_cost_of_repair(self, strategy_tree):
+    def expected_cost_of_repair(self, strategy_tree, obs_obsolete=False):
         """
         Une méthode qui calcule le coût espéré de réparation étant donné un arbre de décision.
 
@@ -1402,13 +1409,13 @@ class TroubleShootingProblem:
         Returns :
             ecr : le côut espéré de réparation d'un arbre de stratégie fourni, objet du type float.
         """
-        ecr = self._expected_cost_of_repair_internal(strategy_tree)
+        ecr = self._expected_cost_of_repair_internal(strategy_tree, obs_obsolete=obs_obsolete)
         self.bay_lp.setEvidence({})
         self._start_bay_lp()
         self.reset_bay_lp()
         return ecr
 
-    def _expected_cost_of_repair_internal(self, strategy_tree, evid_init=None, prob=1.0):
+    def _expected_cost_of_repair_internal(self, strategy_tree, evid_init=None, prob=1.0, obs_obsolete=False):
         """
         Une partie récursive d'une fonction expected_cost_of_repair au-dessus
 
@@ -1423,7 +1430,7 @@ class TroubleShootingProblem:
             ecr : le côut espéré de réparation d'un arbre de stratégie fourni, objet du type float.
         """
         if not isinstance(strategy_tree, st.StrategyTree):
-            raise TypeError('strategy_tree must have type StrategyTre')
+            raise TypeError('strategy_tree must have type StrategyTree')
 
         # On ajoute dans ECR un terme lié à la racine d'un arbre donné
         ecr = 0.0
@@ -1443,22 +1450,29 @@ class TroubleShootingProblem:
             self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
             prob_next = self.prob_val(node_name, 'no')
             self.bay_lp.setEvidence(evidence)
+            if obs_obsolete:
+                obsolete = {obs: None for obs in self.observation_obsolete(node.get_name())}
+            else:
+                obsolete = {}
             ecr += prob * self._expected_cost_of_repair_internal(
                 strategy_tree.get_sub_tree(node.get_child()),
-                merge_dicts(evidence, {node_name: 'yes' if node_name == self.service_node else 'no'}), prob_next
+                diff_dicts(
+                    merge_dicts(evidence, {node_name: 'yes' if node_name == self.service_node else 'no'}), obsolete),
+                prob_next, obs_obsolete
             )
             self.bay_lp.setEvidence(evidence)
         else:
             # ... et plusieurs enfants pour des observations
             for obs_label in self.bayesian_network.variable(node_name).labels():
                 child = node.bn_labels_children_association()[obs_label]
-                new_evidence = (merge_dicts(evidence, {node_name: obs_label})
-                                if evidence.get(node_name) is None else evidence.copy())
+                new_evidence = (evidence.copy()
+                                if evidence.get(node_name) is not None and node_name in self.repairable_nodes
+                                else merge_dicts(evidence, {node_name: obs_label}))
                 self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
                 prob_next = self.prob_val(node_name, obs_label)
                 self.bay_lp.setEvidence(evidence)
                 ecr += prob * self._expected_cost_of_repair_internal(
-                    strategy_tree.get_sub_tree(child), new_evidence, prob_next
+                    strategy_tree.get_sub_tree(child), new_evidence, prob_next, obs_obsolete
                 )
                 self.bay_lp.setEvidence(evidence)
 
@@ -1503,7 +1517,7 @@ class TroubleShootingProblem:
         nodes = []
         for name, i in zip(names, range(len(names))):
             if obs_rep_couples and name in self.observation_nodes.intersection(self.repairable_nodes):
-                node = st.Observation(str(i), -1, name, obs_rep_couples=obs_rep_couples)
+                node = st.Observation(str(i), self.costs_obs[name], name, obs_rep_couples=obs_rep_couples)
             elif name.endswith(rep_string) or name == self.service_node:
                 node = st.Repair(str(i), self.costs_rep[name.replace(rep_string, '')], name.replace(rep_string, ''))
             else:
@@ -1519,7 +1533,7 @@ class TroubleShootingProblem:
         self._nodes_ids_db_brute_force.append(next_id)
         return next_id
 
-    def brute_force_solver(self, debug=False, mode='all', obs_rep_couples=False):
+    def brute_force_solver(self, debug=False, mode='all', obs_rep_couples=False, obs_obsolete=False):
         if debug is False:
             debug = (False, False)
         elif debug is True:
@@ -1540,17 +1554,19 @@ class TroubleShootingProblem:
 
         if mode == 'dp':
             self._best_st, self._best_ecr = self.dynamic_programming_solver(
-                feasible_nodes, debug_iter=debug[0], debug_st=debug[1], obs_rep_couples=obs_rep_couples)
+                feasible_nodes, debug_iter=debug[0], debug_st=debug[1], obs_rep_couples=obs_rep_couples,
+                obs_obsolete=obs_obsolete)
         elif mode == 'all':
-            self._evaluate_all_st(feasible_nodes, debug_iter=debug[0], debug_st=debug[1],
-                                  obs_rep_couples=obs_rep_couples)
+            self._evaluate_all_st(
+                feasible_nodes, debug_iter=debug[0], debug_st=debug[1], obs_rep_couples=obs_rep_couples,
+                obs_obsolete=obs_obsolete)
 
         self._nodes_ids_db_brute_force = []
 
         return self._best_st, self._best_ecr
 
     def _evaluate_all_st(self, feasible_nodes, obs_next_nodes=None, parent=None, fn_immutable=None, debug_nb_call=0,
-                         debug_iter=False, debug_st=False, obs_rep_couples=False):
+                         debug_iter=False, debug_st=False, obs_rep_couples=False, obs_obsolete=False):
         par_tmp = None
         parent_c = shallow_copy_parent(parent)
         branch_attr_obs_rep_couples = None
@@ -1573,6 +1589,7 @@ class TroubleShootingProblem:
         fn_immutable_c = shallow_copy_list_of_copyable(fn_immutable)
         if len(feasible_nodes) > 0:
             for i in range(len(feasible_nodes)):
+                nodes_obs_obsolete = []
                 node = feasible_nodes[i]
                 obs_next_nodes_tmp = shallow_copy_list_of_copyable(obs_next_nodes) \
                     if obs_next_nodes is not None else None
@@ -1592,9 +1609,10 @@ class TroubleShootingProblem:
                     par = [(par_mutable, par_immutable, par_tree_mutable.copy())]
                     fn_im = []
                     fn_im.append([n.copy() for n in (feasible_nodes[:i] + feasible_nodes[i + 1:])])
-                    self._evaluate_all_st(feasible_nodes[:i] + feasible_nodes[i + 1:],
-                                          shallow_copy_list_of_copyable(onn) if onn is not None else None, par, fn_im,
-                                          debug_nb_call + 1, debug_iter, debug_st, obs_rep_couples)
+                    self._evaluate_all_st(
+                        feasible_nodes[:i] + feasible_nodes[i + 1:],
+                        shallow_copy_list_of_copyable(onn) if onn is not None else None, par, fn_im, debug_nb_call + 1,
+                        debug_iter, debug_st, obs_rep_couples, obs_obsolete)
                 else:
                     par_mutable, par_immutable, par_tree_mutable = parent_c[-1]
                     branch_attr = obs_next_nodes_tmp[-1][0] if obs_next_nodes_tmp is not None else None
@@ -1615,14 +1633,27 @@ class TroubleShootingProblem:
                     par_mutable = node.copy()
                     if isinstance(node, st.Repair):
                         parent_c[-1] = (par_mutable, par_immutable, par_tree_mutable.copy())
-                        self._evaluate_all_st(feasible_nodes[:i] + feasible_nodes[i + 1:],
-                                              shallow_copy_list_of_copyable(obs_next_nodes_tmp)
-                                              if obs_next_nodes_tmp is not None else None,
-                                              parent_c, fn_immutable_c, debug_nb_call + 1, debug_iter, debug_st,
-                                              obs_rep_couples)
+                        if obs_obsolete:
+                            obsolete = self.observation_obsolete(node.get_name())
+                            for obs in obsolete:
+                                nodes_obs_obsolete.append(
+                                    st.Observation(self._next_node_id(), self.costs_obs[obs], obs)
+                                )
+                        self._evaluate_all_st(
+                            feasible_nodes[:i] + feasible_nodes[i + 1:] + nodes_obs_obsolete,
+                            shallow_copy_list_of_copyable(obs_next_nodes_tmp)
+                            if obs_next_nodes_tmp is not None else None, parent_c, fn_immutable_c, debug_nb_call + 1,
+                            debug_iter, debug_st, obs_rep_couples, obs_obsolete)
                     elif isinstance(node, st.Observation):
                         fn_im = fn_immutable_c.copy()
                         appended_parent, appended_obs = False, False
+                        if (obs_obsolete and obs_rep_couples and
+                                node.get_name() in self.repairable_nodes.intersection(self.observation_nodes)):
+                            obsolete = self.observation_obsolete(node.get_name())
+                            for obs in obsolete:
+                                nodes_obs_obsolete.append(
+                                    st.Observation(self._next_node_id(), self.costs_obs[obs], obs)
+                                )
                         if len(feasible_nodes) != 1:
                             appended_obs = True
                             par_immutable = node.copy()
@@ -1635,10 +1666,14 @@ class TroubleShootingProblem:
                             obs_next_nodes_tmp = [branch_attrs] \
                                 if obs_next_nodes_tmp is None else obs_next_nodes_tmp + [branch_attrs]
                             fn_im.append([n.copy() for n in (feasible_nodes[:i] + feasible_nodes[i + 1:])])
-                        self._evaluate_all_st(feasible_nodes[:i] + feasible_nodes[i + 1:],
-                                              shallow_copy_list_of_copyable(obs_next_nodes_tmp)
-                                              if obs_next_nodes_tmp is not None else None,
-                                              parent_c, fn_im, debug_nb_call + 1, debug_iter, debug_st, obs_rep_couples)
+                            if (obs_obsolete and obs_rep_couples and
+                                    node.get_name() in self.repairable_nodes.intersection(self.observation_nodes)):
+                                fn_im[-1].extend(nodes_obs_obsolete)
+                        self._evaluate_all_st(
+                            feasible_nodes[:i] + feasible_nodes[i + 1:] + nodes_obs_obsolete,
+                            shallow_copy_list_of_copyable(obs_next_nodes_tmp)
+                            if obs_next_nodes_tmp is not None else None, parent_c, fn_im, debug_nb_call + 1, debug_iter,
+                            debug_st, obs_rep_couples, obs_obsolete)
                         if appended_parent:
                             parent_c.pop()
                         if appended_obs:
@@ -1653,7 +1688,7 @@ class TroubleShootingProblem:
                 strat_tree = st.StrategyTree(root=feasible_nodes[0].copy())
                 if debug_st:
                     print(strat_tree)
-                ecr = self.expected_cost_of_repair(strat_tree)
+                ecr = self.expected_cost_of_repair(strat_tree, obs_obsolete=obs_obsolete)
             else:
                 par_mutable, par_immutable, par_tree_mutable = parent_c[-1]
                 if obs_next_nodes_tmp is None:
@@ -1661,17 +1696,16 @@ class TroubleShootingProblem:
                     strat_tree = par_tree_mutable.copy()
                     if debug_st:
                         print(strat_tree)
-                    ecr = self.expected_cost_of_repair(strat_tree)
+                    ecr = self.expected_cost_of_repair(strat_tree, obs_obsolete=obs_obsolete)
                 else:
                     if len(obs_next_nodes_tmp[-1]) != 1:
                         par_mutable = par_immutable.copy()
                         parent_c[-1] = (par_mutable, par_immutable, par_tree_mutable.copy())
                         obs_next_nodes_tmp[-1].pop(0)
-                        self._evaluate_all_st(fn_immutable_c[-1],
-                                              shallow_copy_list_of_copyable(obs_next_nodes_tmp)
-                                              if obs_next_nodes_tmp is not None else None,
-                                              parent_c, fn_immutable_c, debug_nb_call + 1, debug_iter, debug_st,
-                                              obs_rep_couples)
+                        self._evaluate_all_st(
+                            fn_immutable_c[-1], shallow_copy_list_of_copyable(obs_next_nodes_tmp)
+                            if obs_next_nodes_tmp is not None else None, parent_c, fn_immutable_c, debug_nb_call + 1,
+                            debug_iter, debug_st, obs_rep_couples, obs_obsolete)
                     else:
                         if len(parent_c) != 1 and any([len(lbls) > 1 for lbls in obs_next_nodes_tmp]):
                             while len(obs_next_nodes_tmp[-1]) == 1:
@@ -1680,17 +1714,16 @@ class TroubleShootingProblem:
                                 fn_immutable_c.pop()
                                 parent_c[-1] = (parent_c[-1][1].copy(), parent_c[-1][1], lp[2].copy())
                             obs_next_nodes_tmp[-1].pop(0)
-                            self._evaluate_all_st(fn_immutable_c[-1],
-                                                  shallow_copy_list_of_copyable(obs_next_nodes_tmp)
-                                                  if obs_next_nodes_tmp is not None else None,
-                                                  parent_c, fn_immutable_c, debug_nb_call + 1, debug_iter, debug_st,
-                                                  obs_rep_couples)
+                            self._evaluate_all_st(
+                                fn_immutable_c[-1], shallow_copy_list_of_copyable(obs_next_nodes_tmp)
+                                if obs_next_nodes_tmp is not None else None,  parent_c, fn_immutable_c,
+                                debug_nb_call + 1, debug_iter, debug_st, obs_rep_couples, obs_obsolete)
                         else:
                             complete_tree = True
                             strat_tree = par_tree_mutable.copy()
                             if debug_st:
                                 print(strat_tree)
-                            ecr = self.expected_cost_of_repair(strat_tree)
+                            ecr = self.expected_cost_of_repair(strat_tree, obs_obsolete=obs_obsolete)
             if complete_tree and ecr < self._best_ecr:
                 self._best_st = strat_tree
                 self._best_ecr = ecr
@@ -1698,7 +1731,7 @@ class TroubleShootingProblem:
             return
 
     def dynamic_programming_solver(self, feasible_nodes=None, evidence=None, debug_iter=False, debug_st=False,
-                                   obs_rep_couples=False, prob=1.0):
+                                   obs_rep_couples=False, prob=1.0, obs_obsolete=False):
         nodes_created = False
         if feasible_nodes is None:
             rep_string, obs_string = '_repair', '_observation'
@@ -1725,15 +1758,29 @@ class TroubleShootingProblem:
             if debug_iter and len(evidence.keys()) == 0:
                 print(f'{bcolors.OKGREEN}\n########################\nIter %d\n########################\n{bcolors.ENDC}'
                       % i)
+            nodes_obs_obsolete = []
+            evid_obsolete = {}
             node = feasible_nodes[i].copy()
             node.set_id(self._next_node_id())
             strat_tree = st.StrategyTree(root=node)
             cost = self.costs_rep[node.get_name()] if isinstance(node, st.Repair) else self.costs_obs[node.get_name()]
             ecr = prob * cost
+            if obs_obsolete and (
+                    isinstance(node, st.Repair) or
+                    (obs_rep_couples and isinstance(node, st.Observation) and
+                     node.get_name() in self.repairable_nodes.intersection(self.observation_nodes))
+            ):
+                obsolete = self.observation_obsolete(node.get_name())
+                for obs in obsolete:
+                    nodes_obs_obsolete.append(
+                        st.Observation(self._next_node_id(), self.costs_obs[obs], obs)
+                    )
+                evid_obsolete = {obs: None for obs in obsolete}
             if node.get_name() != self.service_node:
                 for label in (self.bayesian_network.variable(node.get_name()).labels()
                               if isinstance(node, st.Observation) else ['no']):
-                    if isinstance(node, st.Observation) and evidence.get(node.get_name()) is not None:
+                    if (isinstance(node, st.Observation) and evidence.get(node.get_name()) is not None and
+                            node.get_name() in self.repairable_nodes):
                         new_evidence = evidence.copy()
                     else:
                         new_evidence = merge_dicts(evidence, {node.get_name(): label})
@@ -1747,11 +1794,13 @@ class TroubleShootingProblem:
                                                  self.service_node)
                         node_rep.set_child(node_service)
                         best_sub_tree = st.StrategyTree(root=node_rep, nodes=[node_rep, node_service])
-                        best_sub_ecr = self._expected_cost_of_repair_internal(best_sub_tree, new_evidence, prob_next)
+                        best_sub_ecr = self._expected_cost_of_repair_internal(
+                            best_sub_tree, new_evidence, prob_next, obs_obsolete)
                     else:
                         best_sub_tree, best_sub_ecr = self.dynamic_programming_solver(
-                            feasible_nodes[:i] + feasible_nodes[i + 1:], new_evidence, debug_iter, debug_st,
-                            obs_rep_couples, prob_next
+                            feasible_nodes[:i] + feasible_nodes[i + 1:] + nodes_obs_obsolete,
+                            diff_dicts(new_evidence, evid_obsolete), debug_iter, debug_st, obs_rep_couples, prob_next,
+                            obs_obsolete
                         )
                     self.bay_lp.setEvidence(evidence)
                     if best_sub_tree is not None:
@@ -1902,3 +1951,57 @@ class TroubleShootingProblem:
             rep_nodes.remove(action_to_put)
         rep_seq.append(self.service_node)
         return rep_seq, self.expected_cost_of_repair_seq_of_actions(rep_seq)
+
+    def myopic_solver_st(self, evid_init=None):
+        if evid_init is None:
+            evid_init = {}
+        self.reset_bay_lp(evid_init)
+        start_point = self.myopic_solver()
+        self._nodes_ids_db_brute_force = ['-1']
+        current_layer = [(start_point[0], start_point[1], None, None, evid_init)]
+        next_layer = []
+        strat_tree = None
+
+        while len(current_layer) > 0:
+            for name_node, type_node, par, label, evidence in current_layer:
+                node = (st.Repair(self._next_node_id(), self.costs_rep[name_node], name_node)
+                        if name_node not in self.observation_nodes
+                        else st.Observation(
+                            self._next_node_id(), self.costs_obs[name_node], name_node,
+                            obs_rep_couples=(type_node != 'obs'))
+                        )
+                if par is None:
+                    strat_tree = st.StrategyTree(root=node.copy())
+                else:
+                    strat_tree.add_node(node)
+                    strat_tree.add_edge(par, node, label)
+                if isinstance(node, st.Observation) and node.get_obs_rep_couples():
+                    node_rep = st.Repair(self._next_node_id(), self.costs_rep[name_node], name_node)
+                    node_service = st.Repair(self._next_node_id(), self.costs_rep[self.service_node], self.service_node)
+                    strat_tree.add_node(node_rep)
+                    strat_tree.add_node(node_service)
+                    strat_tree.add_edge(node_rep, node_service)
+                    strat_tree.add_edge(node, node_rep, 'yes')
+                if name_node in self.repairable_nodes.intersection(self.observation_nodes):
+                    obsolete = self.observation_obsolete(name_node)
+                    for obs in obsolete:
+                        evidence.pop(obs)
+                if name_node != self.service_node:
+                    next_layer.extend([
+                        (node.get_id(), label, merge_dicts(evidence, {node.get_name(): label}))
+                        for label in (
+                            self.bayesian_network.variable(name_node).labels()
+                            if isinstance(node, st.Observation) and not node.get_obs_rep_couples()
+                            else ['no']
+                        )
+                    ])
+            current_layer.clear()
+            for par, label, evidence in next_layer:
+                self.reset_bay_lp(evidence)
+                name_node, type_node = self.myopic_solver()
+                current_layer.append((name_node, type_node, par, label, evidence))
+            next_layer.clear()
+
+        self._nodes_ids_db_brute_force = []
+        self.reset_bay_lp()
+        return strat_tree
