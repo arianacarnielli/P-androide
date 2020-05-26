@@ -10,15 +10,18 @@ from numpy import inf
 
 def shallow_copy_list_of_copyable(l):
     """
-    Une méthode statique du module qui crée une copie superficielle d'une liste passée en remplissant de plus chaque
-    élément d'une nouvelle liste par un appel de méthode copy() d'un élément corespondant de la liste donnée.
+    Crée une copie superficielle de la liste passée en argument
+    passée en remplissant de plus chaque élément d'une nouvelle liste par un
+    appel de méthode copy() d'un élément corespondant de la liste donnée.
 
     Args :
-        l : une liste dont la copie il faut créer, objet du type list<Copyable> où Copyable est une interface abstraite
-            qui dispose d'une méthode copy().
+        l : une liste dont la copie il faut créer, objet du type list<Copyable>
+            où Copyable est une interface abstraite qui dispose d'une méthode
+            copy().
 
     Returns :
-        cl : une copie superficielle d'une liste donnée qu'il fallait créer, objet du type list<Copyable>.
+        cl : une copie superficielle d'une liste donnée qu'il fallait créer,
+            objet du type list<Copyable>.
     """
     if l is None:
         return None
