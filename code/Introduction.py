@@ -28,7 +28,6 @@ class Introduction(QWidget):
         self.layout.addWidget(self.listAlgo)
         self.layout.addWidget(self.startButton)
         
-        
     def startButtonActivate(self):
         self.startButton.setEnabled(True)
         

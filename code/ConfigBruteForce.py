@@ -27,6 +27,8 @@ class ConfigBruteForce(QWidget):
 
         self.radioExecTree = QRadioButton("Afficher un arbre")
 
+        self.progressBar = QProgressBar()
+
         self.calcButton = QPushButton("Calculer")
 
         # self.modeCalc = QRadioButton()
@@ -36,7 +38,8 @@ class ConfigBruteForce(QWidget):
         self.grid.addWidget(self.createFirstGroup(), 1, 0, 1, 2)
         self.grid.addWidget(self.createSecondGroup(), 2, 0)
         self.grid.addWidget(self.createThirdGroup(), 2, 1)
-        self.grid.addWidget(self.calcButton, 3, 0, 1, 2)
+        self.grid.addWidget(self.progressBar, 3, 0, 1, 2)
+        self.grid.addWidget(self.calcButton, 4, 0, 1, 2)
         self.setLayout(self.grid)
 
     def createFirstGroup(self):

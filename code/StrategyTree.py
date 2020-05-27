@@ -1,3 +1,4 @@
+import os
 from graphviz import Digraph
 
 
@@ -492,6 +493,8 @@ class StrategyTree:
         self._root = root
         self._nodes = []
         self._adj_dict = {}
+        self.fout_newline = '\r\n' if os.name == 'nt' else '\n'
+        self.fout_sep = ','
 
         # si on a précisé une racine, on l'ajoute dans un arbre
         if root is not None:
@@ -944,5 +947,62 @@ class StrategyTree:
                         vst.edge(par, ch, label=attr)
         vst.render(filename, view=True)
 
+    def to_file(self, filemame='last_best_tree.txt'):
+        fout = open(filemame, 'w')
+        newline = self.fout_newline
+        sep = self.fout_sep
+        fout.write(
+            self._root.get_id() + sep + str(self._root.get_cost()) + sep + self._root.get_name() + sep +
+            ('obs' if isinstance(self._root, Observation) else 'rep') + newline
+        )
+        fout.write(newline)
+        for node in self._nodes:
+            fout.write(
+                node.get_id() + sep + str(node.get_cost()) + sep + node.get_name() + sep +
+                ('obs' if isinstance(node, Observation) else 'rep') + newline
+            )
+        fout.write(newline)
+        for edge in self.get_edges():
+            fout.write(
+                edge[0].get_id() + sep + edge[1].get_id() + sep + (edge[2] if edge[2] is not None else 'None') +
+                newline
+            )
+        fout.close()
+
     def delete_unnecessary_nodes(self, call_service):
         pass
+
+
+def st_from_file(filemame='last_best_tree.txt', sep=',', newline=None):
+    if newline is None:
+        newline = '\r\n' if os.name == 'nt' else '\n'
+    fin = open(filemame, 'r')
+    line = fin.readline().replace(newline, '').split(sep)
+    stin = StrategyTree(root=(
+        Repair(line[0], float(line[1]), line[2]) if line[3] == 'rep' else Observation(line[0], float(line[1]), line[2]))
+    )
+    stin.fout_newline = newline
+    stin.fout_sep = sep
+    idroot = line[0]
+
+    fin.readline()
+    line = fin.readline().replace(newline, '')
+    while line != '':
+        line = line.split(sep)
+        if line[0] != idroot:
+            stin.add_node(
+                Repair(line[0], float(line[1]), line[2]) if line[3] == 'rep'
+                else Observation(line[0], float(line[1]), line[2])
+            )
+        line = fin.readline().replace(newline, '')
+    line = fin.readline().replace(newline, '')
+    while line != '':
+        line = line.split(sep)
+        stin.add_edge(line[0], line[1], line[2])
+        line = fin.readline().replace(newline, '')
+    line = fin.readline().replace(newline, '')
+    fin.close()
+    if line != '':
+        ecrin = float(line)
+        return stin, ecrin
+    return stin,

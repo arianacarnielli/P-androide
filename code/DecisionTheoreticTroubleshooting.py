@@ -3,6 +3,7 @@ import copy
 import pyAgrum as gum
 import StrategyTree as st
 import numpy as np
+import socket as socket
 from tqdm import tqdm
 from itertools import permutations
 from numpy import inf
@@ -1533,7 +1534,7 @@ class TroubleShootingProblem:
         self._nodes_ids_db_brute_force.append(next_id)
         return next_id
 
-    def brute_force_solver(self, debug=False, mode='all', obs_rep_couples=False, obs_obsolete=False):
+    def brute_force_solver(self, debug=False, mode='all', obs_rep_couples=False, obs_obsolete=False, sock=None):
         if debug is False:
             debug = (False, False)
         elif debug is True:
@@ -1555,18 +1556,18 @@ class TroubleShootingProblem:
         if mode == 'dp':
             self._best_st, self._best_ecr = self.dynamic_programming_solver(
                 feasible_nodes, debug_iter=debug[0], debug_st=debug[1], obs_rep_couples=obs_rep_couples,
-                obs_obsolete=obs_obsolete)
+                obs_obsolete=obs_obsolete, sock=sock)
         elif mode == 'all':
             self._evaluate_all_st(
                 feasible_nodes, debug_iter=debug[0], debug_st=debug[1], obs_rep_couples=obs_rep_couples,
-                obs_obsolete=obs_obsolete)
+                obs_obsolete=obs_obsolete, sock=sock)
 
         self._nodes_ids_db_brute_force = []
 
         return self._best_st, self._best_ecr
 
     def _evaluate_all_st(self, feasible_nodes, obs_next_nodes=None, parent=None, fn_immutable=None, debug_nb_call=0,
-                         debug_iter=False, debug_st=False, obs_rep_couples=False, obs_obsolete=False):
+                         debug_iter=False, debug_st=False, obs_rep_couples=False, obs_obsolete=False, sock=None):
         par_tmp = None
         parent_c = shallow_copy_parent(parent)
         branch_attr_obs_rep_couples = None
@@ -1589,6 +1590,12 @@ class TroubleShootingProblem:
         fn_immutable_c = shallow_copy_list_of_copyable(fn_immutable)
         if len(feasible_nodes) > 0:
             for i in range(len(feasible_nodes)):
+                if parent_c is not None and sock is not None and (
+                        isinstance(parent_c[-1][2].get_root(), st.Repair) and debug_nb_call == 1 or
+                        isinstance(parent_c[-1][2].get_root(), st.Observation) and len(parent_c) == 1 and
+                        parent_c[-1][0] == parent_c[-1][2].get_root()
+                ):
+                    sock.send('0'.encode())
                 nodes_obs_obsolete = []
                 node = feasible_nodes[i]
                 obs_next_nodes_tmp = shallow_copy_list_of_copyable(obs_next_nodes) \
@@ -1612,7 +1619,7 @@ class TroubleShootingProblem:
                     self._evaluate_all_st(
                         feasible_nodes[:i] + feasible_nodes[i + 1:],
                         shallow_copy_list_of_copyable(onn) if onn is not None else None, par, fn_im, debug_nb_call + 1,
-                        debug_iter, debug_st, obs_rep_couples, obs_obsolete)
+                        debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
                 else:
                     par_mutable, par_immutable, par_tree_mutable = parent_c[-1]
                     branch_attr = obs_next_nodes_tmp[-1][0] if obs_next_nodes_tmp is not None else None
@@ -1643,7 +1650,7 @@ class TroubleShootingProblem:
                             feasible_nodes[:i] + feasible_nodes[i + 1:] + nodes_obs_obsolete,
                             shallow_copy_list_of_copyable(obs_next_nodes_tmp)
                             if obs_next_nodes_tmp is not None else None, parent_c, fn_immutable_c, debug_nb_call + 1,
-                            debug_iter, debug_st, obs_rep_couples, obs_obsolete)
+                            debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
                     elif isinstance(node, st.Observation):
                         fn_im = fn_immutable_c.copy()
                         appended_parent, appended_obs = False, False
@@ -1673,7 +1680,7 @@ class TroubleShootingProblem:
                             feasible_nodes[:i] + feasible_nodes[i + 1:] + nodes_obs_obsolete,
                             shallow_copy_list_of_copyable(obs_next_nodes_tmp)
                             if obs_next_nodes_tmp is not None else None, parent_c, fn_im, debug_nb_call + 1, debug_iter,
-                            debug_st, obs_rep_couples, obs_obsolete)
+                            debug_st, obs_rep_couples, obs_obsolete, sock)
                         if appended_parent:
                             parent_c.pop()
                         if appended_obs:
@@ -1705,7 +1712,7 @@ class TroubleShootingProblem:
                         self._evaluate_all_st(
                             fn_immutable_c[-1], shallow_copy_list_of_copyable(obs_next_nodes_tmp)
                             if obs_next_nodes_tmp is not None else None, parent_c, fn_immutable_c, debug_nb_call + 1,
-                            debug_iter, debug_st, obs_rep_couples, obs_obsolete)
+                            debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
                     else:
                         if len(parent_c) != 1 and any([len(lbls) > 1 for lbls in obs_next_nodes_tmp]):
                             while len(obs_next_nodes_tmp[-1]) == 1:
@@ -1717,7 +1724,7 @@ class TroubleShootingProblem:
                             self._evaluate_all_st(
                                 fn_immutable_c[-1], shallow_copy_list_of_copyable(obs_next_nodes_tmp)
                                 if obs_next_nodes_tmp is not None else None,  parent_c, fn_immutable_c,
-                                debug_nb_call + 1, debug_iter, debug_st, obs_rep_couples, obs_obsolete)
+                                debug_nb_call + 1, debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
                         else:
                             complete_tree = True
                             strat_tree = par_tree_mutable.copy()
@@ -1731,7 +1738,7 @@ class TroubleShootingProblem:
             return
 
     def dynamic_programming_solver(self, feasible_nodes=None, evidence=None, debug_iter=False, debug_st=False,
-                                   obs_rep_couples=False, prob=1.0, obs_obsolete=False):
+                                   obs_rep_couples=False, prob=1.0, obs_obsolete=False, sock=None):
         nodes_created = False
         if feasible_nodes is None:
             rep_string, obs_string = '_repair', '_observation'
@@ -1758,6 +1765,8 @@ class TroubleShootingProblem:
             if debug_iter and len(evidence.keys()) == 0:
                 print(f'{bcolors.OKGREEN}\n########################\nIter %d\n########################\n{bcolors.ENDC}'
                       % i)
+            if len(evidence.keys()) == 1 and sock is not None:
+                sock.send('0'.encode())
             nodes_obs_obsolete = []
             evid_obsolete = {}
             node = feasible_nodes[i].copy()
@@ -1800,7 +1809,7 @@ class TroubleShootingProblem:
                         best_sub_tree, best_sub_ecr = self.dynamic_programming_solver(
                             feasible_nodes[:i] + feasible_nodes[i + 1:] + nodes_obs_obsolete,
                             diff_dicts(new_evidence, evid_obsolete), debug_iter, debug_st, obs_rep_couples, prob_next,
-                            obs_obsolete
+                            obs_obsolete, sock
                         )
                     self.bay_lp.setEvidence(evidence)
                     if best_sub_tree is not None:
