@@ -1074,6 +1074,88 @@ class TroubleShootingProblem:
 
         return chosen_node, type_node, list_ecr, list_eco
 
+    def myopic_solver_st(self, evid_init=None):
+        """
+        Une méthode qui récupère un arbre de stratégie qu'on peut construire à partir de myopic_solver.
+
+        Parameters
+        ----------
+        evid_init : dict, facultatif
+            Un dictionnaire des évidences par défaut.
+
+        Returns
+        -------
+        strat_tree : StrategyTree.StrategyTree
+            Un arbre de stratégie qu'on construit utilisant pas-à-pas une méthode myopic_solver en remplissant cet arbre
+            en largeur.
+        """
+
+        # Initialisation des paramètres divers
+        if evid_init is None:
+            evid_init = {}
+        self.reset_bay_lp(evid_init)
+        start_point = self.myopic_solver()
+        self._nodes_ids_db_brute_force = ['-1']
+        # Une couche courante à ajouter dans un arbre
+        current_layer = [(start_point[0], start_point[1], None, None, evid_init)]
+        next_layer = []
+        strat_tree = None
+
+        # Tant qu'il existe des noeuds dans une couche courante
+        while len(current_layer) > 0:
+            # On parcourt par tous les noeuds dans une couche courante
+            for name_node, type_node, par, label, evidence in current_layer:
+                # On crée un noeud de type plus précis (StrategyTree.NodeST)
+                node = (st.Repair(self._next_node_id(), self.costs_rep[name_node], name_node)
+                        if name_node not in self.observation_nodes
+                        else st.Observation(
+                            self._next_node_id(), self.costs_obs[name_node], name_node,
+                            obs_rep_couples=(type_node != 'obs'))
+                        )
+                # On crée un arbre si c'était pas encore fait
+                if par is None:
+                    strat_tree = st.StrategyTree(root=node.copy())
+                # Sinon on ajoute un noeud dans un arbre
+                else:
+                    strat_tree.add_node(node)
+                    strat_tree.add_edge(par, node, label)
+                # Si on rencontre un noeud d'observation pour une paire observation-réparation, on ajoute aussi un noeud
+                # de réparation
+                if isinstance(node, st.Observation) and node.get_obs_rep_couples():
+                    node_rep = st.Repair(self._next_node_id(), self.costs_rep[name_node], name_node)
+                    node_service = st.Repair(self._next_node_id(), self.costs_rep[self.service_node], self.service_node)
+                    strat_tree.add_node(node_rep)
+                    strat_tree.add_node(node_service)
+                    strat_tree.add_edge(node_rep, node_service)
+                    strat_tree.add_edge(node, node_rep, 'yes')
+                # On remet les observations obsolètes si nécessaire
+                if name_node in self.repairable_nodes.intersection(self.observation_nodes):
+                    obsolete = self.observation_obsolete(name_node)
+                    for obs in obsolete:
+                        evidence.pop(obs)
+                # Si un noeud courant n'est pas un noeud de service alors on ajoute des informations diverses dans une
+                # couche suivante
+                if name_node != self.service_node:
+                    next_layer.extend([
+                        (node.get_id(), label, merge_dicts(evidence, {node.get_name(): label}))
+                        for label in (
+                            self.bayesian_network.variable(name_node).labels()
+                            if isinstance(node, st.Observation) and not node.get_obs_rep_couples()
+                            else ['no']
+                        )
+                    ])
+            # On met à jour une couche courante en fonction des informations contenant dans une couche suivante
+            current_layer.clear()
+            for par, label, evidence in next_layer:
+                self.reset_bay_lp(evidence)
+                name_node, type_node = self.myopic_solver()
+                current_layer.append((name_node, type_node, par, label, evidence))
+            next_layer.clear()
+
+        self._nodes_ids_db_brute_force = []
+        self.reset_bay_lp()
+        return strat_tree
+
     def simple_solver_tester(self, true_prices, epsilon, nb_min = 100, \
                              nb_max = 200):
         """
@@ -1579,7 +1661,7 @@ class TroubleShootingProblem:
         ----------
         strategy_tree : StrategyTree
             Arbre de stratégie dont le coût il faut calculer.
-        obs_obsoletes : bool, facultatif
+        obs_obsolete : bool, facultatif
             Si True, on remet en cause les noeuds d'observation globale après
             une réparation.
 
@@ -1588,15 +1670,15 @@ class TroubleShootingProblem:
         ecr : float
             Coût espéré de réparation d'un arbre de stratégie fourni.
         """
-        ecr = self._expected_cost_of_repair_internal(strategy_tree,\
-                                                     obs_obsolete=obs_obsolete)
+        ecr = self._expected_cost_of_repair_internal(
+            strategy_tree,obs_obsolete=obs_obsolete)
         self.bay_lp.setEvidence({})
         self._start_bay_lp()
         self.reset_bay_lp()
         return ecr
 
-    def _expected_cost_of_repair_internal(self, strategy_tree, evid_init=None,\
-                                          prob=1.0, obs_obsolete=False):
+    def _expected_cost_of_repair_internal(
+            self, strategy_tree, evid_init=None, prob=1.0, obs_obsolete=False):
         """
         Partie récursive de la fonction expected_cost_of_repair.
 
@@ -1608,7 +1690,7 @@ class TroubleShootingProblem:
             Dictionnaire d'évidences utilisé dans les appels récursifs.
         prob : float, facultatif
             Probabilité initiale.
-        obs_obsoletes : bool, facultatif
+        obs_obsolete : bool, facultatif
             Si True, on remet en cause les noeuds d'observation globale après
             une réparation.
 
@@ -1659,7 +1741,7 @@ class TroubleShootingProblem:
         else:
             # ... et plusieurs enfants pour des observations
             for obs_label in \
-                self.bayesian_network.variable(node_name).labels():
+                    self.bayesian_network.variable(node_name).labels():
                 child = node.bn_labels_children_association()[obs_label]
                 new_evidence = (evidence.copy()
                             if evidence.get(node_name) is not None and \
@@ -1677,8 +1759,9 @@ class TroubleShootingProblem:
 
         return ecr
 
-    def _create_nodes(self, names, rep_string='_repair',\
-                      obs_string='_observation', obs_rep_couples=False):
+    def _create_nodes(
+            self, names, rep_string='_repair',
+            obs_string='_observation', obs_rep_couples=False):
         """
         Crée des noeuds de StrategyTree à partir de leurs noms dans le réseau
         Bayésien.
@@ -1706,40 +1789,72 @@ class TroubleShootingProblem:
         """
         nodes = []
         for name, i in zip(names, range(len(names))):
-            if obs_rep_couples and name in \
-                self.observation_nodes.intersection(self.repairable_nodes):
-                node = st.Observation(str(i), self.costs_obs[name], name, \
-                                      obs_rep_couples=obs_rep_couples)
+            if obs_rep_couples and \
+                    name in self.observation_nodes.intersection(self.repairable_nodes):
+                node = st.Observation(
+                    str(i), self.costs_obs[name], name,
+                    obs_rep_couples=obs_rep_couples)
             elif name.endswith(rep_string) or name == self.service_node:
-                node = st.Repair(str(i), \
-                    self.costs_rep[name.replace(rep_string, '')], \
+                node = st.Repair(
+                    str(i), self.costs_rep[name.replace(rep_string, '')],
                     name.replace(rep_string, ''))
             else:
-                node = st.Observation(str(i), \
-                        self.costs_obs[name.replace(obs_string, '')],\
-                                      name.replace(obs_string, ''))
+                node = st.Observation(
+                    str(i), self.costs_obs[name.replace(obs_string, '')],
+                    name.replace(obs_string, ''))
             nodes.append(node)
             self._nodes_ids_db_brute_force.append(str(i))
         return nodes
 
     def _next_node_id(self):
         """
-        Permet d'obtenir la prochaine valeur d'id pour le noeud courant de
-        StrategyTree.
-        
+        Une méthode auxiliaire qui permet d'obtenir une prochaine valeur de id pour un noeud de StrategyTree à partir
+        des ids qu'on utilisé déjà stockés dans *self._nodes_ids_db_brute_force*.
+
         Returns
         -------
-        next_id : string
-            Prochaine valeur d'id.
+        next_id : str
+            Id suivant qu'on peut utiliser avec une garantie qu'il n'existe pas de noeuds avec le même id
+            dans un arbre de stratégie courant.
         """
-        
         next_id = str(int(self._nodes_ids_db_brute_force[-1]) + 1)
         self._nodes_ids_db_brute_force.append(next_id)
         return next_id
 
-    def brute_force_solver(self, debug=False, mode='all',\
-                           obs_rep_couples=False, obs_obsolete=False,\
-                               sock=None):
+    def brute_force_solver(
+            self, debug=False, mode='all', obs_rep_couples=False,
+            obs_obsolete=False, sock=None):
+        """
+        Un wrapper des algorithmes différents de recherche exhaustive qui calcule une solution exactement optimale
+        étand donné un problème de Troubleshooting.
+
+        Parameters
+        ----------
+        debug : bool / tuple, facultatif
+            Un paramètre qui indique s'il faut afficher des résultats intermédiaire du calcul, objet du type tuple avec
+            len(tuple) == 2 ou du type bool (c'est équivalent pour le cas où on passe un tuple avec les deux mêmes
+            valeurs) ; premier composant indique s'il faut afficher un index de l'itération dans un appel le moins
+            profond tandis que le deuxième précise s'il faut afficher tous les arbres intermédiaires.
+        mode : str, facultatif
+            Une mode de calcul, objet du type str : soit 'dp' pour une programmation dynamique, soit 'all' pour le
+            dénombrement complet.
+        obs_rep_couples : bool, facultatif
+            Une variable boléenne qui indique si on suppose l'existance de couples " observation-réparation " dans un
+            arbre de stratégie soumis.
+        obs_obsolete : bool, facultatif
+            Une variable boléenne qui indique si on suppose des " observations obsolètes ", i.e. si c'est possible de
+            faire une observation obsolète réparant une composante.
+        sock : socket.socket, facultatif
+            Un socket de communication entre le processus qui effectue le calcule et celui qui met à jour l'interface ;
+            paramètre nécessaire pour que le ProgressBar de l'interface marche proprement.
+
+        Returns
+        -------
+        best_st : StrategyTree.StrategyTree
+            Le meilleur arbre de stratégie trouvé.
+        best_ecr : float
+            Le coût espéré de réparation du meilleur arbre trouvé i.e. ECR(*best_st*).
+        """
         if debug is False:
             debug = (False, False)
         elif debug is True:
@@ -1780,13 +1895,52 @@ class TroubleShootingProblem:
 
         return self._best_st, self._best_ecr
 
-    def _evaluate_all_st(self, feasible_nodes, obs_next_nodes=None, parent=None, fn_immutable=None, debug_nb_call=0,
-                         debug_iter=False, debug_st=False, obs_rep_couples=False, obs_obsolete=False, sock=None):
+    def _evaluate_all_st(
+            self, feasible_nodes, obs_next_nodes=None, parent=None,
+            fn_immutable=None, debug_nb_call=0, debug_iter=False,
+            debug_st=False, obs_rep_couples=False, obs_obsolete=False,
+            sock=None):
+        """
+        Une méthode récursive qui trouve le meilleur arbre de stratégie étant donné une configuration du problème en
+        dénombrant tous les arbres admissibles.
+
+        Parameters
+        ----------
+        feasible_nodes : list(StrategyTree.NodeST)
+            Une liste des noeuds admissibles qu'on a le droit d'utiliser pour construire un arbre.
+        obs_next_nodes : list(list(str)), facultatif
+            Un paramètre auxiliaire qui est une pile des attributs des arcs qui partent des noeuds déjà utilisés.
+        parent : list(tuple(StrategyTree.NodeST, StrategyTree.NodeST, StrategyTree.StrategyTree)), facultatif
+            Un paramètre auxiliaire qui est une pile des " parents " vers lesqules il faudra se retourner quand on
+            remplira entièrement une branche courante.
+        fn_immutable : list(list(StrategyTree.NodeST)), facultatif
+            Un paramètre auxiliaire qui est une pile des noeuds admissibles qu'on peut utiliser pour les branches
+            différentes qui suivent un noeud d'observation.
+        debug_nb_call : int, facultatif
+            Un paramètre auxiliaire qui est la profondeur de la récursivité.
+        debug_iter : bool, facultatif
+            Une variable boléenne qui indique s'il faut afficher un index de l'itération dans un appel le moins profond.
+        debug_st : bool, facultatif
+            Une variable boléenne qui précise s'il faut afficher tous les arbres intermédiaires.
+        obs_rep_couples : bool, facultatif
+            Une variable boléenne qui indique si on suppose l'existance de couples " observation-réparation " dans un
+            arbre de stratégie soumis.
+        obs_obsolete : bool, facultatif
+            Une variable boléenne qui indique si on suppose des " observations obsolètes ", i.e. si c'est possible de
+            faire une observation obsolète réparant une composante.
+        sock : socket.socket, facultatif
+            Un socket de communication entre le processus qui effectue le calcule et celui qui met à jour l'interface ;
+            paramètre nécessaire pour que le ProgressBar de l'interface marche proprement.
+        """
         par_tmp = None
         parent_c = shallow_copy_parent(parent)
         branch_attr_obs_rep_couples = None
+        # On récupère un parent qui a appelé cette fonction s'il y existe
         if parent is not None:
             par_tmp = parent[-1][0]
+        # Si on suppose des couples observations-réparations on ne reboucle que dans le cas où une observation donne
+        # une réponse qu'une composante marche. Sinon, on ajoute une action de réparation de cette composante et on
+        # s'arrête pour cette branche-là
         if (obs_rep_couples and par_tmp is not None and isinstance(par_tmp, st.Observation)
                 and par_tmp.get_name() in self.repairable_nodes.intersection(self.observation_nodes)):
             node_rep = st.Repair(self._next_node_id(), self.costs_rep[par_tmp.get_name()], par_tmp.get_name())
@@ -1802,6 +1956,7 @@ class TroubleShootingProblem:
             )
             parent_c[-1][2].add_edge(par_tmp, node_rep, branch_attr_obs_rep_couples)
         fn_immutable_c = shallow_copy_list_of_copyable(fn_immutable)
+        # À partir de chaque noeud admissible on dénombre chaque arbre qu'on peut construire
         if len(feasible_nodes) > 0:
             for i in range(len(feasible_nodes)):
                 if parent_c is not None and sock is not None and (
@@ -1817,6 +1972,7 @@ class TroubleShootingProblem:
                 if (branch_attr_obs_rep_couples is not None and obs_next_nodes_tmp is not None and
                         branch_attr_obs_rep_couples in obs_next_nodes_tmp[-1]):
                     obs_next_nodes_tmp[-1].remove(branch_attr_obs_rep_couples)
+                # S'il n'y a pas de parents alors on est dans toute racine ; on crée alors un noeuveau parent
                 if parent_c is None or debug_nb_call == 0:
                     if debug_iter:
                         print(
@@ -1834,6 +1990,7 @@ class TroubleShootingProblem:
                         feasible_nodes[:i] + feasible_nodes[i + 1:],
                         shallow_copy_list_of_copyable(onn) if onn is not None else None, par, fn_im, debug_nb_call + 1,
                         debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
+                # Sinon on reboucle utilisant les noeuds qu'on n'a pas encore utilisés
                 else:
                     par_mutable, par_immutable, par_tree_mutable = parent_c[-1]
                     branch_attr = obs_next_nodes_tmp[-1][0] if obs_next_nodes_tmp is not None else None
@@ -1852,6 +2009,7 @@ class TroubleShootingProblem:
                         par_tree_mutable.add_node(node)
                         par_tree_mutable.add_edge(par_mutable, node, branch_attr)
                     par_mutable = node.copy()
+                    # Une seule branche à remplir pour un noeud de réparation ...
                     if isinstance(node, st.Repair):
                         parent_c[-1] = (par_mutable, par_immutable, par_tree_mutable.copy())
                         if obs_obsolete:
@@ -1865,6 +2023,7 @@ class TroubleShootingProblem:
                             shallow_copy_list_of_copyable(obs_next_nodes_tmp)
                             if obs_next_nodes_tmp is not None else None, parent_c, fn_immutable_c, debug_nb_call + 1,
                             debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
+                    # ... et bien plusieurs pour un noeud d'observation
                     elif isinstance(node, st.Observation):
                         fn_im = fn_immutable_c.copy()
                         appended_parent, appended_obs = False, False
@@ -1900,10 +2059,15 @@ class TroubleShootingProblem:
                         if appended_obs:
                             obs_next_nodes_tmp.pop()
                             obs_next_nodes_tmp = obs_next_nodes_tmp if len(obs_next_nodes_tmp) > 0 else None
+        # S'il ne reste qu'un seul noeud admissible alors on a déjà bien rempli une branche courante ; alors il faut
+        # soit choisir l'une d'autre, soit s'arrêter
         if len(feasible_nodes) == 1:
             complete_tree = False
             ecr = inf
             strat_tree = None
+            # S'il n'y avait pas de parents alors il n'y pas des observations dans les noeuds admissibles par défaut
+            # c'est pour cette raison qu'on a déjà construit un arbre complet et il faut alors le tester en termes des
+            # coûts espérés
             if parent_c is None:
                 complete_tree = True
                 strat_tree = st.StrategyTree(root=feasible_nodes[0].copy())
@@ -1912,6 +2076,9 @@ class TroubleShootingProblem:
                 ecr = self.expected_cost_of_repair(strat_tree, obs_obsolete=obs_obsolete)
             else:
                 par_mutable, par_immutable, par_tree_mutable = parent_c[-1]
+                # S'il n'y avait pas des labels des conséquences des observations alors il n'y pas des observations
+                # dans les noeuds admissibles par défaut c'est pour cette raison qu'on a déjà construit un arbre
+                # complet et il faut alors le tester en termes des coûts espérés
                 if obs_next_nodes_tmp is None:
                     complete_tree = True
                     strat_tree = par_tree_mutable.copy()
@@ -1919,6 +2086,8 @@ class TroubleShootingProblem:
                         print(strat_tree)
                     ecr = self.expected_cost_of_repair(strat_tree, obs_obsolete=obs_obsolete)
                 else:
+                    # Si on n'a pas encore rempli toutes les conséquences possibles d'observation dernière alors
+                    # il faut continuer par une observation suivante
                     if len(obs_next_nodes_tmp[-1]) != 1:
                         par_mutable = par_immutable.copy()
                         parent_c[-1] = (par_mutable, par_immutable, par_tree_mutable.copy())
@@ -1928,6 +2097,8 @@ class TroubleShootingProblem:
                             if obs_next_nodes_tmp is not None else None, parent_c, fn_immutable_c, debug_nb_call + 1,
                             debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
                     else:
+                        # S'il existe une observation pour laquelle il existe une conséquence dont la branche on n'a pas
+                        # encore rempli donc il faut continuer par cette branche
                         if len(parent_c) != 1 and any([len(lbls) > 1 for lbls in obs_next_nodes_tmp]):
                             while len(obs_next_nodes_tmp[-1]) == 1:
                                 lp = parent_c.pop()
@@ -1939,20 +2110,54 @@ class TroubleShootingProblem:
                                 fn_immutable_c[-1], shallow_copy_list_of_copyable(obs_next_nodes_tmp)
                                 if obs_next_nodes_tmp is not None else None,  parent_c, fn_immutable_c,
                                 debug_nb_call + 1, debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
+                        # Sinon, alors toutes les branches de tous les noeuds d'observation ont été remplies, et on
+                        # a donc déjà construit un arbre complet
                         else:
                             complete_tree = True
                             strat_tree = par_tree_mutable.copy()
                             if debug_st:
                                 print(strat_tree)
                             ecr = self.expected_cost_of_repair(strat_tree, obs_obsolete=obs_obsolete)
+            # On teste ECR d'un arbre trouvé pour le sauvegarder si nécessaire
             if complete_tree and ecr < self._best_ecr:
                 self._best_st = strat_tree
                 self._best_ecr = ecr
+        # S'il n'y a pas des noeuds admissibles alors on s'arrête
         elif len(feasible_nodes) == 0:
             return
 
-    def dynamic_programming_solver(self, feasible_nodes=None, evidence=None, debug_iter=False, debug_st=False,
-                                   obs_rep_couples=False, prob=1.0, obs_obsolete=False, sock=None):
+    def dynamic_programming_solver(
+            self, feasible_nodes=None, evidence=None, debug_iter=False,
+            debug_st=False, obs_rep_couples=False, prob=1.0,
+            obs_obsolete=False, sock=None):
+        """
+        Une méthode récursive qui trouve le meilleur arbre de stratégie étant donné une configuration du problème en
+        utilisant l'approche de programmation dynamique supposant qu'un sous-arbre de l'arbre optimal est lui-même
+        également optimal.
+
+        Parameters
+        ----------
+        feasible_nodes : list(StrategyTree.NodeST), facultatif
+            Une liste des noeuds admissibles qu'on a le droit d'utiliser pour construire un arbre.
+        evidence : dict, facultatif
+            Un dictionnaire des évidences initiales pour un appel particulier de cette fonction.
+        debug_iter : bool, facultatif
+            Une variable boléenne qui indique s'il faut afficher un index de l'itération dans un appel le moins profond.
+        debug_st : bool, facultatif
+            Une variable boléenne qui précise s'il faut afficher tous les arbres intermédiaires.
+        obs_rep_couples : bool, facultatif
+            Une variable boléenne qui indique si on suppose l'existance de couples " observation-réparation " dans un
+            arbre de stratégie soumis.
+        prob : float, facultatif
+            Une probabilité que le système ne marche toujours pas.
+        obs_obsolete : bool, facultatif
+            Une variable boléenne qui indique si on suppose des " observations obsolètes ", i.e. si c'est possible de
+            faire une observation obsolète réparant une composante.
+        sock : socket.socket, facultatif
+            Un socket de communication entre le processus qui effectue le calcule et celui qui met à jour l'interface ;
+            paramètre nécessaire pour que le ProgressBar de l'interface marche proprement.
+        """
+        # Si on n'a pas passé des noeuds admissibles alors on les crée
         nodes_created = False
         if feasible_nodes is None:
             rep_string, obs_string = '_repair', '_observation'
@@ -1971,16 +2176,21 @@ class TroubleShootingProblem:
 
         self.bay_lp.setEvidence(evidence)
 
+        # Le pire arbre qu'on peut imaginer pour commencer c'est un arbre ne contenant qu'un seul noeud de service
         call_service_node = st.Repair(self._next_node_id(), self.costs_rep[self.service_node], self.service_node)
         best_tree = st.StrategyTree(call_service_node, [call_service_node])
         best_ecr = self.costs_rep[self.service_node]
 
+        # On commence à trouver le meilleur arbre par chaque noeud passé comme admissible
         for i in range(len(feasible_nodes)):
             if debug_iter and len(evidence.keys()) == 0:
                 print(f'{bcolors.OKGREEN}\n########################\nIter %d\n########################\n{bcolors.ENDC}'
                       % i)
             if len(evidence.keys()) == 1 and sock is not None:
                 sock.send('0'.encode())
+            # On crée un (sous-)arbre qui a un noeud courant pour sa racine calculant une probabilité de ne pas réparer
+            # le dispositif effectuant une action qui correspond à ce noeud-là et mettant à jour tous les paramètres
+            # nécessaires
             nodes_obs_obsolete = []
             evid_obsolete = {}
             node = feasible_nodes[i].copy()
@@ -1988,6 +2198,8 @@ class TroubleShootingProblem:
             strat_tree = st.StrategyTree(root=node)
             cost = self.costs_rep[node.get_name()] if isinstance(node, st.Repair) else self.costs_obs[node.get_name()]
             ecr = prob * cost
+            # On remet certaines observations dans les noeuds admissibles si on peut faire ces observations obsolètes
+            # effectuant une action qui correspond à ce noeud-là
             if obs_obsolete and (
                     isinstance(node, st.Repair) or
                     (obs_rep_couples and isinstance(node, st.Observation) and
@@ -2000,6 +2212,7 @@ class TroubleShootingProblem:
                     )
                 evid_obsolete = {obs: None for obs in obsolete}
             if node.get_name() != self.service_node:
+                # On continue en liant pour toutes les branches possibles un sous-arbre optimal
                 for label in (self.bayesian_network.variable(node.get_name()).labels()
                               if isinstance(node, st.Observation) else ['no']):
                     if (isinstance(node, st.Observation) and evidence.get(node.get_name()) is not None and
@@ -2010,6 +2223,9 @@ class TroubleShootingProblem:
                     self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
                     prob_next = self.get_proba(node.get_name(), label)
                     self.bay_lp.setEvidence(evidence)
+                    # Si un noeud courant est une paire observation-réparation et une conséquence d'observation a dit
+                    # qu'une composante ne marche pas alors on ajoute une action de réparation correspondante, une
+                    # action de service, et on s'arrête pour cette branche-là
                     if (obs_rep_couples and isinstance(node, st.Observation) and label == 'yes' and
                             node.get_name() in self.repairable_nodes.intersection(self.observation_nodes)):
                         node_rep = st.Repair(self._next_node_id(), self.costs_rep[node.get_name()], node.get_name())
@@ -2019,6 +2235,7 @@ class TroubleShootingProblem:
                         best_sub_tree = st.StrategyTree(root=node_rep, nodes=[node_rep, node_service])
                         best_sub_ecr = self._expected_cost_of_repair_internal(
                             best_sub_tree, new_evidence, prob_next, obs_obsolete)
+                    # Sinon on rapelle récursivement cette fonction pour trouver un sous-arbre optimal
                     else:
                         best_sub_tree, best_sub_ecr = self.dynamic_programming_solver(
                             feasible_nodes[:i] + feasible_nodes[i + 1:] + nodes_obs_obsolete,
@@ -2031,9 +2248,12 @@ class TroubleShootingProblem:
                     else:
                         strat_tree.remove_sub_tree(strat_tree.get_root().get_child_by_attribute(label))
                     ecr += prob * best_sub_ecr
+            # On compare si le coût trouvé est inférieure que celui actuellement le meilleur
             if ecr < best_ecr:
                 best_tree = strat_tree.copy()
                 best_ecr = ecr
+
+        # On remet en place certains paramètres si nécessaire
 
         if len(evidence.keys()) == 0:
             self.bay_lp.setEvidence({})
@@ -2049,11 +2269,14 @@ class TroubleShootingProblem:
 
         return best_tree, best_ecr
 
-    def brute_force_solver_tester(self, true_prices, epsilon, nb_min=100,\
-                                  nb_max=200, strategy_tree=None, mode='dp',\
-                                  obs_rep_couples=False, true_prices_obs=None):
+    def brute_force_solver_tester(
+            self, true_prices, epsilon, nb_min=100,
+            nb_max=200, strategy_tree=None, mode='dp',
+            obs_rep_couples=False, true_prices_obs=None):
         """
-        Test empirique de la méthode brute_force_solver.
+        Test empirique de la méthode brute_force_solver, ou bien de l'arbre de stratégie obtenu par l'algorithme
+        différent. Le mécanisme selon lequel on teste une stratégie est exactement le même que celui utilisé au-dessus
+        dans les autres testers.
 
         Parameters
         ----------
@@ -2076,7 +2299,7 @@ class TroubleShootingProblem:
             Paramètre à passer à la méthode brute_force_solver si on doit
             l'exécuter. Indique si on suppose l'existance de couples
             "observation-réparation" dans l'arbre de stratégie.
-         true_prices_obs : dict, facultatif
+        true_prices_obs : dict, facultatif
              Dictionnaire de prix d'observations des composantes observables.
         
         Returns
