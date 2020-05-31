@@ -11,18 +11,20 @@ from numpy import inf
 
 def shallow_copy_list_of_copyable(l):
     """
-    Crée une copie superficielle de la liste passée en argument
-    passée en remplissant de plus chaque élément d'une nouvelle liste par un
-    appel de méthode copy() d'un élément corespondant de la liste donnée.
+    Crée une copie de profondeur 1 de la liste passée en argument : la liste 
+    est recopiée et remplie avec l'appel de la méthode copy() en chaque élément
+    de la liste donnée.
 
-    Args :
-        l : une liste dont la copie il faut créer, objet du type list<Copyable>
-            où Copyable est une interface abstraite qui dispose d'une méthode
-            copy().
+    Parameters
+    ----------
+    l : list<Copyable>
+        La liste qui sera copiée. Chacun de ses éléments doit implémenter la
+        méthode copy().
 
-    Returns :
-        cl : une copie superficielle d'une liste donnée qu'il fallait créer,
-            objet du type list<Copyable>.
+    Returns
+    -------
+    cl : list<Copyable>
+        Copie de profondeur 1 de la liste passée en argument.
     """
     if l is None:
         return None
@@ -31,33 +33,44 @@ def shallow_copy_list_of_copyable(l):
 
 def shallow_copy_parent(parent):
     """
-    Une méthode statique auxiliaire qui crée une copie superficielle d'un `` parent '' (cf une méthode
+    Crée une copie superficielle de *parent* (cf la méthode
     TroubleShootingProblem._evaluate_all_st ci-dessous).
 
-    Args :
-        parent : un parent dont la copie il faut créer, objet du type list<tuple<NodeST, NodeST, StrategyTree>>.
+    Parameters
+    ----------
+    parent : list<tuple<NodeST, NodeST, StrategyTree>>
+        Parent dont la copie il faut créer.
 
-    Returns :
-        parent_copy : une copie superficielle d'un parent passé, objet du type
-            list<tuple<NodeST, NodeST, StrategyTree>>.
+    Returns
+    -------
+    parent_copy : list<tuple<NodeST, NodeST, StrategyTree>>
+        Copie superficielle du parent passé.
     """
     if parent is None:
         return None
-    return [tuple([elem.copy() if elem is not None else None for elem in par]) for par in parent]
+    return [tuple([elem.copy() if elem is not None else None for elem in par])\
+            for par in parent]
 
 
 def merge_dicts(left, right):
     """
-    Uné méthode qui fusionne deux dictionnaire passés ne pas les changeant. Une couple (clé, valeur) de dictionnaire
-    right est plus prioritaire que celle de left ; c'est-à-dire, s'il existe une valeur associée à la même clé k dans
-    tous les deux dictionnaire, on ajoute dans le résultat celle qui appartient à right.
+    Fusionne deux dictionnaire passés sans les changer. Les couples (clé,
+    valeur) du dictionnaire *right* sont plus prioritaires que celles de
+    *left* ; c'est-à-dire, s'il existe une valeur associée à la même clé k dans
+    les deux dictionnaires, on ajoute dans le résultat seulement celle qui
+    appartient à *right*.
 
-    Args :
-        left : l'un de dictionnaires à fusionner, celui qui est moins prioritaire, objet du type dict.
-        right : l'un autre dictionnaire à fusionner, celui qui est plus prioritaire, objet du type dict.
+    Parameters
+    ----------
+    left : dict
+        Un des dictionnaires à fusionner, celui qui est moins prioritaire.
+    right : dict
+        L'autre dictionnaire à fusionner, celui qui est plus prioritaire.
 
-    Returns :
-        res : le résultat de la fusion, objet du type dict.
+    Returns
+    -------
+    res : dict
+        Résultat de la fusion.
     """
     res = left.copy()
     res.update(right)
@@ -65,6 +78,26 @@ def merge_dicts(left, right):
 
 
 def diff_dicts(left, right):
+    """
+    Calcule la différence des dictionnaires *left* et *right* : les entrées de
+    *left* dont la clé est aussi présente dans *right* sont supprimées, les
+    autres sont gardées.
+
+    Parameters
+    ----------
+    left : dict
+        Premier dictionnaire, duquel on supprime les clés apparaissant dans
+        *right*.
+    right : dict
+        Deuxième dictionnaire, celui avec les clés qui doivent être supprimées
+        de *left*.
+
+    Returns
+    -------
+    res : dict
+        Résultat de la différence entre *left* et *right*.
+
+    """
     res = left.copy()
     for k in right.keys():
         if k in res.keys():
@@ -74,7 +107,7 @@ def diff_dicts(left, right):
 
 class bcolors:
     """
-    Une classe statique auxiliare qui n'est utilisé que pour stocker des couleurs différentes.
+    Stockage de couleurs.
     """
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -94,48 +127,56 @@ class TroubleShootingProblem:
     répresenter le problème.
     Les noeuds du réseau bayésien sont réferencés par des strings.
     
-    Attributs :
-        bayesian_network : Objet du type pyAgrum.BayesNet qui répresent le 
-             réseau bayésien (BN) qui modélise un problème donné.
-        bay_lp : Objet du type pyAgrum.LazyPropagation qui fait l'inference
-             exacte pour le BN passé en argument.
-        costs_rep : Dictionnaire de coûts où les clés représentent les noeuds 
-            du BN et les valeurs leurs coûts de reparation (float).
-        costs_rep_interval : Dictionnaire de coûts où les clés représentent les
-            noeuds du BN et les valeurs des listes avec les coûts minimum et 
-            maximum de reparation (floats).
-        costs_obs : Dictionnaire de coûts où les clés représentent les noeuds 
-            du BN et les valeurs leurs coûts d'observation (float).  
-        repairable_nodes : Ensemble de noeuds qui correspondent aux éléments du 
-            système concerné qui peuvent être réparés.
-        unrepairable_nodes : Ensemble de noeuds qui correspondent aux éléments 
-            d'un système qui ne peuvent pas être réparés.
-        problem_defining_node : Noeud qui répresent le problème a être reglé
-            (système fonctionnel où pas).
-        observation_nodes : Ensemble de noeuds qui correspondent aux éléments 
-            du système qui peuvent être observés.
-        service_node : Noeud qui répresent l'appel au service (appel à la 
-            réparation sûre du système).   
-        evidences : Dictionnaire ou les clés répresentent les élements du 
-            système qui ont des evidences modifiés dans bay_lp (donc qui ont 
-            été réparés/observés) et les valeurs sont les inferences faites.
+    Parameters
+    ----------
+    bayesian_network : pyAgrum.BayesNet
+        Représente le réseau bayésien (BN) modélisant un problème donné.
+    costs : list(dict)
+        Liste avec deux dictionnaires, le premier avec les coûts de 
+        réparation (exactes ou avec des minimun/maximun) et le deuxième
+        avec les coûts d'observation des noeuds.
+    nodes_types : dict
+        Dictionnaire où les clés représent les noeuds du BN 
+        et les valeurs leurs types associés (set de string).
+    
+    Attributes
+    ----------
+    bayesian_network : pyAgrum.BayesNet
+        Représente le réseau bayésien (BN) qui modélise un problème donné.
+    bay_lp : pyAgrum.LazyPropagation
+        Fait l'inference exacte pour le BN passé en argument.
+    costs_rep : dict
+        Dictionnaire de coûts où les clés représentent les noeuds 
+        du BN et les valeurs leurs coûts de reparation (float).
+    costs_rep_interval : dict
+        Dictionnaire de coûts où les clés représentent les
+        noeuds du BN et les valeurs des listes avec les coûts minimum et 
+        maximum de reparation (floats).
+    costs_obs : dict
+        Dictionnaire de coûts où les clés représentent les noeuds 
+        du BN et les valeurs leurs coûts d'observation (float).  
+    repairable_nodes : set
+        Ensemble de noeuds qui correspondent aux éléments du 
+        système concerné qui peuvent être réparés.
+    unrepairable_nodes : set
+        Ensemble de noeuds qui correspondent aux éléments 
+        d'un système qui ne peuvent pas être réparés.
+    problem_defining_node : string
+        Noeud qui répresent le problème a être reglé
+        (système fonctionnel où pas).
+    observation_nodes : set
+        Ensemble de noeuds qui correspondent aux éléments 
+        du système qui peuvent être observés.
+    service_node : string
+        Noeud qui répresent l'appel au service (appel à la 
+        réparation sûre du système).   
+    evidences : dict
+        Dictionnaire ou les clés répresentent les élements du 
+        système qui ont des evidences modifiés dans bay_lp (donc qui ont 
+        été réparés/observés) et les valeurs sont les inferences faites.
     """
 
     def __init__(self, bayesian_network, costs, nodes_types):
-        """
-        Crée un objet du type TroubleShootingProblem.
-        Initialise bay_lp et ajoute des inférences vides aux noeuds du BN qui 
-        peuvent être modifiés (réparés/observés/appelés). 
-        
-        Args :
-            bayesian_network : Objet du type pyAgrum.BayesNet qui répresent le 
-                réseau bayésien (BN) modélisant un problème donné.
-            costs : Liste avec deux dictionnaires, le premier avec les coûts de 
-                réparation (exactes ou avec des minimun/maximun) et le deuxième
-                avec les coûts d'observation des noeuds.
-            nodes_types : Dictionnaire où les clés représent les noeuds du BN 
-                    et les valeurs leurs types associés (set de string).       
-        """
         self.bayesian_network = gum.BayesNet(bayesian_network)
         self.bay_lp = gum.LazyPropagation(self.bayesian_network)
         self.costs_rep, self.costs_rep_interval = self._compute_costs(costs[0])
@@ -169,23 +210,29 @@ class TroubleShootingProblem:
         pour chaque clé et l'autre avec des intervalles de valeurs pour chaque 
         clé.
         
-        Args :
-            costs : Dictionnaire de couts où les clés représentent les noeuds 
-                du BN et les valeurs sont de nombres ou de listes de deux 
-                nombres.
-        Returns : 
-            expected_cost : Dictionnaire où les clés représentent les noeuds du
-                BN et les valeurs l'esperance de cout de ce noeud. Si la valeur
-                initiale était déjà un nombre, ce nombre est seulement copié, 
-                sinon on considère que la valeur est une variable aléatoire 
-                avec une distribution uniforme dans l'intervalle et donc
-                l'esperance est la moyenne des extremités de l'intervalle.
-            interval_cost : Dictionnaire où les clés représentent les noeuds du
-                BN et les valeurs sont des listes contenant les deux extremités
-                des intervalles dans lequels les couts se trouvent. Si la 
-                valeur initiale était déjà un nombre, ce nombre est copié comme
-                les deux extremités. Si la valeur initiale était un iterable, 
-                on le transforme en liste. 
+        Parameters
+        ----------
+        costs : dict
+            Dictionnaire de couts où les clés représentent les noeuds 
+            du BN et les valeurs sont de nombres ou de listes de deux 
+            nombres.
+        
+        Returns
+        -------
+        expected_cost : dict
+            Dictionnaire où les clés représentent les noeuds du
+            BN et les valeurs l'esperance de cout de ce noeud. Si la valeur
+            initiale était déjà un nombre, ce nombre est seulement copié, 
+            sinon on considère que la valeur est une variable aléatoire 
+            avec une distribution uniforme dans l'intervalle et donc
+            l'esperance est la moyenne des extremités de l'intervalle.
+        interval_cost : dict
+            Dictionnaire où les clés représentent les noeuds du
+            BN et les valeurs sont des listes contenant les deux extremités
+            des intervalles dans lequels les couts se trouvent. Si la 
+            valeur initiale était déjà un nombre, ce nombre est copié comme
+            les deux extremités. Si la valeur initiale était un iterable, 
+            on le transforme en liste. 
         """
         # On initialise les dictionnaires
         expected_cost = {}
@@ -228,9 +275,11 @@ class TroubleShootingProblem:
         est mis à la valeur associé au noeud dans dict_inf, pour les autres 
         l'inférence est mis à 1.
         
-        Args :
-            dict_inf (facultatif) : Dictionnaire où les clés sont des noeuds et
-                les valeurs sont des inférences. 
+        Parameters
+        ----------
+        dict_inf : dict, facultatif
+            Dictionnaire où les clés sont des noeuds et les valeurs sont des
+            inférences. 
         """
         # On recupere les noeuds qui peuvent changer
         modifiable_nodes = self.repairable_nodes.union(self.observation_nodes)
@@ -252,10 +301,13 @@ class TroubleShootingProblem:
         doit pas être une evidence "vide" (des 1, utilisé plutôt la fonction
         remove_evidence). 
         
-        Args :
-            node : String, nom du noeud de bay_lp qui va être modifié.
-            evidence : nouvelle inference pour le noeud traité (généralement
-                une string ici, cf. les types acceptés par chgEvidence)
+        Parameters
+        ----------
+        node : string
+            Nom du noeud de bay_lp qui va être modifié.
+        evidence : 
+            Nouvelle inference pour le noeud traité (généralement
+            une string ici, cf. les types acceptés par chgEvidence)
         """
         self.bay_lp.chgEvidence(node, evidence)
         # On ajout le noeud au dictionnaire evidences
@@ -267,8 +319,10 @@ class TroubleShootingProblem:
         type pyAgrum.LazyPropagation qui retire une inference et mantient le 
         dictionnaire evidences actualisé. 
         
-        Args :
-            node : String, nom du noeud de bay_lp qui va être modifié.
+        Parameters
+        ----------
+        node : string
+            Nom du noeud de bay_lp qui va être modifié.
         """
         self.bay_lp.chgEvidence(node, [1]*\
                             len(self.bayesian_network.variable(node).labels()))
@@ -282,12 +336,16 @@ class TroubleShootingProblem:
         Récupère à partir du réseau bayésien la probabilité que le noeud node
         ait la valeur value.
         
-        Args:
-            node : String, nom du noeud de bay_lp dont on veut calculer la
-                probabilité
-            value : String, valeur du noeud dont on veut calculer la
-                probabilité
-        Returns:
+        Parameters
+        ----------
+        node : string
+            Nom du noeud de bay_lp dont on veut calculer la probabilité.
+        value : string
+            Valeur du noeud dont on veut calculer la probabilité.
+        
+        Returns
+        -------
+        float
             La probabilité P(node = value)
         """
         p_tab = self.bay_lp.posterior(node)
@@ -300,7 +358,9 @@ class TroubleShootingProblem:
         Tire au hasard des prix de réparation selon des lois uniformes sur les
         intervalles stockés dans self.costs_rep_interval.
         
-        Returns :
+        Returns
+        -------
+        dict
             Dictionnaire avec prix de réparation.
         """
         return {n: np.random.uniform(*self.costs_rep_interval[n])\
@@ -315,12 +375,18 @@ class TroubleShootingProblem:
         À cause de cela, ce solveur n'est pas iteractif et renvoie l'ordre de 
         réparation entière (jusqu'au appel au service).
         
-        Args : 
-            debug (facultatif) : si True, affiche des messages montrant le 
-                deroulement de l'algorithme.
-        Returns :
-            Un tuple avec la séquence des noeuds à être réparés dans l'ordre et
-            l'esperance du coût de réparation de cette séquence.
+        Parameters
+        ----------
+        debug : bool, facultatif
+            Si True, affiche des messages montrant le déroulement de
+            l'algorithme.
+        
+        Returns
+        -------
+        rep_seq : list
+            Séquence des noeuds à être réparés dans l'ordre.
+        exp_cost : float
+            Espérance du coût de réparation de cette séquence.
         """     
         # On crée un dictionnaire avec les efficacités liées à chaque noeud 
         # réparable + service
@@ -434,14 +500,20 @@ class TroubleShootingProblem:
         Le solveur n'est pas encore iteractif et renvoie l'ordre de réparation
         entière (jusqu'au appel au service). Cette choix à été fait car on 
         utilise cet algorithme comme part de l'agorithme plus complexe et 
-        iteratif. 
+        iteratif.
          
-        Args : 
-            debug (facultatif) : si True, affiche des messages montrant le 
-                deroulement de l'algorithme.
-        Returns :
-            Un tuple avec la séquence des noeuds à être réparés dans l'ordre et
-            l'esperance du coût de réparation de cette séquence.
+        Parameters
+        ----------
+        debug : bool, facultatif
+            Si True, affiche des messages montrant le déroulement de
+            l'algorithme.
+            
+        Returns
+        -------
+        rep_seq : list
+            Séquence des noeuds à être réparés dans l'ordre.
+        exp_cost : float
+            Espérance du coût de réparation de cette séquence.
         """
         # On initialise la sequence de réparation vide
         rep_seq = []
@@ -575,16 +647,25 @@ class TroubleShootingProblem:
         l'algorithme myope car elle attend des nouvelles informations venues
         de l'utilisateur (résultat de l'observation si c'est le cas).
         
-        Args : 
-            debug (facultatif) : si True, affiche des messages montrant le 
-                deroulement de l'algorithme.
-            esp_obs (facultatif) : si True, retourne en plus un dictionnaire
-                indexé par les observations possibles et contenants leurs couts
-                myopes espérés respectifs.
-        Returns :
-            Le meilleur noeud de ce tour et son type ("repair" ou "obs"). Si
-            esp_obs == True, retourne aussi le dictionnaire des couts des
-            observations.
+        Parameters
+        ----------
+        debug : bool, facultatif
+            Si True, affiche des messages montrant le déroulement de
+            l'algorithme.
+        esp_obs : bool, facultatif
+            Si True, retourne en plus un dictionnaire indexé par les
+            observations possibles et contenants leurs couts myopes espérés
+            respectifs.
+        
+        Returns
+        -------
+        chosen_node : string
+            Le meilleur noeud de ce tour
+        type_node : string
+            Type du meilleur noeud ("repair" ou "obs")
+        eco : dict
+            Retourné uniquement lorsque esp_obs vaut True. Dictionnaire des
+            couts espérés des observations.
         """
         # Liste des observations generales qu'on peut faire
         nd_obs = self.observation_nodes.intersection(self.unrepairable_nodes)
@@ -665,9 +746,11 @@ class TroubleShootingProblem:
         élicitations de couts ne sont pas implémentées. Les entrées de
         l'utilisateur ne sont pas sécurisées.
         
-        Args : 
-            debug (facultatif) : si True, affiche des messages montrant le 
-                deroulement de l'algorithme.
+        Parameters
+        ----------
+        debug : bool, facultatif
+            Si True, affiche des messages montrant le déroulement de
+            l'algorithme.
         """
         print("Bienvenue! Suivez les instructions pour réparer votre"
               " dispositif")
@@ -711,11 +794,16 @@ class TroubleShootingProblem:
         pas vocation à être appellée en dehors de la fonction principale
         observation_obsolete.
         
-        Args :
-            node : String, nom du noeud don l'information a changé.
-            visites : Ensemble, contient les noeuds déjà visités.
+        Parameters
+        ----------
+        node : string
+            Nom du noeud don l'information a changé.
+        visites : set
+            Contient les noeuds déjà visités.
             
-        Returns :
+        Returns
+        -------
+        ant_obs : set
             Ensemble des noeuds d'observation affectés par node et qui sont
             antecesseurs de node sans être dans visites.
         """
@@ -757,10 +845,14 @@ class TroubleShootingProblem:
         partir du réseau bayésien, tous les noeuds d'observation impactés par
         ce chagement.
         
-        Args :
-            node : String, nom du noeud dont l'information a changé.
+        Parameters
+        ----------
+        node : string
+            Nom du noeud dont l'information a changé.
             
-        Returns :
+        Returns
+        -------
+        obs : set
             Ensemble contenant les noeuds d'observation impactés.
         """
         # La racine est visitée
@@ -812,7 +904,9 @@ class TroubleShootingProblem:
         avoir plus d'information sur l'intervalle de valeur des couts de
         réparation pour chaque composante réparable.
 
-        Returns :
+        Returns
+        -------
+        evoi : dict
             Dictionnaire indexé par les noeuds réparables contenant la valeur
             d'une information plus précise du cout de réparation de ces noeuds.
 
@@ -869,9 +963,11 @@ class TroubleShootingProblem:
         d'information (EVOI) correspondant à avoir plus d'information sur
         l'intervalle de valeur de son cout.
         
-        Returns :
-            Tuple avec le nom du noeud de réparation avec la plus grande EVOI
-            et la valeur d'EVOI correspondante.
+        Returns
+        -------
+        tuple(string, float)
+            Le nom du noeud de réparation avec la plus grande EVOI et la valeur
+            d'EVOI correspondante.
         """
         evois = self.compute_EVOIs()
         return sorted(evois.items(), key = lambda x: x[1], reverse = True)[0]
@@ -881,10 +977,13 @@ class TroubleShootingProblem:
         Met à jour l'intervalle de valeurs de cout pour le noeud et son
         espérance en fonction de la réponse de l'utilisateur.
         
-        Args :
-            noeud : String, nom du noeud à mettre à jour.
-            islower : Booléan, représente la réponse à la question : Est-ce que
-                le cout est plus petit que l'espérance courante ?
+        Parameters
+        ----------
+        noeud : string
+            Nom du noeud à mettre à jour.
+        islower : bool
+            Représente la réponse à la question : Est-ce que le cout est plus
+            petit que l'espérance courante ?
         """
         if islower:
             self.costs_rep_interval[noeud][1] = self.costs_rep[noeud]
@@ -898,15 +997,22 @@ class TroubleShootingProblem:
         Calcule l'ECR myope pour chaque prochaine "observation-réparation"
         possible et l'ECO pour chaque prochaine observation globale possible.
         
-        Args :
-            debug (facultatif) : si True, affiche des messages montrant le 
-                deroulement de l'algorithme.
+        Parameters
+        ----------
+        debug : bool, facultatif
+            Si True, affiche des messages montrant le déroulement de
+            l'algorithme.
 
-        Returns :
-            chosen_node : noeud choisi
-            type_node : type du noeud choisi
-            list_ecr : liste d'ECRs des noeuds d'"observation-réparation"
-            list_eco : liste d'ECOs des noeuds d'observation globale
+        Returns
+        -------
+        chosen_node : string
+            Noeud choisi.
+        type_node : string
+            Type du noeud choisi ("repair" ou "obs").
+        list_ecr : list(tuple)
+            ECRs des noeuds d'"observation-réparation".
+        list_eco : list(tuple)
+            ECOs des noeuds d'observation globale.
         """
         ecr = {}
         _, _, eco = self.myopic_solver(debug, esp_obs = True)
@@ -982,17 +1088,25 @@ class TroubleShootingProblem:
         true_prices. Cette méthode utilise la single fault assumption.
         
         
-        Args :
-            true_prices : Dictionnaire de prix de réparation des composantes
-                réparables
-            epsilon : Tolerance de la moyenne
-            nb_min : Entier, nombre minimum de répétitions à être realisées
-            nb_max : Entier, nombre maximum de répétitions à être realisées
-            
-        Returns :
-            booléeen, True en cas de sortie anticipée, False sinon
-            moyenne des couts observés
-            tableau avec le nombre de composantes réparées à chaque répétition
+        Parameters
+        ----------
+        true_prices : dict
+            Dictionnaire de prix de réparation des composantes réparables.
+        epsilon : float
+            Tolerance relative de la moyenne.
+        nb_min : int
+            Nombre minimum de répétitions à être realisées.
+        nb_max : int
+            Nombre maximum de répétitions à être realisées.
+        
+        Returns
+        -------
+        sortie_anti : bool
+            True en cas de sortie anticipée, False sinon.
+        cost : float
+            Moyenne des couts observés.
+        cpt_repair : numpy.ndarray
+            Tableau avec le nombre de composantes réparées à chaque répétition.
         """
         
         costs = np.zeros(nb_max)
@@ -1048,17 +1162,25 @@ class TroubleShootingProblem:
         anticipée. La fonction calcule les couts empiriques de réparation, en
         utilisant pour cela true_prices.
         
-        Args :
-            true_prices : Dictionnaire de prix de réparation des composantes
-                réparables
-            epsilon : Tolerance de la moyenne
-            nb_min : Entier, nombre minimum de répétitions à être realisées
-            nb_max : Entier, nombre maximum de répétitions à être realisées
-            
-        Returns :
-            booléeen, True en cas de sortie anticipée, False sinon
-            moyenne des couts observés
-            tableau avec le nombre de composantes réparées à chaque répétition
+        Parameters
+        ----------
+        true_prices : dict
+            Dictionnaire de prix de réparation des composantes réparables.
+        epsilon : float
+            Tolerance relative de la moyenne.
+        nb_min : int
+            Nombre minimum de répétitions à être realisées.
+        nb_max : int
+            Nombre maximum de répétitions à être realisées.
+        
+        Returns
+        -------
+        sortie_anti : bool
+            True en cas de sortie anticipée, False sinon.
+        cost : float
+            Moyenne des couts observés.
+        cpt_repair : numpy.ndarray
+            Tableau avec le nombre de composantes réparées à chaque répétition.
         """
         costs = np.zeros(nb_max)
         cpt_repair = np.zeros(nb_max)
@@ -1124,21 +1246,31 @@ class TroubleShootingProblem:
         anticipée. La fonction calcule les couts empiriques de réparation, en
         utilisant pour cela true_prices.
         
-        Args :
-            true_prices : Dictionnaire de prix de réparation des composantes
-                réparables
-            epsilon : Tolerance de la moyenne
-            nb_min : Entier, nombre minimum de répétitions à être realisées
-            nb_max : Entier, nombre maximum de répétitions à être realisées
-            debug (facultatif) : si True, affiche des messages montrant le 
-                deroulement de l'algorithme.
-                
-        Returns :
-            booléeen, True en cas de sortie anticipée, False sinon
-            moyenne des couts observés
-            tableau avec le nombre de composantes réparées à chaque répétition
-            tableau avec le nombre d'observations globales faites à chaque
-                répétition
+        Parameters
+        ----------
+        true_prices : dict
+            Dictionnaire de prix de réparation des composantes réparables.
+        epsilon : float
+            Tolerance relative de la moyenne.
+        nb_min : int
+            Nombre minimum de répétitions à être realisées.
+        nb_max : int
+            Nombre maximum de répétitions à être realisées.
+        debug : bool, facultatif
+            Si True, affiche des messages montrant le déroulement de
+            l'algorithme.
+        
+        Returns
+        -------
+        sortie_anti : bool
+            True en cas de sortie anticipée, False sinon.
+        cost : float
+            Moyenne des couts observés.
+        cpt_repair : numpy.ndarray
+            Tableau avec le nombre de composantes réparées à chaque répétition.
+        cpt_obs : numpy.ndarray
+            Tableau avec le nombre d'observations globales faites à chaque
+            répétition.
         """
         costs = np.zeros(nb_max)
         cpt_obs = np.zeros(nb_max)
@@ -1222,22 +1354,33 @@ class TroubleShootingProblem:
         anticipée. La fonction calcule les couts empiriques de réparation, en
         utilisant pour cela true_prices.
 
-        Args :
-            true_prices : Dictionnaire de prix de réparation des composantes
-                réparables
-            epsilon : Tolerance de la moyenne
-            nb_min : Entier, nombre minimum de répétitions à être realisées
-            nb_max : Entier, nombre maximum de répétitions à être realisées
-            debug (facultatif) : si True, affiche des messages montrant le 
-                deroulement de l'algorithme.
-                
-        Returns :
-            booléeen, True en cas de sortie anticipée, False sinon
-            moyenne des couts observés
-            tableau avec le nombre de composantes réparées à chaque répétition
-            tableau avec le nombre d'observations globales faites à chaque
-                répétition        
-            tableau avec le nombre de questions répondues à chaque répétition
+        Parameters
+        ----------
+        true_prices : dict
+            Dictionnaire de prix de réparation des composantes réparables.
+        epsilon : float
+            Tolerance relative de la moyenne.
+        nb_min : int
+            Nombre minimum de répétitions à être realisées.
+        nb_max : int
+            Nombre maximum de répétitions à être realisées.
+        debug : bool, facultatif
+            Si True, affiche des messages montrant le déroulement de
+            l'algorithme.
+        
+        Returns
+        -------
+        sortie_anti : bool
+            True en cas de sortie anticipée, False sinon.
+        cost : float
+            Moyenne des couts observés.
+        cpt_repair : numpy.ndarray
+            Tableau avec le nombre de composantes réparées à chaque répétition.
+        cpt_obs : numpy.ndarray
+            Tableau avec le nombre d'observations globales faites à chaque
+            répétition.
+        cpt_questions : numpy.ndarray
+            Tableau avec le nombre de questions répondues à chaque répétition.
         """
         costs = np.zeros(nb_max)
         cpt_obs = np.zeros(nb_max)
@@ -1336,65 +1479,92 @@ class TroubleShootingProblem:
 
     def expected_cost_of_repair_seq_of_actions(self, seq):
         """
-        Une fonction qui calcule un coût espéré de réparation à partir d'une séquence d'actions donnée.
-        Ici on utilise une formule
-        ECR = coût(C1) + (1 - P(e = Normal | C1 = Normal)) * coût(C2) +
-              (1 - P(e = Normal | C1 = Normal, C2 = Normal)) * coût(C3) + ...
+        Calcule un coût espéré de réparation à partir d'une séquence d'actions
+        donnée. On utilise la formule
+        ECR = coût(C1 | E0)
+        + P(C1 = Normal | E0) * coût(C2 | E1)
+        + P(C1 = Normal | E0) * P(C2 = Normal | E1) * coût(C2 | E2)
+        + ...
 
-        Args :
-            seq : une séquence d'actions de réparations dont le coût espéré il faut calculer, objet du type list<str>.
+        Parameters
+        ----------
+        seq : list(str)
+            Séquence d'actions de réparations dont le coût espéré est à
+            calculer.
 
-        Returns :
-            ecr : le coût espéré de réparations d'une séquence soumise, objet du type float.
+        Returns
+        -------
+        ecr : float
+            Coût espéré de réparation de la séquence donnée.
         """
-
         ecr = 0.0
         prob = 1.0
-        self.reset_bay_lp()
-
-        # Parcours par tous les compasants à réparer
+        
+        # On copie les évidences actuelles pour remettre le réseau à son état
+        # de départ
+        evid = self.evidences.copy()
+        
+        # Parcours de toutes les compasantes à réparer
         for node in seq:
             # On ajoute un terme à ECR
             ecr += self.costs_rep[node] * prob
-            # On propage dans notre réseau une évidence que C_next = Normal
-            if node == self.service_node:
-                self.bay_lp.chgEvidence(node, "yes")
+
+            # On calcule maintenant la probabilité que la réparation de ce
+            # noeud n'a pas résolu le problème,
+            # P(e != Normal | repair(ci), Ei). Comme on n'a qu'un seul défaut,
+            # cela vaut P(ci = Normal | Ei).
+            self.add_evidence(self.problem_defining_node, "yes")
+            
+            if node != self.service_node:
+                p = self.get_proba(node, "no")
             else:
-                self.bay_lp.chgEvidence(node, "no")
-            pot = self.bay_lp.posterior(self.problem_defining_node)
-            inst = gum.Instantiation(pot)
-            inst.chgVal(self.problem_defining_node, "no")
-            # On met-à-jour une proba
-            prob = (1 - pot.get(inst))
+                p = self.get_proba(node, "yes")
+    
+            prob *= p
 
-        self.reset_bay_lp()
+            # On propage dans notre réseau une évidence que C_next = Normal
+            if node != self.service_node:
+                self.add_evidence(node, "no")
+            else:
+                self.add_evidence(node, "yes")
 
+        self.reset_bay_lp(evid)
+        
         return ecr
 
     def brute_force_solver_actions_only(self, debug=False):
         """
-        Une fonction qui cherche une séquence optimale de réparation par une recherche exhaustive en choisissant
-        une séquence de meilleur ECR. Pour le cas où on ne considère que les actions de réparation il suffit de
-        dénombrer toutes les permutations possibles d'un ensemble des actions admissibles.
+        Cherche une séquence optimale de réparation par une recherche
+        exhaustive en choisissant la séquence de meilleur ECR. Pour le cas où
+        on ne considère que les actions de réparation il suffit de dénombrer
+        toutes les permutations possibles d'un ensemble des actions
+        admissibles.
 
-        Args :
-            debug (facultatif) : un flag qui indique s'il faut afficher des séquences intermédiaires ou pas,
-                objet du type bool.
+        Parameters
+        ----------
+        debug : bool, facultatif
+            Si True, affiche des messages montrant le déroulement de
+            l'algorithme.
 
-        Returns :
-            min_seq : une séquence optimale trouvée dont le coût est le plus petit que possible ;
-                objet du type list<str>.
-            min_ecr : le côut espéré de réparation correspondant à min_seq, objet du type float.
+        Returns
+        -------
+        min_seq : list(str)
+            Séquence optimale trouvée dont le coût est le plus petit possible.
+        min_ecr : float
+            Coût espéré de réparation correspondant à min_seq.
         """
         min_seq = [self.service_node] + list(self.repairable_nodes).copy()
         min_ecr = self.expected_cost_of_repair_seq_of_actions(min_seq)
 
-        # Parcours par toutes les permutations de l'union de noeuds réparables avec un noeud de service
-        for seq in [list(t) for t in permutations(list(self.repairable_nodes) + [self.service_node])]:
+        # Parcours par toutes les permutations de l'union de noeuds réparables 
+        # avec un noeud de service
+        for seq in [list(t) for t in permutations(list(self.repairable_nodes) \
+                                                  + [self.service_node])]:
             ecr = self.expected_cost_of_repair_seq_of_actions(seq)
             if debug:
                 print("seq : {0}\necr : {1}\n\n".format(seq, ecr))
-            # Si on trouve une séquence meilleure que celle courante on la sauvegarde
+            # Si on trouve une séquence meilleure que celle courante on 
+            # la sauvegarde
             if ecr < min_ecr:
                 min_ecr = ecr
                 min_seq = seq.copy()
@@ -1403,35 +1573,49 @@ class TroubleShootingProblem:
 
     def expected_cost_of_repair(self, strategy_tree, obs_obsolete=False):
         """
-        Une méthode qui calcule le coût espéré de réparation étant donné un arbre de décision.
+        Calcule le coût espéré de réparation étant donné un arbre de décision.
 
-        Args :
-            strategy_tree : un arbre de stratégie dont le côut il faut calculer, objet du type StrategyTree.
-            obs_rep_couples (facultatif) : une variable boléenne qui indique si on suppose l'existance de couples
-            ``observation-réparation'' dans un arbre de stratégie soumis, objet du type bool.
+        Parameters
+        ----------
+        strategy_tree : StrategyTree
+            Arbre de stratégie dont le coût il faut calculer.
+        obs_obsoletes : bool, facultatif
+            Si True, on remet en cause les noeuds d'observation globale après
+            une réparation.
 
-        Returns :
-            ecr : le côut espéré de réparation d'un arbre de stratégie fourni, objet du type float.
+        Returns
+        -------
+        ecr : float
+            Coût espéré de réparation d'un arbre de stratégie fourni.
         """
-        ecr = self._expected_cost_of_repair_internal(strategy_tree, obs_obsolete=obs_obsolete)
+        ecr = self._expected_cost_of_repair_internal(strategy_tree,\
+                                                     obs_obsolete=obs_obsolete)
         self.bay_lp.setEvidence({})
         self._start_bay_lp()
         self.reset_bay_lp()
         return ecr
 
-    def _expected_cost_of_repair_internal(self, strategy_tree, evid_init=None, prob=1.0, obs_obsolete=False):
+    def _expected_cost_of_repair_internal(self, strategy_tree, evid_init=None,\
+                                          prob=1.0, obs_obsolete=False):
         """
-        Une partie récursive d'une fonction expected_cost_of_repair au-dessus
+        Partie récursive de la fonction expected_cost_of_repair.
 
-        Args :
-            strategy_tree : un arbre de stratégie dont le côut il faut calculer, objet du type StrategyTree.
-            evid_init (facultatif) : un dictionnaire d'évidences utilisé dans les appels récursifs mais vide par
-                défaut, objet du type dict<str, str>.
-            obs_rep_couples (facultatif): une variable boléenne qui indique si on suppose l'existance de couples
-                ``observation-réparation'' dans un arbre de stratégie soumis, objet du type bool.
+        Parameters
+        ----------
+        strategy_tree : StrategyTree
+            Arbre de stratégie dont le coût il faut calculer.
+        evid_init : dict(str: str), facultatif
+            Dictionnaire d'évidences utilisé dans les appels récursifs.
+        prob : float, facultatif
+            Probabilité initiale.
+        obs_obsoletes : bool, facultatif
+            Si True, on remet en cause les noeuds d'observation globale après
+            une réparation.
 
-        Returns :
-            ecr : le côut espéré de réparation d'un arbre de stratégie fourni, objet du type float.
+        Returns
+        -------
+        ecr : float
+            Coût espéré de réparation d'un arbre de stratégie fourni.
         """
         if not isinstance(strategy_tree, st.StrategyTree):
             raise TypeError('strategy_tree must have type StrategyTree')
@@ -1442,102 +1626,120 @@ class TroubleShootingProblem:
         self.bay_lp.setEvidence(evidence)
         node = strategy_tree.get_root()
         node_name = strategy_tree.get_root().get_name()
-        cost = self.costs_rep[node_name] if isinstance(node, st.Repair) else self.costs_obs[node_name]
+        cost = self.costs_rep[node_name] if isinstance(node, st.Repair) else \
+            self.costs_obs[node_name]
         ecr += prob * cost
 
-        # On relance récursivement cette fonction-là pour chaque sous-arbre qui a un enfant (s'il en existe)
-        # d'une racine courante pour sa propre racine
-        if len(node.get_list_of_children()) == 0 or node_name == self.service_node or np.abs(prob) < 1e-12:
+        # On relance récursivement cette fonction-là pour chaque sous-arbre qui
+        # a un enfant (s'il en existe) d'une racine courante pour sa propre
+        # racine
+        if len(node.get_list_of_children()) == 0 or \
+            node_name == self.service_node or np.abs(prob) < 1e-12:
             return ecr
         if isinstance(node, st.Repair):
-            # Généralement un enfant pour une action de réparation puisque on les suppose parfaites ...
-            self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
-            prob_next = self.prob_val(node_name, 'no')
+            # Généralement un enfant pour une action de réparation puisque on 
+            # les suppose parfaites ...
+            self.bay_lp.setEvidence(merge_dicts(evidence, \
+                                        {self.problem_defining_node: 'yes'}))
+            prob_next = self.get_proba(node_name, 'no')
             self.bay_lp.setEvidence(evidence)
             if obs_obsolete:
-                obsolete = {obs: None for obs in self.observation_obsolete(node.get_name())}
+                obsolete = {obs: None for obs in \
+                            self.observation_obsolete(node.get_name())}
             else:
                 obsolete = {}
             ecr += prob * self._expected_cost_of_repair_internal(
                 strategy_tree.get_sub_tree(node.get_child()),
                 diff_dicts(
-                    merge_dicts(evidence, {node_name: 'yes' if node_name == self.service_node else 'no'}), obsolete),
+                    merge_dicts(evidence, {node_name: 'yes' \
+                    if node_name == self.service_node else 'no'}), obsolete),
                 prob_next, obs_obsolete
             )
             self.bay_lp.setEvidence(evidence)
         else:
             # ... et plusieurs enfants pour des observations
-            for obs_label in self.bayesian_network.variable(node_name).labels():
+            for obs_label in \
+                self.bayesian_network.variable(node_name).labels():
                 child = node.bn_labels_children_association()[obs_label]
                 new_evidence = (evidence.copy()
-                                if evidence.get(node_name) is not None and node_name in self.repairable_nodes
-                                else merge_dicts(evidence, {node_name: obs_label}))
-                self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
-                prob_next = self.prob_val(node_name, obs_label)
+                            if evidence.get(node_name) is not None and \
+                                    node_name in self.repairable_nodes
+                            else merge_dicts(evidence, {node_name: obs_label}))
+                self.bay_lp.setEvidence(merge_dicts(evidence, \
+                                        {self.problem_defining_node: 'yes'}))
+                prob_next = self.get_proba(node_name, obs_label)
                 self.bay_lp.setEvidence(evidence)
                 ecr += prob * self._expected_cost_of_repair_internal(
-                    strategy_tree.get_sub_tree(child), new_evidence, prob_next, obs_obsolete
+                    strategy_tree.get_sub_tree(child), new_evidence, \
+                        prob_next, obs_obsolete
                 )
                 self.bay_lp.setEvidence(evidence)
 
         return ecr
 
-    # En fait, la même méthode que get_proba au-dessus
-    # On a donc implémenté de manière indépendante deux méthodes similaires :)
-    def prob_val(self, var, value):
+    def _create_nodes(self, names, rep_string='_repair',\
+                      obs_string='_observation', obs_rep_couples=False):
         """
-        Une méthode auxiliare qui retourne une probabilité à posteriori qu'une variable var égal à value sachant une
-        évidence courante de notre réseau bayésien (cette évidence doit être mise en place en dehors de cette fonction).
+        Crée des noeuds de StrategyTree à partir de leurs noms dans le réseau
+        Bayésien.
 
-        Args :
-            var : un label d'une variable aléatoire, objet du type str.
-            value : une valeur d'une variable aléatoire, objet du type str.
+        Parameters
+        ----------
+        names : list(str)
+            Noms des noeuds de réparations/observations/
+            observations-réparations dans le réseau Bayésien à partir desquels
+            on crée les noeuds.
+        rep_string : string, facultatif
+            Dans le cas où on ne considère pas des couples, on utilise ce
+            paramètre comme un suffixe pour les noeuds de réparation pour les
+            séparer de ceux d'observation.
+        obs_string : string, facultatif
+            Suffixe pour les noeuds d'observation.
+        obs_rep_couples : bool, facultatif
+            Variable boléenne qui indique si on suppose l'existance de couples
+            "observation-réparation" dans l'arbre de stratégie.
 
-        Returns :
-            prob : une probabilité que var égal à value sachant une évidence courante de notre réseau bayésien, ie
-                prob = P(var = value | E), où E est une évidence courante.
-        """
-        pot_var = self.bay_lp.posterior(var)
-        inst_var = gum.Instantiation(pot_var)
-        inst_var.chgVal(var, value)
-        return pot_var[inst_var]
-
-    def _create_nodes(self, names, rep_string='_repair', obs_string='_observation', obs_rep_couples=False):
-        """
-        Une méthode auxiliaire qui crée des noeuds de StrategyTree à partir de leurs noms dans un modèle.
-
-        Args :
-            names : des noms des réparations/observations/observations-réparations dans un modèle à partir desquels
-                il faut créer des noeuds ; objet du type list<str>.
-            rep_string (facultatif) : dans le cas où on ne considère pas des couples, on utilise ce paramètre comme
-                un suffixe pour les noeuds de réparation pour les séparer de ceux d'observation, objet du type str.
-            obs_string (facultatif) : un suffixe pour les noeuds d'observation, objet du type str.
-            obs_rep_couples (facultatif): une variable boléenne qui indique si on suppose l'existance de couples
-                ``observation-réparation'' dans un arbre de stratégie soumis, objet du type bool.
-
-        Returns :
-            nodes : une liste de noeuds qu'il faut créer, objet du type list<NodeST>
+        Returns
+        -------
+        nodes : list(NodeST)
+            Liste de noeuds crées.
         """
         nodes = []
         for name, i in zip(names, range(len(names))):
-            if obs_rep_couples and name in self.observation_nodes.intersection(self.repairable_nodes):
-                node = st.Observation(str(i), self.costs_obs[name], name, obs_rep_couples=obs_rep_couples)
+            if obs_rep_couples and name in \
+                self.observation_nodes.intersection(self.repairable_nodes):
+                node = st.Observation(str(i), self.costs_obs[name], name, \
+                                      obs_rep_couples=obs_rep_couples)
             elif name.endswith(rep_string) or name == self.service_node:
-                node = st.Repair(str(i), self.costs_rep[name.replace(rep_string, '')], name.replace(rep_string, ''))
+                node = st.Repair(str(i), \
+                    self.costs_rep[name.replace(rep_string, '')], \
+                    name.replace(rep_string, ''))
             else:
-                node = st.Observation(str(i), self.costs_obs[name.replace(obs_string, '')],
+                node = st.Observation(str(i), \
+                        self.costs_obs[name.replace(obs_string, '')],\
                                       name.replace(obs_string, ''))
             nodes.append(node)
             self._nodes_ids_db_brute_force.append(str(i))
         return nodes
 
-    # Une méthode qui permet d'obtenir une prochaine valeur de id pour un noeud de StrategyTree
     def _next_node_id(self):
+        """
+        Permet d'obtenir la prochaine valeur d'id pour le noeud courant de
+        StrategyTree.
+        
+        Returns
+        -------
+        next_id : string
+            Prochaine valeur d'id.
+        """
+        
         next_id = str(int(self._nodes_ids_db_brute_force[-1]) + 1)
         self._nodes_ids_db_brute_force.append(next_id)
         return next_id
 
-    def brute_force_solver(self, debug=False, mode='all', obs_rep_couples=False, obs_obsolete=False, sock=None):
+    def brute_force_solver(self, debug=False, mode='all',\
+                           obs_rep_couples=False, obs_obsolete=False,\
+                               sock=None):
         if debug is False:
             debug = (False, False)
         elif debug is True:
@@ -1797,7 +1999,7 @@ class TroubleShootingProblem:
                     else:
                         new_evidence = merge_dicts(evidence, {node.get_name(): label})
                     self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
-                    prob_next = self.prob_val(node.get_name(), label)
+                    prob_next = self.get_proba(node.get_name(), label)
                     self.bay_lp.setEvidence(evidence)
                     if (obs_rep_couples and isinstance(node, st.Observation) and label == 'yes' and
                             node.get_name() in self.repairable_nodes.intersection(self.observation_nodes)):
@@ -1838,31 +2040,47 @@ class TroubleShootingProblem:
 
         return best_tree, best_ecr
 
-    def brute_force_solver_tester(self, true_prices, epsilon, nb_min=100, nb_max=200, strategy_tree=None, mode='dp',
+    def brute_force_solver_tester(self, true_prices, epsilon, nb_min=100,\
+                                  nb_max=200, strategy_tree=None, mode='dp',\
                                   obs_rep_couples=False, true_prices_obs=None):
         """
         Test empirique de la méthode brute_force_solver.
 
-        Args :
-            true_prices : dictionnaire de prix de réparation des composantes réparables.
-            epsilon : tolerance de la moyenne, objet du type float.
-            nb_min (facultatif) : entier, nombre minimum de répétitions à être realisées.
-            nb_max (facultatif) : entier, nombre maximum de répétitions à être realisées.
-            strategy_tree (facultatif) : un arbre de stratégie qu'il faut tester ; si rien passé, on calcule un arbre à
-                nouveau avec une méthode brute_force_solver ; objet du type StrategyTree.
-            mode (facultatif) : un paramètre d'une méthode brute_force_solver si jamais on devait l'exécuter ; une mode
-                de recherche exhaustive à utiliser, objet du type str ; soit 'all' pour le dénombrement complet, soit
-                'dp' pour une programmation dynamique.
-            obs_rep_couples (facultatif): un paramètre d'une méthode brute_force_solver si jamais on devait l'exécuter ;
-                une variable boléenne qui indique si on suppose l'existance de couples ``observation-réparation'' dans
-                un arbre de stratégie soumis, objet du type bool.
-             true_prices_obs (facultatif) : dictionnaire de prix d'observations des composantes observables.
-
-        Returns :
-            sortie_anti : booléeen, True en cas de sortie anticipée, False sinon.
-            costs_mean : moyenne des couts observés, objet du type float.
-            cpt_repair : tableau avec le nombre de composantes réparées à chaque répétition, objet du type np.ndarray.
-            cpt_obs : tableau avec le nombre de composantes observées à chaque répétition, objet du type np.ndarray.
+        Parameters
+        ----------
+        true_prices : dict
+            Dictionnaire de prix de réparation des composantes réparables.
+        epsilon : float
+            Tolerance relative de la moyenne.
+        nb_min : int
+            Nombre minimum de répétitions à être realisées.
+        nb_max : int
+            Nombre maximum de répétitions à être realisées.
+        strategy_tree : StrategyTree, facultatif
+            Arbre de stratégie qu'il faut tester ; si rien passé, on calcule
+            l'arbre avec la méthode brute_force_solver.
+        mode : string, facultatif
+            Paramètre à passer à la méthode brute_force_solver si on doit
+            l'exécuter. Peut être égal à 'all' pour le dénombrement complet ou
+            'dp' pour la programmation dynamique.
+        obs_rep_couples : bool, facultatif
+            Paramètre à passer à la méthode brute_force_solver si on doit
+            l'exécuter. Indique si on suppose l'existance de couples
+            "observation-réparation" dans l'arbre de stratégie.
+         true_prices_obs : dict, facultatif
+             Dictionnaire de prix d'observations des composantes observables.
+        
+        Returns
+        -------
+        sortie_anti : bool
+            True en cas de sortie anticipée, False sinon.
+        cost : float
+            Moyenne des couts observés.
+        cpt_repair : numpy.ndarray
+            Tableau avec le nombre de composantes réparées à chaque répétition.
+        cpt_obs : numpy.ndarray
+            Tableau avec le nombre d'observations globales faites à chaque
+            répétition.
         """
 
         costs = np.zeros(nb_max)
@@ -1886,7 +2104,7 @@ class TroubleShootingProblem:
                     self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
                     p = []
                     for label in self.bayesian_network.variable(node.get_name()).labels():
-                        p.append(self.prob_val(node.get_name(), label))
+                        p.append(self.get_proba(node.get_name(), label))
                     label = self.bayesian_network.variable(node.get_name()).labels()[
                         np.nonzero(np.random.rand() < np.cumsum(p))[0][0]]
                     evidence = (merge_dicts(evidence, {node.get_name(): label})
@@ -1901,7 +2119,7 @@ class TroubleShootingProblem:
                     costs[i] += true_prices[node.get_name()]
                     cpt_repair[i] += 1
                     self.bay_lp.setEvidence(merge_dicts(evidence, {self.problem_defining_node: 'yes'}))
-                    p = self.prob_val(node.get_name(), 'yes')
+                    p = self.get_proba(node.get_name(), 'yes')
 
                     if np.random.rand() <= p:
                         break
@@ -1922,98 +2140,3 @@ class TroubleShootingProblem:
 
         return sortie_anti, costs[:last_index+1].mean(), np.array(cpt_repair[:last_index+1], dtype=int),\
                np.array(cpt_obs[:last_index+1], dtype=int)
-
-# =============================================================================
-# Méthodes pas encore fonctionnelles            
-# =============================================================================
-
-    # Une méthode qui implémente un algorithme le plus simple de résolution du problème de Troubleshooting
-    def solve_static(self):
-        rep_nodes = list(self.repairable_nodes.copy())
-        rep_seq = []
-        # L'efficacité de l'appel à service
-        service_ef = 1.0 / self.costs_rep[self.service_node]
-        ie = gum.LazyPropagation(self.bayesian_network)
-        # Tant qu'on n'a pas encore observer tous les noeuds réparables
-        while len(rep_nodes) > 0:
-            # On suppose par défaut que l'appel à service est une action la plus efficace
-            # on cherche ensuite une action plus efficace
-            action_to_put = self.service_node
-            ef = service_ef
-            # On observe tous les actions pas encore observés
-            for rnode in range(len(rep_nodes)):
-                if rnode != 0:
-                    ie.eraseEvidence(rep_nodes[rnode-1])
-                ie.addEvidence(rep_nodes[rnode], "no")
-                # On vérifie si une action courante est plus efficace que le dernier  max par efficacité
-                #print(ie.posterior(self.problem_defining_node).tolist()[0])
-                if ef < ie.posterior(self.problem_defining_node).tolist()[0] / self.costs_rep[rep_nodes[rnode]]:
-                    ef = ie.posterior(self.problem_defining_node).tolist()[0] / self.costs_rep[rep_nodes[rnode]]
-                    #print(ef)
-                    action_to_put = rep_nodes[rnode]
-            rep_seq.append(action_to_put)
-            # Si on a trouvé quelque part qu'un appel au service est plus efficace que toutes les actions possibles,
-            # on ajoute donc 'service' dans une séquence de réparation et on s'arrête car cet appel réparera un appareil
-            # avec un certain
-            if action_to_put == self.service_node:
-                return rep_seq, self.expected_cost_of_repair_seq_of_actions(rep_seq)
-            ie.eraseEvidence(rep_nodes[-1])
-            ie.addEvidence(action_to_put, "no")
-            # on met-à-jour les noeuds réparables
-            rep_nodes.remove(action_to_put)
-        rep_seq.append(self.service_node)
-        return rep_seq, self.expected_cost_of_repair_seq_of_actions(rep_seq)
-
-    def myopic_solver_st(self, evid_init=None):
-        if evid_init is None:
-            evid_init = {}
-        self.reset_bay_lp(evid_init)
-        start_point = self.myopic_solver()
-        self._nodes_ids_db_brute_force = ['-1']
-        current_layer = [(start_point[0], start_point[1], None, None, evid_init)]
-        next_layer = []
-        strat_tree = None
-
-        while len(current_layer) > 0:
-            for name_node, type_node, par, label, evidence in current_layer:
-                node = (st.Repair(self._next_node_id(), self.costs_rep[name_node], name_node)
-                        if name_node not in self.observation_nodes
-                        else st.Observation(
-                            self._next_node_id(), self.costs_obs[name_node], name_node,
-                            obs_rep_couples=(type_node != 'obs'))
-                        )
-                if par is None:
-                    strat_tree = st.StrategyTree(root=node.copy())
-                else:
-                    strat_tree.add_node(node)
-                    strat_tree.add_edge(par, node, label)
-                if isinstance(node, st.Observation) and node.get_obs_rep_couples():
-                    node_rep = st.Repair(self._next_node_id(), self.costs_rep[name_node], name_node)
-                    node_service = st.Repair(self._next_node_id(), self.costs_rep[self.service_node], self.service_node)
-                    strat_tree.add_node(node_rep)
-                    strat_tree.add_node(node_service)
-                    strat_tree.add_edge(node_rep, node_service)
-                    strat_tree.add_edge(node, node_rep, 'yes')
-                if name_node in self.repairable_nodes.intersection(self.observation_nodes):
-                    obsolete = self.observation_obsolete(name_node)
-                    for obs in obsolete:
-                        evidence.pop(obs)
-                if name_node != self.service_node:
-                    next_layer.extend([
-                        (node.get_id(), label, merge_dicts(evidence, {node.get_name(): label}))
-                        for label in (
-                            self.bayesian_network.variable(name_node).labels()
-                            if isinstance(node, st.Observation) and not node.get_obs_rep_couples()
-                            else ['no']
-                        )
-                    ])
-            current_layer.clear()
-            for par, label, evidence in next_layer:
-                self.reset_bay_lp(evidence)
-                name_node, type_node = self.myopic_solver()
-                current_layer.append((name_node, type_node, par, label, evidence))
-            next_layer.clear()
-
-        self._nodes_ids_db_brute_force = []
-        self.reset_bay_lp()
-        return strat_tree
