@@ -4,7 +4,9 @@ import numpy as np
 import pyAgrum as gum
 import time as time
 import StrategyTree as st
+import socket as socket
 from multiprocessing import Process
+
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -20,22 +22,21 @@ from Action import *
 from Elicitation import *
 from Fin import *
 from ConfigBruteForce import *
-from ProgressBarBruteForce import *
+from ShowECR import *
 from StepBruteForce import *
-
 
 class MainWindow(QMainWindow):
 
     def __init__(self, parent = None):
         QMainWindow.__init__(self, parent)
-        
+
 ###################################################
 # Bayesian Network                                #
-###################################################  
+###################################################
 
         # Le problème est modélisé par un réseau bayésien de PyAgrum
         bnCar = gum.loadBN("simpleCar2.bif")
-            
+
         # On initialise les coûts des réparations et observations
         costsRep = {
             "car.batteryFlat": [100, 300],
@@ -45,7 +46,7 @@ class MainWindow(QMainWindow):
             "starter.starterBroken": [20, 60],
             "callService": 500
         }
-        
+
         costsObs = {
             "car.batteryFlat": 20,
             "oil.noOil": 50,
@@ -56,7 +57,7 @@ class MainWindow(QMainWindow):
             "car.noOilLightOn": 1,
             "oil.dipstickLevelOk": 7
         }
-        
+
         # On initialise les types des noeuds du réseau
         # nodesAssociations = {
         #     "car.batteryFlat": {"repairable", "observable"},
@@ -79,69 +80,69 @@ class MainWindow(QMainWindow):
             'car.carWontStart': {'problem-defining'},
             'callService': {'service'}
         }
-        
+
         #On peut choisir quel algorithme utiliser entre les 4 algorithmes codés
         self.algos_possibles = [
-            "simple", 
-            "simple avec observations locales", 
-            "myope (avec observations globales)", 
+            "simple",
+            "simple avec observations locales",
+            "myope (avec observations globales)",
             "myope avec elicitation",
             "recherche exhaustive"
         ]
         self.size = (600, 500)
-        self.configSize = (300, 300)
+        self.configSize = (300, 350)
         self.progressSize = (500, 200)
-        
+
 ###################################################
 # Propriétés de la MainWindow                     #
 ###################################################
-        
+
         self.setWindowTitle("Troubleshooter")
         self.resize(self.size[0], self.size[1])
-        
+
 ###################################################
 # Differents widgets                              #
 ###################################################
-        
+
         self.introduction = Introduction(self.algos_possibles)
         self.introduction.startButton.clicked.connect(self.startAlgorithme)
-        
+
         self.static = Static()
         self.static.finButton.clicked.connect(self.finish)
-        
-        self.trouble = Troubleshoot() 
+
+        self.trouble = Troubleshoot()
         self.trouble.obsButton.clicked.connect(self.callObs)
         self.trouble.actButton.clicked.connect(self.callAct)
         self.trouble.eliButton.clicked.connect(self.callEli)
 
         self.obs = Observation()
         self.obs.cb.activated.connect(self.makeObs)
-        
+
         self.act = Action()
         self.act.yesButton.clicked.connect(self.makeAct)
         self.act.noButton.clicked.connect(self.makeAct)
-        
+
         self.eli = Elicitation()
         self.eli.yesButton.clicked.connect(self.makeEli)
         self.eli.noButton.clicked.connect(self.makeEli)
-        
+
         self.fin = Fin()
         self.fin.finButton.clicked.connect(self.finish)
 
         self.config = ConfigBruteForce()
         self.config.calcButton.clicked.connect(self.calculateBF)
+        self.config.progressBar.valueChanged.connect(self.pbarChanged)
 
-        self.progress = ProgressBarBruteForce()
-        self.progress.progressBar.valueChanged.connect(self.pbarMaxReached)
-        self.progress.continueButton.clicked.connect(self.continueWithBF)
+        self.showECR = ShowECR()
+        self.showECR.continueButton.clicked.connect(self.continueWithBF)
 
         self.step = StepBruteForce()
         self.step.okButton.clicked.connect(self.stepOk)
-        
+
 ###################################################
 # Widget principal                                #
 ###################################################
-      
+
         self.stack = QStackedWidget()
         self.stack.addWidget(self.introduction)
         self.stack.addWidget(self.static)
@@ -151,22 +152,22 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.eli)
         self.stack.addWidget(self.fin)
         self.stack.addWidget(self.config)
-        self.stack.addWidget(self.progress)
+        self.stack.addWidget(self.showECR)
         self.stack.addWidget(self.step)
-        
+
         self.setCentralWidget(self.stack)
 
 ###################################################
 # Troubleshooter                                  #
-################################################### 
-        
+###################################################
+
         # On crée l'objet pour résoudre le problème
         self.tsp = dtt.TroubleShootingProblem(bnCar, [costsRep, costsObs], nodesAssociations)
 
         self.repairables = self.tsp.repairable_nodes.copy()
         self.repairables.add(self.tsp.service_node)
         self.observables = set(self.tsp.observation_nodes).intersection(set(self.tsp.unrepairable_nodes))
-        
+
         self.elicitationNode = ""
         self.recommendation, self.typeNodeRec, self.ecr, self.eco = self.tsp.ECR_ECO_wrapper()
         self.currentNode =  ""
@@ -183,9 +184,12 @@ class MainWindow(QMainWindow):
         self.modeExec = ""
         self.bruteForce = False
         self.bruteForceStats = {}
-        
+        self.exchangeFileName = "optimal_strategy_tree.txt"
+        self.bfProcess = None
+        self.randomSocketPort = None
+
     def startAlgorithme(self):
-        self.algo = self.introduction.listAlgo.currentItem().text() 
+        self.algo = self.introduction.listAlgo.currentItem().text()
         if self.algo == self.algos_possibles[0] or \
         self.algo == self.algos_possibles[1]:
             self.startStatic()
@@ -194,7 +198,7 @@ class MainWindow(QMainWindow):
             self.startBruteForce()
         else:
             self.startTroubleshoot()
-            
+
     def startStatic(self):
         if self.algo == self.algos_possibles[0]:
             seq, ecr = self.tsp.simple_solver()
@@ -202,23 +206,23 @@ class MainWindow(QMainWindow):
             seq, ecr = self.tsp.simple_solver_obs()
 
         text = "La séquence de réparation recommendée est la suivante, avec un cout esperé de {:.3f}.".format(ecr)
-        self.static.title.setText(text)  
+        self.static.title.setText(text)
         self.static.showSequence(seq)
         self.stack.setCurrentWidget(self.static)
-        
+
     def startTroubleshoot(self):
         self.trouble.observationsPossibles(self.eco)
         self.trouble.actionsPossibles(self.ecr)
-        
+
         if self.typeNodeRec == "obs":
             text = "On vous recommende d'observez le composant {} avec ECO : {:.3f}".format(self.recommendation, self.eco[0][1])
         else:
             text = "On vous recommende de faire l'observation-réparation suivante : {} avec ECR : {:.3f}".format(self.recommendation, self.ecr[0][1])
         self.trouble.recommendation.setText(text)
-        
+
         if self.algo == self.algos_possibles[2]:
             self.trouble.eliButton.setEnabled(False)
-        
+
         self.stack.setCurrentWidget(self.trouble)
 
     def startBruteForce(self):
@@ -227,16 +231,16 @@ class MainWindow(QMainWindow):
         self.bruteForceStats["obs_num"] = 0
         self.bruteForceStats["ecr"] = 0.0
         self.stack.setCurrentWidget(self.config)
-               
+
     def callObs(self):
         if not self.bruteForce:
             self.currentNode = re.findall('(\S+) \d+.\d+', self.trouble.listObs.currentItem().text())[0]
         else:
             self.currentNode = self.optimalStrategyTreeCopy.get_root().get_name()
-        self.currentPossibilities = self.tsp.bayesian_network.variable(self.currentNode).labels()        
+        self.currentPossibilities = self.tsp.bayesian_network.variable(self.currentNode).labels()
         self.obs.resultatsPossibles(self.currentPossibilities)
-        self.stack.setCurrentWidget(self.obs)        
-        
+        self.stack.setCurrentWidget(self.obs)
+
     def callAct(self):
         if not self.bruteForce:
             self.currentNode = re.findall('(\S+) \d+.\d+', self.trouble.listAct.currentItem().text())[0]
@@ -244,19 +248,19 @@ class MainWindow(QMainWindow):
             self.currentNode = self.optimalStrategyTreeCopy.get_root().get_name()
         if self.currentNode == self.tsp.service_node:
                 self.act.noButton.setEnabled(False)
-        
+
         self.stack.setCurrentWidget(self.act)
-        
+
     def callEli(self):
         self.elicitationNode, val = self.tsp.best_EVOI()
         if not np.allclose(0, val) and val > 0:
-            text = "Est-ce que le prix de réparer " + self.elicitationNode + " est plus petit que " + str(self.tsp.costs_rep[self.elicitationNode]) + " ?" 
+            text = "Est-ce que le prix de réparer " + self.elicitationNode + " est plus petit que " + str(self.tsp.costs_rep[self.elicitationNode]) + " ?"
             self.eli.title.setText(text)
-            self.stack.setCurrentWidget(self.eli)       
+            self.stack.setCurrentWidget(self.eli)
         else:
             error = QMessageBox(((QMessageBox.Warning)), "Alerte", "Pas de questions à poser")
             error.exec()
-            
+
     def makeObs(self, text):
         self.currentObs = self.obs.cb.currentText()
         if not self.bruteForce:
@@ -272,7 +276,7 @@ class MainWindow(QMainWindow):
                 self.optimalStrategyTreeCopy = st.StrategyTree(
                     root=st.Repair('0', self.tsp.costs_rep[self.tsp.service_node], self.tsp.service_node))
             self.showCurrentNodeBF()
-        
+
     def makeAct(self):
         if self.sender().text() == "No":
             if not self.bruteForce:
@@ -297,7 +301,7 @@ class MainWindow(QMainWindow):
                 self.showCurrentNodeBF()
         else:
             self.stack.setCurrentWidget(self.fin)
-        
+
     def makeEli(self):
         if self.sender().text() == "Yes":
             islower = True
@@ -305,15 +309,17 @@ class MainWindow(QMainWindow):
             islower = False
         self.tsp.elicitation(self.elicitationNode, islower)
         self.recommendation, self.typeNodeRec, self.ecr, self.eco = self.tsp.ECR_ECO_wrapper()
-        
+
         self.startTroubleshoot()
-           
+
     def finish(self):
-        if self.bruteForce:
+        if self.bruteForce and self.modeExec == "step-by-step":
             print(self.bruteForceStats)
         QApplication.exit()
 
     def calculateBF(self):
+        pbarMax = 0
+        self.config.calcButton.setEnabled(False)
         self.obsRepCouples = self.config.checkObsRepCouples.isChecked()
         self.obsObsolete = self.config.checkObsObsObsolete.isChecked()
         if self.config.radioCalcAll.isChecked():
@@ -325,21 +331,32 @@ class MainWindow(QMainWindow):
         else:
             self.modeExec = "show-tree"
         if self.obsRepCouples:
-            nodesNumber = len(self.tsp.repairable_nodes.union(self.tsp.observation_nodes)) + 1
+            for node_name in self.tsp.repairable_nodes.union(self.tsp.observation_nodes).union(
+                    set() if self.modeCalc == "dp" else {self.tsp.service_node}):
+                if node_name in self.tsp.repairable_nodes.union({self.tsp.service_node}):
+                    pbarMax += len(self.tsp.repairable_nodes.union(self.tsp.observation_nodes))
+                else:
+                    pbarMax += len(self.tsp.repairable_nodes.union(self.tsp.observation_nodes)) ** 2
         else:
-            nodesNumber = len(self.tsp.repairable_nodes) + len(self.tsp.observation_nodes) + 1
-        self.progress.addProgressBar(nodesNumber+1)
-        self.stack.setCurrentWidget(self.progress)
-        self.resize(self.progressSize[0], self.progressSize[1])
-        self.optimalStrategyTree, self.optimalECR = self.tsp.brute_force_solver(
-            mode=self.modeCalc, obs_rep_couples=self.obsRepCouples, obs_obsolete=self.obsObsolete
-        )
-        self.progress.progressBar.setValue(self.progress.progressBar.maximum())
+            for node_name in self.tsp.repairable_nodes.union(self.tsp.observation_nodes).union(
+                    set() if self.modeCalc == "dp" else {self.tsp.service_node}):
+                if node_name in self.tsp.repairable_nodes.union({self.tsp.service_node}):
+                    pbarMax += len(self.tsp.repairable_nodes) + len(self.tsp.observation_nodes)
+                if node_name in self.tsp.observation_nodes:
+                    pbarMax += (len(self.tsp.repairable_nodes) + len(self.tsp.observation_nodes)) ** 2
+        self.config.progressBar.setRange(0, pbarMax)
+        self.randomSocketPort = int(np.random.randint(1024, 10000, 1))
+        self.bfProcess = Process(target=self.launchBruteForceMultiProcessing)
+        self.bfProcess.start()
+        self.managePbar()
 
-    def pbarMaxReached(self, val):
-        if self.progress.progressBar.maximum() == val:
-            self.progress.continueButton.setEnabled(True)
-            self.progress.updateTitle(self.optimalECR)
+    def pbarChanged(self, val):
+        if self.config.progressBar.maximum() == val:
+            self.optimalStrategyTree, self.optimalECR = st.st_from_file(self.exchangeFileName)
+            self.showECR.continueButton.setEnabled(True)
+            self.showECR.updateTitle(self.optimalECR)
+            self.resize(self.progressSize[0], self.progressSize[1])
+            self.stack.setCurrentWidget(self.showECR)
 
     def continueWithBF(self):
         if self.modeExec == "show-tree":
@@ -386,6 +403,41 @@ class MainWindow(QMainWindow):
             ).get_child_by_attribute(obsRes)
         )
 
+    def launchBruteForceMultiProcessing(self):
+        sock = socket.socket()
+        sock.connect(("localhost", self.randomSocketPort))
+        best_tree, best_ecr = self.tsp.brute_force_solver(
+            mode=self.modeCalc, obs_rep_couples=self.obsRepCouples, obs_obsolete=self.obsObsolete,
+            sock=sock
+        )
+        filename = self.exchangeFileName
+        best_tree.to_file(filename)
+        fout = open(filename, "a")
+        fout.write(best_tree.fout_newline + str(best_ecr) + best_tree.fout_newline)
+        fout.close()
+
+        sock.send("1".encode())
+        sock.close()
+
+    def managePbar(self):
+        sock = socket.socket()
+        sock.bind(("", self.randomSocketPort))
+        sock.listen(1)
+        conn, addr = sock.accept()
+        while self.config.progressBar.value() < self.config.progressBar.maximum():
+            data = conn.recv(34).decode()
+            if "0" in data:
+                self.config.progressBar.setValue(
+                    self.config.progressBar.value() + data.count("0")
+                    if self.config.progressBar.value() + data.count("0") < self.config.progressBar.maximum()
+                    else self.config.progressBar.maximum() - 1
+                )
+                QApplication.processEvents()
+            if "1" in data:
+                self.config.progressBar.setValue(self.config.progressBar.maximum())
+                QApplication.processEvents()
+        conn.close()
+
     def quit(self):
         box = QMessageBox()
         b = box.question(self, 'Sortir ?', "Vous voulez sortir du logiciel ?", QMessageBox.Yes | QMessageBox.No)
@@ -395,12 +447,14 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         event.ignore()
+        if self.bfProcess is not None:
+            self.bfProcess.join()
         self.quit()
-        
+
 
 if __name__ == "__main__":
     def run_app():
-        if not QApplication.instance():        
+        if not QApplication.instance():
             app = QApplication(sys.argv)
         else:
             app = QApplication.instance()

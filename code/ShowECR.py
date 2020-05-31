@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 
-class ProgressBarBruteForce(QWidget):
+class ShowECR(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
@@ -13,9 +13,7 @@ class ProgressBarBruteForce(QWidget):
         self.title.setAlignment(Qt.AlignCenter)
         self.title.setWordWrap(True)
         self.title.setFont(QFont('Arial', 20))
-        self.title.setText("On effectue le calcul de stratégie optimale...")
-
-        self.progressBar = QProgressBar()
+        self.title.setText("")
 
         self.continueButton = QPushButton("Continuer")
         self.continueButton.setEnabled(False)
@@ -23,10 +21,6 @@ class ProgressBarBruteForce(QWidget):
         self.grid.addWidget(self.title, 0, 0)
         self.grid.addWidget(self.continueButton, 2, 0)
 
-    def addProgressBar(self, maximum):
-        self.progressBar.setMinimum(0)
-        self.progressBar.setMaximum(maximum)
-        self.grid.addWidget(self.progressBar, 1, 0)
-
     def updateTitle(self, ecr):
-        self.title.setText(self.title.text() + " et on l'a trouvée avec le coût espéré : %.3f" % ecr)
+        self.title.setText(
+            "On a effectué le calcul de stratégie optimale et on l'a trouvée avec le coût espéré : %.3f" % ecr)
