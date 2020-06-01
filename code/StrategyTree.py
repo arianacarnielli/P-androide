@@ -9,78 +9,93 @@ class NodeST:
     d'un enfant (il n'y a pas d'un attribut qui correspond à un noeud suivant), pourtant, on suppose que ses sous-
     classes en auront.
 
-    Attributs :
-        _id : identificateur unique d'un noeud, objet du type str.
-        _cost : un attribut qui correspond à "coût" d'un noeud, objet du type float.
-        _name : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été passé, on pose que
-                _name = _id.
+    Parameters
+    ----------
+    id : str
+        Identificateur unique d'un noeud.
+    cost : float
+        Un attribut qui correspond à "coût" d'un noeud.
+    name : str, facultatif
+        Un nom d'un noeud qui peut être pas unique ; si rien a été soumis, on pose que *_name* = *_id*.
+
+    Attributes
+    ----------
+    _id : str
+        Identificateur unique d'un noeud.
+    _cost : float
+        Un attribut qui correspond à "coût" d'un noeud.
+    _name : str
+        Un nom d'un noeud qui peut être pas unique ; si rien a été passé, on pose que *_name* = *_id_*.
     """
 
     def __init__(self, id, cost, name=None):
-        """
-        Un constructeur qui crée un objet de type NodeST initialisant ses attributs par des valeurs fournies.
-
-        Args :
-            id : identificateur unique d'un noeud, objet du type str.
-            cost : un attribut qui correspond à "coût" d'un noeud, objet du type float.
-            name (facultatif) : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été soumis,
-                on pose que _name = _id.
-        """
         self._id = id
         self._cost = cost
         self._name = name if name is not None else id
 
     def set_id(self, id):
         """
-        Setter d'un attribut _id.
+        Setter d'un attribut *_id*.
 
-        Args :
-            id : identificateur unique d'un noeud pour mettre en place, objet du type str.
+        Parameters
+        ----------
+        id : str
+            Identificateur unique d'un noeud pour mettre en place.
         """
         self._id = id
 
     def get_id(self):
         """
-        Getter d'un attribut _id.
+        Getter d'un attribut *_id*.
 
-        Returns :
-            _id : identificateur unique courant d'un noeud, objet du type str.
+        Returns
+        -------
+        _id : str
+            Identificateur unique courant d'un noeud.
         """
         return self._id
 
     def set_cost(self, cost):
         """
-        Setter d'un attribut _cost.
+        Setter d'un attribut *_cost*.
 
-        Args :
-            cost : une valeur de coût d'un noeud à mettre en place, objet du type float.
+        Parameters
+        ----------
+        cost : float
+            Une valeur de coût d'un noeud à mettre en place.
         """
         self._cost = cost
 
     def get_cost(self):
         """
-        Getter d'un attribut _cost.
+        Getter d'un attribut *_cost*.
 
-        Returns :
-            _cost : une valeur de coût d'un noeud, objet du type float.
+        Returns
+        -------
+        _cost : float
+            Une valeur de coût d'un noeud.
         """
         return self._cost
 
     def set_name(self, name):
         """
-        Setter d'un attribut _name.
+        Setter d'un attribut *_name*.
 
-        Args :
-            name : un nom d'un noeud pour mettre en place, objet du type str.
+        Parameters
+        ----------
+        name : str
+            Un nom d'un noeud pour mettre en place.
         """
         self._name = name
 
     def get_name(self):
         """
-        Getter d'un attribut _name.
+        Getter d'un attribut *_name*.
 
-        Returns :
-            _name : un nom d'un noeud, objet du type str.
+        Returns
+        -------
+        _name : str
+            Un nom d'un noeud.
         """
         return self._name
 
@@ -88,11 +103,15 @@ class NodeST:
         """
         Une méthode abstraite qui retournerait un enfant d'un noeud correspondant à attr.
 
-        Args :
-            attr : un attribut (un type) d'enfant qu'il faudrait retourner, objet du type str.
+        Parameters
+        ----------
+        attr : str
+            Un attribut (un type) d'enfant qu'il faudrait retourner.
 
-        Returns :
-            child : un enfant d'un noeud qui correspond à un attribut soumis, objet du type NodeST.
+        Returns
+        -------
+        child : NodeST
+            Un enfant d'un noeud qui correspond à un attribut soumis.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
@@ -100,9 +119,12 @@ class NodeST:
         """
         Une méthode abstraite qui mettrait en place un enfant d'un noeud correspondant à attr.
 
-        Args :
-            attr : un attribut (un type) d'enfant qu'il faudrait mettre en place, objet du type str.
-            child (facultatif) : un enfant d'un noeud qui correspond à un attribut soumis et qu'il faut mettre en place.
+        Parameters
+        ----------
+        attr : str
+            Un attribut (un type) d'enfant qu'il faudrait mettre en place.
+        child : NodeST, facultatif
+            Un enfant d'un noeud qui correspond à un attribut soumis et qu'il faut mettre en place.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
@@ -110,8 +132,10 @@ class NodeST:
         """
         Une méthode abstraite qui permettrait d'obtenir une liste de tous les enfants d'un noeud.
 
-        Returns :
-            list_of_children : une liste de tous les enfants d'un noeud.
+        Returns
+        -------
+        list_of_children : list(NodeST)
+            Une liste de tous les enfants d'un noeud.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
@@ -119,8 +143,10 @@ class NodeST:
         """
         Une méthode abstraite qui ajouterait un enfant d'un noeud.
 
-        Args :
-            child : un enfant à ajouter, objet du type NodeST.
+        Parameters
+        ----------
+        child : NodeST
+            Un enfant à ajouter.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
@@ -128,8 +154,10 @@ class NodeST:
         """
         Une méthode qui retournerait une copie superficielle d'un noeud.
 
-        Returns :
-            copy : une copie superficielle d'un noeud, objet du type NodeST.
+        Returns
+        -------
+        copy : NodeST
+            Une copie superficielle d'un noeud.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
@@ -137,11 +165,15 @@ class NodeST:
         """
         Overloading d'opérateur __eq__ ; on dit que deux noeuds sont égaux ssi ils ont les mêmes ids.
 
-        Args :
-            other : un autre noeud à comparer avec celui-ci, objet du type NodeST.
+        Parameters
+        ----------
+        other : NodeST
+            Un autre noeud à comparer avec celui-ci.
 
-        Returns :
-            comp_res : True, si self._id == other._id ET si self et other ont le même type ; False, sinon.
+        Returns
+        -------
+        comp_res : bool
+            True, si self._id == other._id ET si self et other ont le même type ; False, sinon.
         """
         if (self is None and other is not None) or (self is not None and other is None):
             return False
@@ -151,8 +183,10 @@ class NodeST:
         """
         Overloading d'opérateur __str__.
 
-        Returns :
-            corr_str : une représentation d'un noeud sous une forme de str, objet du type str.
+        Returns
+        -------
+        corr_str : str
+            Une représentation d'un noeud sous une forme de str.
         """
         return '(' + self._id + ': ' + str(self._cost) + ', ' + self._name + ')'
 
@@ -161,8 +195,10 @@ class NodeST:
         Une méthode abstraite qui retournera un dictionnaire des associations entre des labels d'un réseau
         bayésien et des enfants d'un noeud.
 
-        Returns :
-            da : un dictionnaire des associations concerné.
+        Returns
+        -------
+        da : dict
+            Un dictionnaire des associations concerné.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
@@ -172,43 +208,52 @@ class Repair(NodeST):
     """
     Classe qui représente un noeud de type plus précis : celui correspondant à une action de réparation.
 
-    Attributs :
-        _id : identificateur unique d'un noeud, objet du type str.
-        _cost : un attribut qui correspond à "coût" d'un noeud, objet du type float.
-        _name : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été passé, on pose que
-            _name = _id.
-        _child : un enfant d'un noeud, c'est-à-dire, un noeud suivant dans un arbre ; objet du type NodeST.
+    Parameters
+    ----------
+    id : str
+        Identificateur unique d'un noeud.
+    cost : float
+        Un attribut qui correspond à "coût" d'un noeud.
+    name : str, facultatif
+        Un nom d'un noeud qui peut être pas unique ; si rien a été soumis, on pose que *_name* = *_id*.
+    child : NodeST, facultatif
+        Un enfant d'un noeud.
+
+    Attributes
+    ----------
+    _id : str
+        Identificateur unique d'un noeud.
+    _cost : float
+        Un attribut qui correspond à "coût" d'un noeud.
+    _name : str
+        Un nom d'un noeud qui peut être pas unique ; si rien a été passé, on pose que *_name* = *_id*.
+    _child : NodeST
+        Un enfant d'un noeud, c'est-à-dire, un noeud suivant dans un arbre.
     """
 
     def __init__(self, id, cost, name=None, child=None):
-        """
-        Un constructeur qui crée un objet de type Repair(NodeST) initialisant ses attributs par des valeurs fournies.
-
-        Args :
-            id : identificateur unique d'un noeud, objet du type str.
-            cost : un attribut qui correspond à "coût" d'un noeud, objet du type float.
-            name (facultatif) : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été soumis,
-                on pose que _name = _id.
-            child (facultatif) : un enfant d'un noeud, objet du type NodeST.
-        """
         super().__init__(id, cost, name)
         self._child = child
 
     def set_child(self, child=None):
         """
-        Setter d'un attribut _child.
+        Setter d'un attribut *_child*.
 
-        Args :
-            child (facultatif) : un enfant d'un noeud, objet du type NodeST.
+        Parameters
+        ----------
+        child : NodeST, facultatif
+            Un enfant d'un noeud.
         """
         self._child = child
 
     def get_child(self):
         """
-        Getter d'un attribut _child.
+        Getter d'un attribut *_child*.
 
-        Returns :
-            _child : un enfant d'un noeud, objet du type NodeST.
+        Returns
+        -------
+        _child : NodeST
+            Un enfant d'un noeud.
         """
         return self._child
 
@@ -217,11 +262,15 @@ class Repair(NodeST):
         Une méthode qui réalise une version abstraite de superclass ; comme ce type de noeud ne dispose que d'un seul
         enfant, on y retourne toujours cet enfant pour n'importe quel attr indiqué
 
-        Args :
-            attr : un attribut (un type) d'enfant qu'il faudrait retourner, objet du type str.
+        Parameters
+        ----------
+        attr : str
+            Un attribut (un type) d'enfant qu'il faudrait retourner.
 
-        Returns :
-            child : un enfant d'un noeud, objet du type NodeST.
+        Returns
+        -------
+        child : NodeST
+            Un enfant d'un noeud.
         """
         return self._child
 
@@ -230,9 +279,12 @@ class Repair(NodeST):
         Une méthode qui met en place un enfant d'un noeud correspondant à attr réalisant une méthode correspondante
         superclass.
 
-        Args :
-            attr : un attribut (un type) d'enfant qu'il faut mettre en place, objet du type str.
-            child (facultatif) : un enfant d'un noeud qui correspond à un attribut soumis et qu'il faut mettre en place.
+        Parameters
+        ----------
+        attr : str
+            Un attribut (un type) d'enfant qu'il faut mettre en place.
+        child : NodeST, facultatif
+            Un enfant d'un noeud qui correspond à un attribut soumis et qu'il faut mettre en place.
         """
         self.set_child(child)
 
@@ -241,9 +293,10 @@ class Repair(NodeST):
         Une méthode qui retourne une liste qui contient tous les enfants d'un noeud ; pour ce cas-là alors, soit
         une liste avec un seul élément, soit une liste vide.
 
-        Returns :
-            list_of_children : une liste de tous les enfants d'un noeud (soit une liste avec un seul élément,
-                soit une liste vide).
+        Returns
+        -------
+        list_of_children : list(NodeST)
+            Une liste de tous les enfants d'un noeud (soit une liste avec un seul élément, soit une liste vide).
         """
         return [self._child] if self._child is not None else []
 
@@ -252,8 +305,10 @@ class Repair(NodeST):
         Une méthode qui ajoute littéralement un enfant dans une liste des enfants d'un noeud.
         ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour cela, veuillez utiliser set_child !
 
-        Args :
-            child : un enfant à ajouter, objet du type NodeST.
+        Parameters
+        ----------
+        child : NodeST
+            Un enfant à ajouter.
         """
         if child is None:
             return
@@ -265,8 +320,10 @@ class Repair(NodeST):
         """
         Une méthode qui retourne une copie superficielle d'un noeud.
 
-        Returns :
-            copy : une copie superficielle d'un noeud, objet du type Repair(NodeST).
+        Returns
+        -------
+        copy : Repair
+            Une copie superficielle d'un noeud.
         """
         new_node = Repair(self._id, self._cost, self._name, self._child.copy() if self._child is not None else None)
         return new_node
@@ -276,8 +333,10 @@ class Repair(NodeST):
         Une méthode plutôt auxiliare qui retourne un dictionnaire des associations entre des labels d'un réseau
         bayésien et des enfants d'un noeud.
 
-        Returns :
-            da : un dictionnaire des associations concerné.
+        Returns
+        -------
+        da : dict
+            Un dictionnaire des associations concerné.
         """
         return {'': self.get_child()}
 
@@ -287,32 +346,40 @@ class Observation(NodeST):
     """
     Classe qui représente un noeud de type correspondant à une action d'observation.
 
-    Attributs :
-        _id : identificateur unique d'un noeud, objet du type str.
-        _cost : un attribut qui correspond à "coût" d'un noeud, objet du type float.
-        _name : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été passé, on pose que
-            _name = _id.
-        _yes_child : un enfant d'un noeud qui correspond à une branche "yes", objet du type NodeST.
-        _no_child : un enfant d'un noeud qui correspond à une branche "no", objet du type NodeST.
-        _obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
-            représente une couple observation-réparation ou pas
+    Parameters
+    ----------
+    id : str
+        Identificateur unique d'un noeud.
+    cost : float
+        Un attribut qui correspond à "coût" d'un noeud.
+    name : str, facultatif
+        Un nom d'un noeud qui peut être pas unique ; si rien a été soumis, on pose que *_name* = *_id*.
+    yes_child : NodeST, facultatif
+        Un enfant d'un noeud qui correspond à une branche "yes".
+    no_child : NodeST, facultatif
+        Un enfant d'un noeud qui correspond à une branche "no".
+    obs_rep_couples : bool, facultatif
+        Un attribut sous la forme d'une variable boléenne qui indique si le noeud représente une couple
+        observation-réparation ou pas.
+
+    Attributes
+    ----------
+    _id : str
+        Identificateur unique d'un noeud.
+    _cost : float
+        Un attribut qui correspond à "coût" d'un noeud.
+    _name : str
+        Un nom d'un noeud qui peut être pas unique ; si rien a été passé, on pose que *_name* = *_id*.
+    _yes_child : NodeST
+        Un enfant d'un noeud qui correspond à une branche "yes".
+    _no_child : NodeST
+        Un enfant d'un noeud qui correspond à une branche "no".
+    _obs_rep_couples : bool
+        Un attribut sous la forme d'une variable boléenne qui indique si le noeud représente une couple
+        observation-réparation ou pas
     """
 
     def __init__(self, id, cost, name=None, yes_child=None, no_child=None, obs_rep_couples=False):
-        """
-        Un constructeur qui crée un objet de type Observation(NodeST) initialisant ses attributs par des valeurs
-        fournies.
-
-        Args :
-            id : identificateur unique d'un noeud, objet du type str.
-            cost : un attribut qui correspond à "coût" d'un noeud, objet du type float.
-            name (facultatif) : un nom d'un noeud qui peut être pas unique, objet du type str; si rien a été soumis,
-                on pose que _name = _id.
-            yes_child (facultatif) : un enfant d'un noeud qui correspond à une branche "yes", objet du type NodeST.
-            no_child (facultatif): un enfant d'un noeud qui correspond à une branche "no", objet du type NodeST.
-            obs_rep_couples (facultatif) : un attribut sous la forme d'une variable boléenne qui indique si le noeud
-                représente une couple observation-réparation ou pas.
-        """
         super().__init__(id, cost, name)
         self._yes_child = yes_child
         self._no_child = no_child
@@ -320,57 +387,69 @@ class Observation(NodeST):
 
     def set_yes_child(self, yes_child=None):
         """
-        Setter d'un attribut _yes_child.
+        Setter d'un attribut *_yes_child*.
 
-        Args :
-            yes_child (facultatif) : un enfant d'un noeud qui correspond à une branche "yes", objet du type NodeST.
+        Parameters
+        ----------
+        yes_child : NodeST, facultatif
+            Un enfant d'un noeud qui correspond à une branche "yes".
         """
         self._yes_child = yes_child
 
     def get_yes_child(self):
         """
-        Getter d'un attribut _yes_child.
+        Getter d'un attribut *_yes_child*.
 
-        Returns :
-            _yes_child : un enfant d'un noeud qui correspond à une branche "yes", objet du type NodeST.
+        Returns
+        -------
+        _yes_child : NodeST
+            Un enfant d'un noeud qui correspond à une branche "yes".
         """
         return self._yes_child
 
     def set_no_child(self, no_child=None):
         """
-        Setter d'un attribut _no_child.
+        Setter d'un attribut *_no_child*.
 
-        Args :
-            no_child (facultatif) : un enfant d'un noeud qui correspond à une branche "no", objet du type NodeST.
+        Parameters
+        ----------
+        no_child : NodeST, facultatif
+            Un enfant d'un noeud qui correspond à une branche "no".
         """
         self._no_child = no_child
 
     def get_no_child(self):
         """
-        Getter d'un attribut _no_child.
+        Getter d'un attribut *_no_child*.
 
-        Returns :
-            _no_child : un enfant d'un noeud qui correspond à une branche "no", objet du type NodeST.
+        Returns
+        -------
+        _no_child : NodeST
+            Un enfant d'un noeud qui correspond à une branche "no".
         """
         return self._no_child
 
     def set_obs_rep_couples(self, obs_rep_couples):
         """
-        Setter d'un attribut _obs_rep_couples
+        Setter d'un attribut *_obs_rep_couples*.
 
-        Args :
-            obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
-                représente une couple observation-réparation ou pas.
+        Parameters
+        ----------
+        obs_rep_couples : bool
+            Un attribut sous la forme d'une variable boléenne qui indique si le noeud représente une couple
+            observation-réparation ou pas.
         """
         self._obs_rep_couples = obs_rep_couples
 
     def get_obs_rep_couples(self):
         """
-        Getter d'un attribut _obs_rep_couples
+        Getter d'un attribut *_obs_rep_couples*.
 
-        Returns :
-            _obs_rep_couples : un attribut sous la forme d'une variable boléenne qui indique si le noeud
-                représente une couple observation-réparation ou pas
+        Returns
+        -------
+        _obs_rep_couples : bool
+            Un attribut sous la forme d'une variable boléenne qui indique si le noeud représente une couple
+            observation-réparation ou pas.
         """
         return self._obs_rep_couples
 
@@ -378,10 +457,14 @@ class Observation(NodeST):
         """
         Une méthode qui retourne un enfant d'un noeud correspondant à l'attribut de la branche soumise.
 
-        Args :
-            attr : attribut de la branche, objet du type str.
-        Returns :
-            child : un enfant correspondant à l'attribut, objet du type NodeST.
+        Parameters
+        ----------
+        attr : str
+            Attribut de la branche.
+        Returns
+        -------
+        child : NodeST
+            Un enfant correspondant à l'attribut.
         """
 
         # Si attr == "yes", on retourne _yes_child
@@ -397,9 +480,12 @@ class Observation(NodeST):
         """
         Une méthode qui met en place un enfant d'un noeud correspondant à l'attribut de la branche soumise.
 
-        Args :
-            attr : attribut de la branche, objet du type str.
-            child (facultatif) : un enfant qu'il faut mettre en place, objet du type NodeST.
+        Parameters
+        ----------
+        attr : str
+            Attribut de la branche.
+        child : NodeST, facultatif
+            Un enfant qu'il faut mettre en place.
         """
 
         # Si on reconnaît l'attribut, on met en place un enfant
@@ -415,8 +501,10 @@ class Observation(NodeST):
         """
         Une méthode qui retourne une liste avec tous les enfants d'un noeud.
 
-        Returns :
-            list_of_children : une liste avec tous les enfants d'un noeud.
+        Returns
+        -------
+        list_of_children : list(NodeST)
+            Une liste avec tous les enfants d'un noeud.
         """
         # On ajoute les enfants
         res = [self._yes_child, self._no_child]
@@ -430,8 +518,10 @@ class Observation(NodeST):
         Une méthode qui ajoute littéralement un enfant dans une liste des enfants d'un noeud.
         ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour cela, veuillez utiliser set_child !
 
-        Args :
-            child : un enfant à ajouter, objet du type NodeST.
+        Parameters
+        ----------
+        child : NodeST
+            Un enfant à ajouter.
         """
         if child is None:
             return
@@ -450,8 +540,10 @@ class Observation(NodeST):
         """
         Une méthode qui retourne une copie superficielle d'un noeud.
 
-        Returns :
-            copy : une copie superficielle d'un noeud, objet du type Observation(NodeST).
+        Returns
+        -------
+        copy : Observation
+            Une copie superficielle d'un noeud.
         """
         new_node = Observation(self._id, self._cost, self._name,
                                self._yes_child.copy() if self._yes_child is not None else None,
@@ -464,8 +556,10 @@ class Observation(NodeST):
         Une méthode plutôt auxiliare qui retourne un dictionnaire des associations entre des labels d'un réseau
         bayésien et des enfants d'un noeud.
 
-        Returns :
-            da : un dictionnaire des associations concerné.
+        Returns
+        -------
+        da : dict
+            Un dictionnaire des associations concerné.
         """
         return {'no': self.get_no_child(), 'yes': self.get_yes_child()}
 
@@ -474,20 +568,29 @@ class StrategyTree:
     """
     Une classe pour représenter un arbre de stratégie qui fait face au problème de Troubleshooting.
 
-    Attributs :
-        _root : une racine de l'arbre, i.e. une action pour commencer ; objet du type NodeST
-        _nodes : une liste des noeuds de l'arbre.
-        _adj_dict : un dictionnaire pour indiquer lesquels noeuds sont liés par des arcs.
+    Parameters
+    ----------
+    root : NodeST, facultatif
+        Une racine de l'arbre, i.e. une action pour commencer.
+    nodes : list(NodeST), facultatif
+        Une liste des noeuds de l'arbre.
+
+    Attributes
+    ----------
+    _root : NodeST
+        Une racine de l'arbre, i.e. une action pour commencer.
+    _nodes : list(NodeST)
+        Une liste des noeuds de l'arbre.
+    _adj_dict : dict
+        Un dictionnaire pour indiquer lesquels noeuds sont liés par des arcs.
+    fout_newline : str
+        Un attribut utilisé pour indiquer le début d'une nouvelle ligne quand on transforme cet arbre ans un fichier
+        textuel.
+    fout_sep : str
+        Un séparateur des attributs qu'on utilise quand on transforme cet arbre dans un fichier textuel.
     """
 
     def __init__(self, root=None, nodes=None):
-        """
-        Un constructeur qui crée un nouvelle arbre de stratégie donc un nouveau objet du type StrategyTree.
-
-        Attributs :
-            root (facultatif) : une racine de l'arbre, i.e. une action pour commencer ; objet du type NodeST.
-            nodes (facultatif) : une liste des noeuds de l'arbre.
-        """
 
         # une initialisation par défaut qui crée un arbre vide
         self._root = root
@@ -520,8 +623,10 @@ class StrategyTree:
         """
         Une méthode qui réalise transformation de l'arbre vers str.
 
-        Returns :
-            st_str : une représentation de l'arbre de stratégie en forme de str, objet du type str.
+        Returns
+        -------
+        st_str : str
+            Une représentation de l'arbre de stratégie en forme de str.
         """
 
         # Plus précisément, on utilise pour cela l'une des méthodes ci-dessous
@@ -531,8 +636,10 @@ class StrategyTree:
         """
         Une méthode qui réalise une transformation particulière de l'arbre vers str.
 
-        Returns :
-            st_str : une représentation de l'arbre de stratégie en forme de str, objet du type str.
+        Returns
+        -------
+        st_str : str
+            Une représentation de l'arbre de stratégie en forme de str.
         """
         if self._root is None:
             return '{}'
@@ -562,9 +669,10 @@ class StrategyTree:
         """
         Une autre méthode qui réalise une transformation particulière de l'arbre vers str.
 
-        Returns :
-            st_str : une représentation de l'arbre de stratégie en forme de str de manière alternative,
-                objet du type str.
+        Returns
+        -------
+        st_str : str
+            Une représentation de l'arbre de stratégie en forme de str de manière alternative.
         """
         if self._root is None:
             return '{}'
@@ -590,10 +698,12 @@ class StrategyTree:
 
     def set_root(self, root):
         """
-        Un setter d'un attribut _root.
+        Un setter d'un attribut *_root*.
 
-        Args :
-            root : une racine à mettre en place, objet du type NodeST.
+        Parameters
+        ----------
+        root : NodeST
+            Une racine à mettre en place.
         """
 
         # Si une racine soumise n'était pas de bon type, on évoquerait une exception
@@ -608,10 +718,12 @@ class StrategyTree:
 
     def get_root(self):
         """
-        Un getter d'un attribut _root.
+        Un getter d'un attribut *_root*.
 
-        Returns :
-            _root : une racine de l'arbre, objet du type NodeST.
+        Returns
+        -------
+        _root : NodeST
+            Une racine de l'arbre.
         """
         return self._root
 
@@ -619,12 +731,15 @@ class StrategyTree:
         """
         Une méthode qui retourne un noeud exacte (en sens de l'objet dans mémoire vivant) de l'arbre avec id indiqué.
 
-        Args :
-            id : soit id de noeud, objet du type str, soit un noeud lui-même, objet du type NodeST, dont un clone
-                (en sens d'id) il faut trouver dans l'arbre.
+        Parameters
+        ----------
+        id : str / NodeST
+            Soit id de noeud, soit un noeud lui-même dont un clone (en sens d'id) il faut trouver dans l'arbre.
 
-        Returns :
-            n : un noeud de l'arbre avec la même id que celui soumis, objet du type NodeST.
+        Returns
+        -------
+        n : NodeST
+            Un noeud de l'arbre avec la même id que celui soumis.
         """
 
         if isinstance(id, NodeST):
@@ -639,11 +754,15 @@ class StrategyTree:
         """
         Une méthode qui retourne tous les noeuds de l'arbre dont les noms sont égaux à celui indiqué.
 
-        Args :
-            name : un nom ou un noeud dont le nom on doit utiliser ; objet du type str ou NodeST.
+        Parameters
+        ----------
+        name : str
+            Un nom ou un noeud dont le nom on doit utiliser.
 
-        Returns :
-            nodes : une liste de tous les noeuds de l'arbre qui ont le même nom que celui donné.
+        Returns
+        -------
+        nodes : list(NodeST)
+            Une liste de tous les noeuds de l'arbre qui ont le même nom que celui donné.
         """
         if isinstance(name, NodeST):
             name = name.get_name()
@@ -657,9 +776,11 @@ class StrategyTree:
         """
         Une méthode qui récupère tous les arcs de l'arbres.
 
-        Returns :
-            edges : une liste de triplets où chaque celui edge correspond à un arc d'un graphe de manière que
-                edge[0] est un parent, edge[1] est un enfant tandis que edge[2] est un attribut de la branche.
+        Returns
+        -------
+        edges : list(tuple(NodeST, NodeST, str))
+            Une liste de triplets où chaque celui edge correspond à un arc d'un graphe de manière que edge[0] est un
+            parent, edge[1] est un enfant tandis que edge[2] est un attribut de la branche.
         """
         res = []
         # On parcourt par tous les parents et par tous leurs enfants
@@ -680,8 +801,10 @@ class StrategyTree:
         """
         Une méthode qui permet d'ajouter un.des nouveau.x noeud.s dans l'arbre.
 
-        Args :
-            node : noeud.s à ajouter, un objet du type NodeST ou list<NodeST>.
+        Parameters
+        ----------
+        node : NodeST / list(NodeST)
+            Noeud.s à ajouter.
         """
         if node is None:
             return
@@ -707,13 +830,15 @@ class StrategyTree:
         """
         Une méthode qui permet d'ajouter un arc dans un arbre entre deux noeuds.
 
-        Args :
-            parent : un noeud qui doit être un parent dans cet arc, donc un noeud duquel cet arc part ; objet du type
-                str ou NodeST.
-            child : un noeud qui doit être un enfant dans cet arc, donc un noeud auquel cet arc entre ; objet du type
-                str ou NodeST.
-            child_type : un attribut de la branche du parent à laquelle il faut ajouter un enfant (par exemple si
-                parent est une observation alors child_type est égal soit à 'no', soit à 'yes') ; objet du type str.
+        Parameters
+        ----------
+        parent : str / NodeST
+            Un noeud qui doit être un parent dans cet arc, donc un noeud duquel cet arc part.
+        child : str / NodeST
+            Un noeud qui doit être un enfant dans cet arc, donc un noeud auquel cet arc entre.
+        child_type : str, facultatif
+            Un attribut de la branche du parent à laquelle il faut ajouter un enfant (par exemple si parent est une
+            observation alors child_type est égal soit à 'no', soit à 'yes').
         """
 
         # On vérifie si les paramètres soumis ont des bons types
@@ -741,19 +866,23 @@ class StrategyTree:
 
     def get_nodes(self):
         """
-        Un getter d'un attribut _nodes.
+        Un getter d'un attribut *_nodes*.
 
-        Returns :
-            _nodes : une copie superficielle d'une liste des noeuds d'un arbre, objet du type list<NodeST>.
+        Returns
+        -------
+        _nodes : list(NodeST)
+            Une copie superficielle d'une liste des noeuds d'un arbre.
         """
         return self._nodes.copy()
 
     def get_adj_dict(self):
         """
-        Un getter d'un attribut _adj_dict.
+        Un getter d'un attribut *_adj_dict*.
 
-        Returns :
-            _adj_dict : une copie superficielle d'un dictionnaire d'adjacence, objet du type dict<str, list<str>>.
+        Returns
+        -------
+        _adj_dict : dict
+            Une copie superficielle d'un dictionnaire d'adjacence.
         """
         return self._adj_dict.copy()
 
@@ -762,12 +891,15 @@ class StrategyTree:
         Une méthode qui retourne un sous-arbre de cet arbre-là étant donné une sous-racine à partir de laquelle ce
         sous-arbre commence.
 
-        Args :
-            sub_root : une sous-racine de l'arbre qui est une racine de sous-arbre qu'il faut retourner, objet du type
-                NodeST.
+        Parameters
+        ----------
+        sub_root : NodeST
+            Une sous-racine de l'arbre qui est une racine de sous-arbre qu'il faut retourner.
 
-        Returns :
-            sub_tree : un sous-arbre de cet arbre dont la racine est sub_root ; objet du type StrategyTree.
+        Returns
+        -------
+        sub_tree : StrategyTree
+            Un sous-arbre de cet arbre dont la racine est sub_root.
         """
         if sub_root is None:
             return None
@@ -807,11 +939,15 @@ class StrategyTree:
         Une méthode qui cherche et qui retourne un parent d'un noeud soumis dans l'arbre. Remarque : dans un arbre comme
         ça chaque noeud ne doit avoir qu'un seul parent.
 
-        Args :
-            child : un enfant dont le parent il faut trouver dans cet arbre-là, objet du type NodeST ou str.
+        Parameters
+        ----------
+        child : str / NodeST
+            Un enfant dont le parent il faut trouver dans cet arbre-là.
 
-        Returns :
-            parent : un parent trouvé d'un noeud soumis, objet du type NodeST.
+        Returns
+        -------
+        parent : NodeST
+            Un parent trouvé d'un noeud soumis.
         """
         ch = self.get_node(child)
         if ch is None or ch == self._root:
@@ -826,11 +962,15 @@ class StrategyTree:
         """
         Une méthode qui nous permet de supprimer un sous-arbre de cet arbre étant donné une sous-racine.
 
-        Args :
-            sub_root : une sous-racine d'un sous-arbre qu'il faut supprimer, objet du type str ou NodeST.
+        Parameters
+        ----------
+        sub_root : str / NodeST
+            Une sous-racine d'un sous-arbre qu'il faut supprimer.
 
-        Returns :
-            flag : une variable booléen qui est égale à True si on supprime quelque chose et False sinon.
+        Returns
+        -------
+        flag : bool
+            Une variable booléen qui est égale à True si on supprime quelque chose et False sinon.
         """
 
         # En exécutant parcours en largeur on récupère les noeuds qu'il faudrait supprimer (cf. une méthode get_sub_tree
@@ -886,8 +1026,10 @@ class StrategyTree:
         """
         Une méthode qui retourne une copie superficielle de cet arbre.
 
-        Returns :
-            copy : une copie superficielle de cet arbre-là, objet du type StrategyTree.
+        Returns
+        -------
+        copy : StrategyTree
+            Une copie superficielle de cet arbre-là.
         """
         other_root = self._root.copy() if self._root is not None else None
         other_nodes = []
@@ -900,12 +1042,17 @@ class StrategyTree:
         Une méthode qui nous permet de connecter deux arbre, plus précisément, on connecte tout cet arbre avec celui
         soumis dans root_with_subtree en remplissant sa branche qui correspond à root_child_type.
 
-        Args :
-            root_with_subtree : un arbre vers la racine duquel on va connecter cet arbre ; objet du type StrategyTree.
-            root_child_type : un attribut de la branche de la racine du root_with_subtree ; objet du type str.
+        Parameters
+        ----------
+        root_with_subtree : StrategyTree
+            Un arbre vers la racine duquel on va connecter cet arbre.
+        root_child_type : str
+            Un attribut de la branche de la racine du root_with_subtree.
 
-        Returns :
-            merged_tree : un arbre fusionné, objet du type StrategyTree.
+        Returns
+        -------
+        merged_tree : StrategyTree
+            Un arbre fusionné.
         """
         if not isinstance(root_with_subtree, StrategyTree):
             raise TypeError('root_with_tree must be an object of type StrategyTree')
@@ -933,8 +1080,10 @@ class StrategyTree:
         Une méthode qui nous permet d'afficher cet arbre de stratégie via un module graphviz. L'image construit est
         sauvegardé dans un fichier 'filename.pdf'.
 
-        Args :
-            filename : un nom de fichier où il faut sauvegarder une image obtenue.
+        Parameters
+        ----------
+        filename : str, facultatif
+            Un nom de fichier où il faut sauvegarder une image obtenue.
         """
         vst = Digraph()
         for node in self._nodes:
@@ -948,6 +1097,34 @@ class StrategyTree:
         vst.render(filename, view=True)
 
     def to_file(self, filemame='last_best_tree.txt'):
+        """
+        Une méthode qui permet de sauvegarder cet arbre de stratégie sous en forme de fichier textuel. On y utilise le
+        modèle suivant :
+            1) chaque noeud est représenté par une ligne dévouée : _id,_cost,_name,_type ; c'est bien possible de
+            remplacer une virgule ',' par un séparateur différent en précisant un attribut self.fout_sep de
+            cette classe ;
+            2) chaque arc est représenté par une ligne dévouée : _id_parent,_id_child,_attribut ; où _attribut est le
+            type d'arc pour cet arbre-là (par exemple 'yes' ou 'no' si parent est une Observation) ;
+            3) le fichier lui-même a la structure suivante :
+            racine de l'arbre    # ligne 1
+            [ligne vide]         # ligne 2
+            noeud_1              # ligne 3
+            noeud_2              # ligne 4
+            ...
+            noeud_n              # ligne n + 2
+            [ligne vide]         # ligne n + 3
+            arc_1                # ligne n + 4
+            arc_2                # ligne n + 5
+            ...
+            arc_m                # ligne n + m + 3
+        Cette méthode utilise également un attribut self.fout_newline pour représenter une signe qui indique le début
+        d'une nouvelle ligne.
+
+        Parameters
+        ----------
+        filemame : str, facultatif
+            Un nom de fichier où il faut sauvegarder l'arbre concerné.
+        """
         fout = open(filemame, 'w')
         newline = self.fout_newline
         sep = self.fout_sep
@@ -969,14 +1146,29 @@ class StrategyTree:
             )
         fout.close()
 
-    def delete_unnecessary_nodes(self, call_service):
-        pass
 
+def st_from_file(filename='last_best_tree.txt', sep=',', newline=None):
+    """
+    Une méthode statique du module qui permet de créer un objet du type StrategyTree à partir du fichier qui suit un
+    modèle fourni par la méthode StrategyTree.to_file.
 
-def st_from_file(filemame='last_best_tree.txt', sep=',', newline=None):
+    Parameters
+    ----------
+    filename : str, facultatif
+        Un nom du fichier où on stocke l'arbre sous en forme textuelle.
+    sep : str, facultatif
+        Un séparateur utilisé dans le fichier passé.
+    newline : str, facultatif
+        Une signe qui indique le début d'une nouvelle ligne.
+
+    Returns
+    -------
+    stin : StrategyTree
+        Un arbre créé à partir des paramètres passés.
+    """
     if newline is None:
         newline = '\r\n' if os.name == 'nt' else '\n'
-    fin = open(filemame, 'r')
+    fin = open(filename, 'r')
     line = fin.readline().replace(newline, '').split(sep)
     stin = StrategyTree(root=(
         Repair(line[0], float(line[1]), line[2]) if line[3] == 'rep' else Observation(line[0], float(line[1]), line[2]))
