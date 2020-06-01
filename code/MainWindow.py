@@ -5,6 +5,7 @@ import pyAgrum as gum
 import time as time
 import StrategyTree as st
 import socket as socket
+import os as os
 from multiprocessing import Process
 
 
@@ -35,10 +36,11 @@ class MainWindow(QMainWindow):
 ###################################################
 
         # Le problème est modélisé par un réseau bayésien de PyAgrum
-        bnCar = gum.loadBN("simpleCar2.bif")
+        self.bnCarFilename = "simpleCar2.bif"
+        bnCar = gum.loadBN(self.bnCarFilename)
 
         # On initialise les coûts des réparations et observations
-        costsRep = {
+        self.costsRep = {
             "car.batteryFlat": [100, 300],
             "oil.noOil": [50, 100],
             "tank.Empty": [40, 60],
@@ -47,7 +49,7 @@ class MainWindow(QMainWindow):
             "callService": 500
         }
 
-        costsObs = {
+        self.costsObs = {
             "car.batteryFlat": 20,
             "oil.noOil": 50,
             "tank.Empty": 5,
@@ -59,7 +61,7 @@ class MainWindow(QMainWindow):
         }
 
         # On initialise les types des noeuds du réseau
-        # nodesAssociations = {
+        # self.nodesAssociations = {
         #     "car.batteryFlat": {"repairable", "observable"},
         #     "oil.noOil": {"repairable", "observable"},
         #     "tank.Empty": {"repairable"},
@@ -72,7 +74,7 @@ class MainWindow(QMainWindow):
         #     "callService": {"service"}
         # }
 
-        nodesAssociations = {
+        self.nodesAssociations = {
             'car.batteryFlat': {'repairable', 'observable'},
             'tank.Empty': {'repairable'},
             "oil.noOil": {"repairable", "observable"},
@@ -81,7 +83,7 @@ class MainWindow(QMainWindow):
             'callService': {'service'}
         }
 
-        #On peut choisir quel algorithme utiliser entre les 4 algorithmes codés
+        # On peut choisir quel algorithme utiliser entre les 4 algorithmes codés
         self.algos_possibles = [
             "simple",
             "simple avec observations locales",
@@ -162,7 +164,7 @@ class MainWindow(QMainWindow):
 ###################################################
 
         # On crée l'objet pour résoudre le problème
-        self.tsp = dtt.TroubleShootingProblem(bnCar, [costsRep, costsObs], nodesAssociations)
+        self.tsp = dtt.TroubleShootingProblem(bnCar, [self.costsRep, self.costsObs], self.nodesAssociations)
 
         self.repairables = self.tsp.repairable_nodes.copy()
         self.repairables.add(self.tsp.service_node)
@@ -177,7 +179,7 @@ class MainWindow(QMainWindow):
 
         self.optimalStrategyTree = None
         self.optimalStrategyTreeCopy = None
-        self.optimalECR = costsRep[self.tsp.service_node]
+        self.optimalECR = self.costsRep[self.tsp.service_node]
         self.obsRepCouples = None
         self.obsObsolete = None
         self.modeCalc = None
@@ -346,7 +348,16 @@ class MainWindow(QMainWindow):
                     pbarMax += (len(self.tsp.repairable_nodes) + len(self.tsp.observation_nodes)) ** 2
         self.config.progressBar.setRange(0, pbarMax)
         self.randomSocketPort = int(np.random.randint(1024, 10000, 1))
-        self.bfProcess = Process(target=self.launchBruteForceMultiProcessing)
+        if os.name == "nt":
+            self.bfProcess = Process(
+                target=launch_brute_force_multi_processing_windows,
+                args=(
+                    self.bnCarFilename, [self.costsRep, self.costsObs], self.nodesAssociations, self.randomSocketPort,
+                    self.modeCalc, self.obsRepCouples, self.obsObsolete, self.exchangeFileName
+                )
+            )
+        else:
+            self.bfProcess = Process(target=self.launchBruteForceMultiProcessing)
         self.bfProcess.start()
         self.managePbar()
 
@@ -450,6 +461,26 @@ class MainWindow(QMainWindow):
         if self.bfProcess is not None:
             self.bfProcess.join()
         self.quit()
+
+
+def launch_brute_force_multi_processing_windows(
+        bayesian_network_filename, costs, nodes_types, port, mode_calc, obs_rep_couples, obs_obsolete,
+        exchange_file_name
+):
+    tsp = dtt.TroubleShootingProblem(gum.loadBN(bayesian_network_filename), costs, nodes_types)
+    sock = socket.socket()
+    sock.connect(("localhost", port))
+    best_tree, best_ecr = tsp.brute_force_solver(
+        mode=mode_calc, obs_rep_couples=obs_rep_couples, obs_obsolete=obs_obsolete, sock=sock
+    )
+    filename = exchange_file_name
+    best_tree.to_file(filename)
+    fout = open(filename, "a")
+    fout.write(best_tree.fout_newline + str(best_ecr) + best_tree.fout_newline)
+    fout.close()
+
+    sock.send("1".encode())
+    sock.close()
 
 
 if __name__ == "__main__":
