@@ -596,7 +596,7 @@ class StrategyTree:
         self._root = root
         self._nodes = []
         self._adj_dict = {}
-        self.fout_newline = '\r\n' if os.name == 'nt' else '\n'
+        self.fout_newline = '\n'
         self.fout_sep = ','
 
         # si on a précisé une racine, on l'ajoute dans un arbre
@@ -1167,9 +1167,11 @@ def st_from_file(filename='last_best_tree.txt', sep=',', newline=None):
         Un arbre créé à partir des paramètres passés.
     """
     if newline is None:
-        newline = '\r\n' if os.name == 'nt' else '\n'
+        newline = '\n'
     fin = open(filename, 'r')
-    line = fin.readline().replace(newline, '').split(sep)
+    lines = fin.read().split(newline)
+    fin.close()
+    line = lines.pop(0).split(sep)
     stin = StrategyTree(root=(
         Repair(line[0], float(line[1]), line[2]) if line[3] == 'rep' else Observation(line[0], float(line[1]), line[2]))
     )
@@ -1177,8 +1179,8 @@ def st_from_file(filename='last_best_tree.txt', sep=',', newline=None):
     stin.fout_sep = sep
     idroot = line[0]
 
-    fin.readline()
-    line = fin.readline().replace(newline, '')
+    lines.pop(0)
+    line = lines.pop(0)
     while line != '':
         line = line.split(sep)
         if line[0] != idroot:
@@ -1186,14 +1188,13 @@ def st_from_file(filename='last_best_tree.txt', sep=',', newline=None):
                 Repair(line[0], float(line[1]), line[2]) if line[3] == 'rep'
                 else Observation(line[0], float(line[1]), line[2])
             )
-        line = fin.readline().replace(newline, '')
-    line = fin.readline().replace(newline, '')
+        line = lines.pop(0)
+    line = lines.pop(0)
     while line != '':
         line = line.split(sep)
         stin.add_edge(line[0], line[1], line[2])
-        line = fin.readline().replace(newline, '')
-    line = fin.readline().replace(newline, '')
-    fin.close()
+        line = lines.pop(0)
+    line = lines.pop(0)
     if line != '':
         ecrin = float(line)
         return stin, ecrin

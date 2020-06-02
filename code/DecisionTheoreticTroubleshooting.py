@@ -38,12 +38,12 @@ def shallow_copy_parent(parent):
 
     Parameters
     ----------
-    parent : list<tuple<NodeST, NodeST, StrategyTree>>
+    parent : list(tuple(StrategyTree.NodeST, StrategyTree.NodeST, StrategyTree.StrategyTree))
         Parent dont la copie il faut créer.
 
     Returns
     -------
-    parent_copy : list<tuple<NodeST, NodeST, StrategyTree>>
+    parent_copy : list(tuple(StrategyTree.NodeST, StrategyTree.NodeST, StrategyTree.StrategyTree))
         Copie superficielle du parent passé.
     """
     if parent is None:
@@ -1640,8 +1640,8 @@ class TroubleShootingProblem:
 
         # Parcours par toutes les permutations de l'union de noeuds réparables 
         # avec un noeud de service
-        for seq in [list(t) for t in permutations(list(self.repairable_nodes) \
-                                                  + [self.service_node])]:
+        for seq in [list(t) for t in permutations(
+                list(self.repairable_nodes) + [self.service_node])]:
             ecr = self.expected_cost_of_repair_seq_of_actions(seq)
             if debug:
                 print("seq : {0}\necr : {1}\n\n".format(seq, ecr))
@@ -1659,7 +1659,7 @@ class TroubleShootingProblem:
 
         Parameters
         ----------
-        strategy_tree : StrategyTree
+        strategy_tree : StrategyTree.StrategyTree
             Arbre de stratégie dont le coût il faut calculer.
         obs_obsolete : bool, facultatif
             Si True, on remet en cause les noeuds d'observation globale après
@@ -1671,7 +1671,7 @@ class TroubleShootingProblem:
             Coût espéré de réparation d'un arbre de stratégie fourni.
         """
         ecr = self._expected_cost_of_repair_internal(
-            strategy_tree,obs_obsolete=obs_obsolete)
+            strategy_tree, obs_obsolete=obs_obsolete)
         self.bay_lp.setEvidence({})
         self._start_bay_lp()
         self.reset_bay_lp()
@@ -1684,7 +1684,7 @@ class TroubleShootingProblem:
 
         Parameters
         ----------
-        strategy_tree : StrategyTree
+        strategy_tree : StrategyTree.StrategyTree
             Arbre de stratégie dont le coût il faut calculer.
         evid_init : dict(str: str), facultatif
             Dictionnaire d'évidences utilisé dans les appels récursifs.
@@ -1700,7 +1700,7 @@ class TroubleShootingProblem:
             Coût espéré de réparation d'un arbre de stratégie fourni.
         """
         if not isinstance(strategy_tree, st.StrategyTree):
-            raise TypeError('strategy_tree must have type StrategyTree')
+            raise TypeError('strategy_tree must have type StrategyTree.StrategyTree')
 
         # On ajoute dans ECR un terme lié à la racine d'un arbre donné
         ecr = 0.0
@@ -1716,25 +1716,26 @@ class TroubleShootingProblem:
         # a un enfant (s'il en existe) d'une racine courante pour sa propre
         # racine
         if len(node.get_list_of_children()) == 0 or \
-            node_name == self.service_node or np.abs(prob) < 1e-12:
+                node_name == self.service_node or np.abs(prob) < 1e-12:
             return ecr
         if isinstance(node, st.Repair):
             # Généralement un enfant pour une action de réparation puisque on 
             # les suppose parfaites ...
-            self.bay_lp.setEvidence(merge_dicts(evidence, \
-                                        {self.problem_defining_node: 'yes'}))
+            self.bay_lp.setEvidence(merge_dicts(
+                evidence, {self.problem_defining_node: 'yes'}))
             prob_next = self.get_proba(node_name, 'no')
             self.bay_lp.setEvidence(evidence)
             if obs_obsolete:
-                obsolete = {obs: None for obs in \
+                obsolete = {obs: None for obs in
                             self.observation_obsolete(node.get_name())}
             else:
                 obsolete = {}
             ecr += prob * self._expected_cost_of_repair_internal(
                 strategy_tree.get_sub_tree(node.get_child()),
-                diff_dicts(
-                    merge_dicts(evidence, {node_name: 'yes' \
-                    if node_name == self.service_node else 'no'}), obsolete),
+                diff_dicts(merge_dicts(
+                    evidence,
+                    {node_name: 'yes' if node_name == self.service_node else 'no'}
+                ), obsolete),
                 prob_next, obs_obsolete
             )
             self.bay_lp.setEvidence(evidence)
@@ -1743,17 +1744,20 @@ class TroubleShootingProblem:
             for obs_label in \
                     self.bayesian_network.variable(node_name).labels():
                 child = node.bn_labels_children_association()[obs_label]
-                new_evidence = (evidence.copy()
-                            if evidence.get(node_name) is not None and \
-                                    node_name in self.repairable_nodes
-                            else merge_dicts(evidence, {node_name: obs_label}))
-                self.bay_lp.setEvidence(merge_dicts(evidence, \
-                                        {self.problem_defining_node: 'yes'}))
+                new_evidence = (
+                    evidence.copy()
+                    if evidence.get(node_name) is not None and
+                       node_name in self.repairable_nodes
+                    else merge_dicts(evidence, {node_name: obs_label})
+                )
+                self.bay_lp.setEvidence(merge_dicts(
+                    evidence, {self.problem_defining_node: 'yes'}
+                ))
                 prob_next = self.get_proba(node_name, obs_label)
                 self.bay_lp.setEvidence(evidence)
                 ecr += prob * self._expected_cost_of_repair_internal(
-                    strategy_tree.get_sub_tree(child), new_evidence, \
-                        prob_next, obs_obsolete
+                    strategy_tree.get_sub_tree(child), new_evidence,
+                    prob_next, obs_obsolete
                 )
                 self.bay_lp.setEvidence(evidence)
 
@@ -1784,7 +1788,7 @@ class TroubleShootingProblem:
 
         Returns
         -------
-        nodes : list(NodeST)
+        nodes : list(StrategyTree.NodeST)
             Liste de noeuds crées.
         """
         nodes = []
@@ -1959,11 +1963,7 @@ class TroubleShootingProblem:
         # À partir de chaque noeud admissible on dénombre chaque arbre qu'on peut construire
         if len(feasible_nodes) > 0:
             for i in range(len(feasible_nodes)):
-                if parent_c is not None and sock is not None and (
-                        isinstance(parent_c[-1][2].get_root(), st.Repair) and debug_nb_call == 1 or
-                        isinstance(parent_c[-1][2].get_root(), st.Observation) and len(parent_c) == 1 and
-                        parent_c[-1][0] == parent_c[-1][2].get_root()
-                ):
+                if sock is not None and debug_nb_call == 1:
                     sock.send('0'.encode())
                 nodes_obs_obsolete = []
                 node = feasible_nodes[i]
@@ -2076,7 +2076,7 @@ class TroubleShootingProblem:
                 ecr = self.expected_cost_of_repair(strat_tree, obs_obsolete=obs_obsolete)
             else:
                 par_mutable, par_immutable, par_tree_mutable = parent_c[-1]
-                # S'il n'y avait pas des labels des conséquences des observations alors il n'y pas des observations
+                # S'il n'y avait pas des labels des conséquences des observations alors il n'y a pas des observations
                 # dans les noeuds admissibles par défaut c'est pour cette raison qu'on a déjà construit un arbre
                 # complet et il faut alors le tester en termes des coûts espérés
                 if obs_next_nodes_tmp is None:
@@ -2129,7 +2129,7 @@ class TroubleShootingProblem:
     def dynamic_programming_solver(
             self, feasible_nodes=None, evidence=None, debug_iter=False,
             debug_st=False, obs_rep_couples=False, prob=1.0,
-            obs_obsolete=False, sock=None):
+            obs_obsolete=False, sock=None, debug_nb_call=0):
         """
         Une méthode récursive qui trouve le meilleur arbre de stratégie étant donné une configuration du problème en
         utilisant l'approche de programmation dynamique supposant qu'un sous-arbre de l'arbre optimal est lui-même
@@ -2156,6 +2156,8 @@ class TroubleShootingProblem:
         sock : socket.socket, facultatif
             Un socket de communication entre le processus qui effectue le calcule et celui qui met à jour l'interface ;
             paramètre nécessaire pour que le ProgressBar de l'interface marche proprement.
+        debug_nb_call : int, facultatif
+            Un paramètre auxiliaire qui est la profondeur de la récursivité.
         """
         # Si on n'a pas passé des noeuds admissibles alors on les crée
         nodes_created = False
@@ -2186,7 +2188,7 @@ class TroubleShootingProblem:
             if debug_iter and len(evidence.keys()) == 0:
                 print(f'{bcolors.OKGREEN}\n########################\nIter %d\n########################\n{bcolors.ENDC}'
                       % i)
-            if len(evidence.keys()) == 1 and sock is not None:
+            if debug_nb_call == 1 and sock is not None:
                 sock.send('0'.encode())
             # On crée un (sous-)arbre qui a un noeud courant pour sa racine calculant une probabilité de ne pas réparer
             # le dispositif effectuant une action qui correspond à ce noeud-là et mettant à jour tous les paramètres
@@ -2240,7 +2242,7 @@ class TroubleShootingProblem:
                         best_sub_tree, best_sub_ecr = self.dynamic_programming_solver(
                             feasible_nodes[:i] + feasible_nodes[i + 1:] + nodes_obs_obsolete,
                             diff_dicts(new_evidence, evid_obsolete), debug_iter, debug_st, obs_rep_couples, prob_next,
-                            obs_obsolete, sock
+                            obs_obsolete, sock, debug_nb_call+1
                         )
                     self.bay_lp.setEvidence(evidence)
                     if best_sub_tree is not None:
@@ -2288,7 +2290,7 @@ class TroubleShootingProblem:
             Nombre minimum de répétitions à être realisées.
         nb_max : int
             Nombre maximum de répétitions à être realisées.
-        strategy_tree : StrategyTree, facultatif
+        strategy_tree : StrategyTree.StrategyTree, facultatif
             Arbre de stratégie qu'il faut tester ; si rien passé, on calcule
             l'arbre avec la méthode brute_force_solver.
         mode : string, facultatif
