@@ -179,6 +179,9 @@
 %-----------------------------------------------------------------------------------%
 \theoremstyle{plain}
 \newtheorem*{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem*{defi}{Définition}
+\newtheorem*{remk}{Remarque}
 
 %-----------------------------------------------------------------------------------%
 % DEFINIÇÃO DE COMANDOS MATEMÁTICOS                                                 %
@@ -196,6 +199,7 @@
 \DeclareMathOperator*{\argmin}{argmin}
 \DeclareMathOperator{\ECO}{ECO}
 \DeclareMathOperator{\ECR}{ECR}
+\DeclareMathOperator{\EC}{EC}
 \DeclareMathOperator{\EVOI}{EVOI}
 
 %-----------------------------------------------------------------------------------%
@@ -242,7 +246,7 @@
 
 \section{Introduction}
 
-Ce document présente les travaux réalisés pour le projet «~Diagnostic and Value of Information~» du master M1 Androide à Sorbonne Université. Il commence par une description de la problématique traitée et les objectifs initiaux à travers le cahier des charges de la Section~\ref{SecCharges}. On donne ensuite un panorama de la littérature disponible sur le sujet dans l'état de l'art de la Section~\ref{SecEtatDeLArt}. La Section~\ref{SecContribution} présente notre contribution à l'étude du problème traité. Une description des implémentations réalisées est donnée dans la Section~\ref{SecImplementation} avant la présentation des résultats dans la Section~\ref{SecResultats}.
+Ce document présente les travaux réalisés pour le projet «~Diagnostic and Value of Information~» du master M1 Androide à Sorbonne Université. Il commence par une description de la problématique traitée et les objectifs initiaux à travers le cahier des charges de la Section~\ref{SecCharges}. On donne ensuite un panorama de la littérature disponible sur le sujet dans l'état de l'art de la Section~\ref{SecEtatDeLArt}. La Section~\ref{SecMethodologie} détaille la méthodologie choisie dans ce projet, avant la description plus détaillée de notre contribution à l'étude du problème traité dans la Section~\ref{SecContribution}. Une description des implémentations réalisées est donnée dans la Section~\ref{SecImplementation} avant la présentation des résultats dans la Section~\ref{SecResultats}.
 
 \section{Cahier des charges}
 \label{SecCharges}
@@ -265,6 +269,10 @@ Une fois la revue de la littérature complétée, l'objectif suivant de ce proje
 
 À partir de l'implémentation de techniques classiques de \emph{Troubleshooting}, l'objectif sera d'étudier l'effet de l'utilisation des techniques d'élicitation permettant de réduire des incertitudes concernant les prix de réparation des composantes du dispositif. Il s'agira ainsi, d'une part, de proposer des méthodes d'élicitation permettant de le faire et, d'autre part, de les implémenter dans le module de base de \emph{Troubleshooting} afin de les tester et des les comparer aux techniques existantes.
 
+\item Implémentation d'une interface graphique pour des problèmes de \emph{Troubleshooting}
+
+Outre l'implémentation des techniques classiques de \emph{Troubleshooting} et l'exploration de nouvelles techniques à l'aide de la théorie de l'élicitation, un des objectifs de ce projet est de concevoir une interface graphique qui pourrait permettre à un utilisateur de résoudre une panne d'un dispositif à l'aide des algorithmes implémentés. Cette interface doit être toujours destinée à la recherche, en présentant par exemple à chaque étape les coûts espérés de réparation sous chaque action possible, mais en gardant l'idée qu'elle devrait être facilement adaptable à une situation réelle.
+
 \item Études expérimentaux et présentation des résultats.
 
 À la fin, le dernier objectif de ce projet sera de présenter les résultats de l'implémentation réalisée sur un cas concret.  Le résultat espéré est que les techniques implémentées avec l'élicitation permettent d'améliorer les techniques existantes dans le cas où les coûts de réparation ne sont pas connus de façon exacte.
@@ -275,6 +283,7 @@ Une fois la revue de la littérature complétée, l'objectif suivant de ce proje
 \label{SecEtatDeLArt}
 
 \subsection{Description générale du problème de \emph{Troubleshooting}}
+\label{SecDescription}
 
 Étant donné un dispositif en panne, le problème du \emph{Troubleshooting} consiste à chercher une stratégie de réparation de coût total minimal. Plus précisément, on considère que le dispositif est constitué d'un nombre fini de composantes $c_1, \dotsc, c_n$, certaines pouvant être en panne, et que l'on dispose de 2 types d'actions qui peuvent être réalisées de façon séquentielle~: observations et réparations.
 
@@ -327,20 +336,21 @@ Dans le cadre du \emph{Troubleshooting}, les actions $\alpha_i$ sont des observa
 \subsection{Valeur de l'information myope}
 \label{SecValeurInformation}
 
-Les concepts de bases de la théorie de la valeur de l'information sont présentés dans l'article \cite{howard_information_1966}. Plus précisément, supposons que l'on doit prendre une décision $D$ dans l'incertain parmi celles proposées sachant que l'on connaît un ensemble d'évidences $\varepsilon$. Supposons en plus qu'il existe un voyant qui est capable de fournir une autre évidence $X$, ce qui diminue les incertitudes. Néanmoins, obtenir $X$ ne serait pas gratuit~: pour qu'un voyant nous dise son secret il faut lui payer $C_X$. Serait-ce alors mieux de payer au voyant ou doit-on prendre plutôt une décision sans informations additionnelles~? L'idée principale de l'approche proposée dans \cite{howard_information_1966} est de comparer l'utilité que l'on obtiendrait sans et avec l'évidence fournie par le voyant. Cette approche est myope car on considère que l'on ne cherchera pas d'autres informations après avoir obtenu $X$.
+Les concepts de bases de la théorie de la valeur de l'information sont présentés dans l'article \cite{howard_information_1966}. Plus précisément, supposons que l'on doit prendre une décision $D$ dans l'incertain parmi celles proposées sachant que l'on connaît un ensemble d'évidences $E$. Supposons en plus qu'il existe un voyant qui est capable de fournir une autre évidence $X$, ce qui diminue les incertitudes. Néanmoins, obtenir $X$ ne serait pas gratuit~: pour qu'un voyant nous dise son secret il faut lui payer $C_X$. Serait-ce alors mieux de payer au voyant ou doit-on prendre plutôt une décision sans informations additionnelles~? L'idée principale de l'approche proposée dans \cite{howard_information_1966} est de comparer l'utilité que l'on obtiendrait sans et avec l'évidence fournie par le voyant. Cette approche est myope car on considère que l'on ne cherchera pas d'autres informations après avoir obtenu $X$.
 
-Si $E u(D \mid \varepsilon)$ est l'utilité espérée lorsque l'on prend la décision $D$ sachant $\varepsilon$, selon la technique proposée, il suffit de connaître la valeur
+Si $\mathbb E u(D \mid E)$ est l'utilité espérée lorsque l'on prend la décision $D$ sachant $E$, selon la technique proposée, il suffit de connaître la valeur
 \begin{equation}
 \label{EsperanceObservation}
-\EVOI(X, \varepsilon) = \max_{D} \sum_{x_i} Eu(D \mid X = x_i, \varepsilon) P(X = x_i \mid \varepsilon) - \max_{D} Eu(D \mid \varepsilon),
+\EVOI(X, E) = \max_{D} \sum_{x_i} \mathbb E u(D \mid X = x_i, E) P(X = x_i \mid E) - \max_{D} \mathbb E u(D \mid E),
 \end{equation}
-donc la différence entre l'utilité espérée maximale si l'on connaît $X$ et celle sans connaître $X$. Selon ce critère, on décide alors de payer pour évidence $X$ si $\EVOI(X, \varepsilon) > 0$ et prendre une décision directement sinon. De plus, si l'on avait un choix entre des évidences $X_1, X_2, \dotsc, X_n$, on choisirait celle qui apporterait à $\EVOI(X_i, \varepsilon)$ une valeur maximale toujours en vérifiant que $\EVOI(X_i, \varepsilon) > 0$.
+donc la différence entre l'utilité espérée maximale si l'on connaît $X$ et celle sans connaître $X$. Selon ce critère, on décide alors de payer pour évidence $X$ si $\EVOI(X, E) > 0$ et prendre une décision directement sinon. De plus, si l'on avait un choix entre des évidences $X_1, X_2, \dotsc, X_n$, on choisirait celle qui apporterait à $\EVOI(X_i, E)$ une valeur maximale toujours en vérifiant que $\EVOI(X_i, E) > 0$.
 
 Cette idée est aussi celle utilisée dans l'approche myope au problème de \emph{Troubleshooting} décrite ci-après dans la Section~\ref{SecMyope}. On peut voir l'introduction des observations globales comme des actions pour obtenir plus d'information. Le choix si une de ces actions sera prise ou pas est fait à travers un critère tout à fait analogue à celui décrit par \eqref{EsperanceObservation}.
 
 %On constate que ces idées décrites ci-dessus sont utilisées assez souvent comme un fondement dans les autres articles y concernés lorsque l'on parle de la valeur d'information même si des formules ultérieures pour définir cet objet mathématique ne concordent pas parfois avec celles au-dessus.
 
 \subsection{Réseaux Bayésiens}
+\label{SecReseauxBayesiens}
 
 Les incertitudes dans le problème de \emph{Troubleshooting} ont plusieurs origines~: on ne connaît pas quelles composantes sont en panne ni les effets précis que le changement de l'état d'une composante peut avoir sur les autres autres composantes, sur les observations et sur l'état du système. Ces incertitudes sont représentées dans notre approche par des probabilités. La représentation intégrale de la loi de probabilité jointe de toutes les composantes et de toutes les observations du système serait trop gourmande en mémoire et inutilement complexe puisque l'on peut imaginer qu'il y a plusieurs relations d'indépendance ou d'indépendance conditionnelle entre elles. Ainsi, les réseaux Bayésiens, décrits par exemple dans \cite{Jensen_2007}, sont un outil mathématique adaptée à la représentation des probabilités de notre problème.
 
@@ -370,14 +380,17 @@ Pour la construction d'un tel graphe dans des situations pratiques, les flèches
 Un exemple classique de réseau Bayésien pour le \emph{Troubleshooting}, présenté dans \cite{Jensen_2007}, est celui du \emph{problème de démarrage de la voiture}, dans lequel on considère une voiture qui ne démarre pas. La Figure~\ref{FigExplBayesien} représente ce réseau, avec quatre nœuds représentant quatre variables de la voiture (démarrage ou pas, affichage de la jauge de carburant, présence de carburant, fonctionnement des bougies d'allumage). Dans ce réseau, par exemple, la probabilité que la voiture démarre est exprimée comme une loi conditionnelle dépendant de la présence de carburant et du fonctionnement des bougies. La probabilité que la jauge de carburant affiche qu'il y a du carburant ou pas est représentée comme une loi conditionnelle dépendant uniquement de la présence de carburant. Le fonctionnement des bougies et la présence de carburant sont représentés par deux lois de probabilité simples, sans conditionnement.
 
 \subsection{Approches au problème de \emph{Troubleshooting}}
+\label{SecApprochesTrouble}
 
 \subsubsection{Approche exacte}
+\label{SecAlgoExacte}
 
 L'approche immédiate pour résoudre le problème \emph{Troubleshooting} est de construire l'arbre correspondant avec toutes les actions d'observation et réparation qui peuvent être réalisées à chaque étape, les feuilles correspondant aux états où le dispositif a été réparé après une séquence d'actions. À chaque feuille correspond ainsi un coût total de la réparation qui mène à cette feuille. On peut alors calculer les coûts espérés dans chaque nœud de façon inductive à partir des feuilles~: dans un nœud de loterie (résultat d'une observation ou d'une réparation), on calcule l'espérance des coûts de ses nœuds fils alors que, dans un nœud de décision (choix d'une observation ou réparation), on prend comme valeur la valeur du fils avec le plus petit coût espéré. Cette approche permet de résoudre le problème de façon exacte, mais en temps exponentiel en la taille des données car il faut parcourir tout l'arbre pour déterminer le meilleur choix en chaque nœud.
 
-Le fait que cet algorithme exacte est exponentiel n'est pas surprenant : il a été démontré dans \cite{Vomlelov__2003} que, sauf sous des hypothèses simplificatrices assez fortes (par exemple, absence d'observations et présence d'une unique composante en panne sur le système), le problème de \emph{Troubleshooting} est NP-difficile. Cela motive ainsi la recherche d'heuristiques donnant de bonnes solutions pratiques ainsi que d'algorithmes approchés pour le problème de \emph{Troubleshooting}. Il faut cependant noter que, en toute généralité, le problème de \emph{Troubleshooting} est aussi NP-difficile à résoudre dans un sens approché, comme démontré dans \cite{L_n_2014}.
+Le fait que cet algorithme exact est exponentiel n'est pas surprenant : il a été démontré dans \cite{Vomlelov__2003} que, sauf sous des hypothèses simplificatrices assez fortes (par exemple, absence d'observations et présence d'une unique composante en panne sur le système), le problème de \emph{Troubleshooting} est NP-difficile. Cela motive ainsi la recherche d'heuristiques donnant de bonnes solutions pratiques ainsi que d'algorithmes approchés pour le problème de \emph{Troubleshooting}. Il faut cependant noter que, en toute généralité, le problème de \emph{Troubleshooting} est aussi NP-difficile à résoudre dans un sens approché, comme démontré dans \cite{L_n_2014}.
 
 \subsubsection{Algorithme exacte sous hypothèses simplificatrices}
+\label{SecAlgoSimple}
 
 Sous des hypothèses simplificatrices assez restrictives, il est connu \cite{heckerman1994troubleshooting, Heckerman_1995, Vomlelov__2003, L_n_2014} qu'il est possible de résoudre le problème de \emph{Troubleshooting} en temps polynomial. Plus précisément, on suppose que~:
 \begin{itemize}
@@ -399,7 +412,7 @@ Les articles \cite{heckerman1994troubleshooting, Heckerman_1995} présentent un 
 \label{EqCor}
 C^{or}(a, E) = C(o) + P(o \neq \text{normal} \mid E) C(r),
 \end{equation}
-où $E$ représente les informations dont on dispose. On définit $C^{or}(a, E) = C(r)$ dans le cas où $a = r$ représente la réparation d'une composante non-observable et $C^{or}(a_0, E) = C(a_0)$ pour l'action spéciale $a_0$ d'appel au service. L'algorithme suit la même idée que le précédent, en choisissant à chaque étape le plus grand rapport probabilité/coût, mais ces rapports doivent désormais être recalculés à chaque étape car les probabilités et les coûts évoluent en fonction des actions déjà effectuées.
+où $E$ représente les informations dont on dispose. On définit $C^{or}(a, E) = C(r)$ dans le cas où $a = r$ représente la réparation d'une composante non-observable et $C^{or}(a_0, E) = C(a_0)$ pour l'action spéciale $a_0$ d'appel au service. L'algorithme suit la même idée que celui de la Section~\ref{SecAlgoSimple}, en choisissant à chaque étape le plus grand rapport probabilité/coût, mais ces rapports doivent désormais être recalculés à chaque étape car les probabilités et les coûts évoluent en fonction des actions déjà effectuées.
 
 À la fin de l'algorithme, cette heuristique basée sur les observations-réparations donnera une séquence d'actions $S^\ast = (a_1, \dotsc, a_k)$ à prendre dans l'ordre, où chaque action $a_i$ représente la réparation d'une composante non-observable, la paire observation-réparation d'une composante observable ou l'appel au service. Le coût espéré de réparation associé à cette séquence d'actions $S^\ast$ calculée à partir des informations initiales $E_0$, $\ECR(E_0, S^\ast)$, est alors donné par la formule
 \begin{equation}
@@ -493,25 +506,162 @@ On choisit alors son pire adversaire $q_\ast$, celui qui maximise son regret, so
 \[q_{\ast} = \argmax_{q \in \mathcal O} \max_{w \in P} u(q, w) - u(o_\ast, w),\]
 et on demande à l'utilisateur de comparer $o_\ast$ et $q_\ast$. La réponse de l'utilisateur donne ainsi une inégalité entre $u(q_\ast, w)$ et $u(o_\ast, w)$, qui est utilisée pour réduire la région $P$. On itère jusqu'à ce que $P$ soit suffisamment petit ou que le regret soit nul.
 
-\subsection{Objectifs du projet}
+\section{Analyse et méthodologie choisie}
+\label{SecMethodologie}
 
-Pour ce projet, on commence par la réalisation d'un logiciel qui permettra de résoudre des problèmes de \emph{Troubleshooting} différents à partir des leurs modèles donnés sous une forme de réseau Bayésien et en utilisant les algorithmes décrits dans les références ci-dessus, notamment \cite{Heckerman_1995, heckerman1994troubleshooting}. Cette implémentation suppose une connaissance parfaite des paramètres du problème, à savoir les probabilités du réseau Bayésien et les coûts de chaque observation et réparation. La deuxième partie du projet cherche à s'affranchir, au moins partiellement, de ces hypothèses simplificatrices, en supposant par exemple que les coûts ne sont pas parfaitement connus. Notre objectif sera alors d'utiliser des méthodes d'élicitation pour réduire les incertitudes sur les données du problème.
+En vue de la diversité de points de vue sur le problème du \emph{Troubleshooting} et des sujets connexes présentés dans la Section~\ref{SecEtatDeLArt}, nous fixons dans cette section le cadre formel choisi pour représenter le problème de \emph{Troubleshooting} dans ce projet.
+
+\subsection{Description du réseau Bayésien}
+\label{SecBayesTroubleshooting}
+
+Un dispositif en panne est représenté par un \emph{réseau Bayésien}, tel que décrit dans la Section~\ref{SecReseauxBayesiens}, c'est-à-dire un graphe orienté $G = (V, E)$ avec, dans chaque sommet $s \in V$, une loi de probabilité conditionnelle $P(s \mid \text{parents}(s))$. Dans ce document, on identifiera les sommets du réseau Bayésien et les variables aléatoires qu'ils représentent.
+
+Un des sommets de ce graphe correspond à l'observation spéciale $o_0$ de l'état global du système et est appelé \emph{problem defining node}. Ce nœud peut avoir plusieurs valeurs mais, par souci de simplicité, on considérera dans la suite qu'il n'en a que deux, correspondant au fonctionnement normal du système ou pas.
+
+Un autre nœud spécial du réseau est celui d'«~appel au service~», comme décrit dans la Section~\ref{SecDescription}. Ce nœud a deux valeurs, \emph{yes} ou \emph{no}, correspondant au fait que le service a été appelé ou pas. Ce nœud ne doit pas avoir de parent dans le réseau Bayésien, sa loi de probabilité initiale doit être une probabilité de $100\%$ de \emph{no}, et il doit satisfaire que $P(o_0 = \text{normal} \mid \text{appel au service} = \text{yes}) = 1$, c'est-à-dire qu'un appel au service doit forcément résoudre le problème.
+
+Les composantes $c_1, \dotsc, c_n$ sont représentées par des sommets de $V$. Toutes les composantes sont réparables, et l'action de réparation de la composante $c_i$ représentée par le sommet $s_i \in V$ correspond à considérer l'événement $s_i = \text{normal}$. Certaines composantes sont aussi observables, ce qui représente le fait que l'on peut observer la valeur de la variable aléatoire $s_i$.
+
+Les observations globales, c'est-à-dire celles ne correspondant pas à l'observation d'une seule composante, sont aussi représentées par des sommets de $V$. L'ensemble des sommets $V$ contient ainsi les deux sommets spéciaux de \emph{problem defining node} et d'appel au service, les composantes et les observations globales, mais cette inclusion peut ne pas être une égalité~: on autorise à $V$ d'avoir d'autres sommets qui ne rentreraient pas dans ces catégories et n'exerceraient qu'une influence indirecte sur le problème de \emph{Troubleshooting}.
+
+On suppose que l'on part d'un état d'information $E_0$, sous-ensemble de l'événement certain. Ce sous-ensemble doit contenir au moins l'information $o_0 \neq \text{normal}$, mais peut aussi contenir d'autres informations connues à l'état initial.
+
+\subsection{Problème de \emph{Troubleshooting}}
+\label{SecProbTrouble}
+
+Avec les outils de la section précédente, on donne maintenant la définition formelle de ce que l'on veut dire par \emph{problème de Troubleshooting} dans ce document.
+
+\begin{defi}
+Un \emph{problème de Troubleshooting} est la donnée de~:
+\begin{enumerate}
+\item un ensemble fini $\mathcal C$ de \emph{composantes}~;
+\item un sous-ensemble $\mathcal C_o \subset \mathcal C$ des composantes dites \emph{observables}~;
+\item un ensemble fini $\mathcal O$ d'\emph{observations globales}~;
+\item un élément particulier $o_0 \in \mathcal O$ appelé \emph{problem defining node}~;
+\item\label{Defi-Bayes} un réseau Bayésien satisfaisant les propriétés de la Section~\ref{SecBayesTroubleshooting}~;
+\item un ensemble $E_0$, sous-ensemble de l'événement certain, donnant les informations à l'état initial~;
+\item\label{Defi-CoutReparation} une fonction $C_r: \mathcal C \to \mathbb R_+$ donnant les \emph{coûts de réparation} des composantes~; et
+\item\label{Defi-CoutObservation} une fonction $C_o: \mathcal C_o \cup \mathcal O \to \mathbb R_+$ donnant les \emph{coûts d'observation} avec $C_o(o_0) = 0$.
+\end{enumerate}
+\end{defi}
+
+On appellera \emph{action} dans un problème de \emph{Troubleshooting} tout ce qui permet de mettre à jour l'ensemble $E$ d'informations disponibles sur le problème, en obtenant un nouvel ensemble $E^\prime$. Comme décrit dans les Sections~\ref{SecDescription} et \ref{SecMyope}, les actions considérées ici sont les réparations des composantes, les observations globales ou d'une composante, et les paires observation-réparation des composantes observables. Dans le cas des observations, la mise-à-jour de $E$ se fait en rajoutant le résultat de l'observation, qui est aléatoire et dépend de la loi correspondante au nœud de l'observation sur le réseau Bayésien. Dans le cas de la réparation d'une composante $c_i$, la mise-à-jour de $E$ se fait en rajoutant l'information $c_i = \text{normal}$ et en supprimant toute autre information devenue caduque suite à la réparation.
+
+On remarque que l'ensemble des actions admissibles dépend du cadre considéré et de l'ensemble des informations $E$. Ainsi, le cadre décrit dans la Section~\ref{SecMyope}, par exemple, n'autorise que les actions couplées d'observation-réparation pour les composantes observables, ne permettant pas que les actions de réparation ou d'observation soient réalisées de façon séparée pour ces composantes. En plus, si une composante a déjà été réparée, son action de réparation (ou d'observation-réparation, suivant le cadre) n'est plus disponible. Lorsqu'une observation est réalisée, sa nouvelle réalisation n'est pas disponible, jusqu'à ce qu'une action de réparation ne rende caduque l'information qui avait été apportée par cette observation. Enfin, lorsque $E$ contient le fait que le dispositif est réparé (ce qui arrive, par exemple, après l'action d'appel au service), aucune autre action n'est possible.
+
+\subsection{Arbres de décision et stratégies}
+\label{SecAbresEtStrategies}
+
+Étant donné un problème de \emph{Troubleshooting} et un cadre définissant les actions admissibles, on peut associer à ce problème l'arbre de décision correspondant construit de façon inductive comme suit.
+
+\begin{itemize}
+\item La racine de cet arbre est un nœud de décision avec l'état d'information $E_0$, duquel partent autant d'arcs que d'actions possibles sous l'état $E_0$.
+
+\item Si l'action est une réparation ou une paire observation-réparation, l'arc correspondant mène à un nœud de loterie binaire déterminant si la réparation a résolu le problème du dispositif ou pas. Dans le cas où l'action résout le problème, la loterie mène sur une feuille de l'arbre. Dans le cas contraire, elle mène à un nouveau nœud de décision, associé à un état $E_1$ qui incorpore l'information issue de la réparation, et l'arbre se construit de façon inductive à partir de ce nœud.
+
+\item Si l'action est une observation, l'arc correspondant mène à un nouveau nœud de loterie avec la loi de probabilité correspondant au nœud d'observation correspondant du réseau Bayésien. Ce nœud de loterie a autant d'arcs sortants que de résultats possibles de l'observation. Chacun de ces arcs mène à un nouveau nœud de décision avec l'état de l'information contenant le résultat de la loterie, et l'arbre est construit de façon inductive à partir de ce nœud.
+\end{itemize}
+
+L'arbre ainsi construit est fini car le nombre d'actions possibles est fini, les actions de réparation (ou d'observation-réparation) ne peuvent être réalisées qu'une seule fois au maximum, et, même si les actions d'observation peuvent être répétées lorsque des nouvelles informations sont disponibles, il y a une borne sur le nombre maximal de fois que chaque action d'observation peut être répétée (donnée par le nombre total de composantes).
+
+À chaque feuille de l'arbre, on associe le \emph{coût total de réparation} de cette feuille, qui correspond à la somme de tous les coûts des actions prises dans le chemin qui va de la racine à cette feuille.
+
+Une \emph{stratégie} $S$ dans cet arbre est la donnée, pour chaque nœud de décision de l'arbre, d'une action à prendre dans ce nœud. L'\emph{espérance de coût} de la stratégie $S$ avec l'état d'informations initial $E_0$, $\ECR(E_0, S)$, est calculée de la façon suivante~: à chaque feuille de l'arbre, on associe son coût total de réparation. À chaque nœud de loterie de l'arbre dont les descendants ont été calculés, on associe l'espérance de la loterie correspondante. À chaque nœud de décision de l'arbre dont les descendants ont été calculés, on associe la valeur de son descendant choisi dans la stratégie $S$. La valeur $\ECR(E_0, S)$ est la valeur associée à la racine de l'arbre.
+
+En dénotant par $\mathcal S$ l'ensemble de toutes les stratégies possibles, le problème de \emph{Troubleshooting} peut être écrit, en termes de ces notations, comme le calcul de
+\begin{equation}
+\label{MainProblem}
+\argmin_{S \in \mathcal S} \ECR(E_0, S).
+\end{equation}
+
+\begin{remk}
+Étant donnée une stratégie $S$, lorsque l'on se place dans un nœud de décision quelconque dans lequel la stratégie $S$ donne un choix d'action $a$, la valeur de $\ECR(E_0, S)$ ne change pas si on modifie la stratégie $S$ dans les sous-arbres issues de ce nœud de décision ne correspondant pas à l'action $a$. Dans la suite, on identifie deux stratégies qui peuvent être obtenues l'une à partir de l'autre avec ce type de modification.
+\end{remk}
+
+\begin{remk}
+Dans le cas particulier où l'ensemble des actions possibles ne contient que des réparations ou des paires observation-réparation, une stratégie $S$ peut être identifiée à une séquence d'actions $(a_1, \dotsc, a_k)$, où $a_1$ est l'action à prendre dans le nœud de décision racine, $a_2$ est la décision à prendre si l'action $a_1$ ne résout pas le problème, et ainsi de suite. Cela arrive car, dans ce cas, les seuls nœuds de loterie possibles sont binaires, à la suite des réparations, avec un arc qui mène directement à une feuille. Ce cadre correspond à celui décrit dans la Section~\ref{SecAlgoSimple} et dans la première partie de la Section~\ref{SecMyope}, et la définition de $\ECR(E_0, S)$ donnée ici coïncide avec \eqref{EqECR}.
+\end{remk}
+
+\subsection{Méthodes classiques d'approximation}
+
+Comme rappelé dans la Section~\ref{SecAlgoExacte}, la résolution exacte de \eqref{MainProblem} est un problème difficile. Afin d'approcher ce minimum, plusieurs algorithmes basés sur des heuristiques ont été proposés, comme détaillé dans la Section~\ref{SecApprochesTrouble}. Ce projet s'intéresse à trois d'entre deux, donnés dans \cite{Heckerman_1995, heckerman1994troubleshooting} et décrits dans les Sections~\ref{SecAlgoSimple} et \ref{SecMyope}~:
+\begin{enumerate}
+\item L'algorithme dit \emph{simple} de la Section~\ref{SecAlgoSimple}, dans lequel les seules actions disponibles sont les réparations des différentes composantes.
+
+\item L'algorithme dit \emph{simple avec observations locales} décrit au début de la Section~\ref{SecMyope}, dans lequel les seules actions disponibles sont les réparations des composantes non-observables et les paires observation-réparation des composantes observables.
+
+\item L'algorithme dit \emph{myope} décrit dans la suite de la Section~\ref{SecMyope}, qui rajoute la possibilité d'observations globales.
+\end{enumerate}
+La description de l'implémentation de ces algorithmes est donnée dans la Section~\ref{SecImplementation} ci-après.
+
+%Pour ce projet, on commence par la réalisation d'un logiciel qui permettra de résoudre des problèmes de \emph{Troubleshooting} différents à partir des leurs modèles donnés sous une forme de réseau Bayésien et en utilisant les algorithmes décrits dans les références ci-dessus, notamment \cite{Heckerman_1995, heckerman1994troubleshooting}. Cette implémentation suppose une connaissance parfaite des paramètres du problème, à savoir les probabilités du réseau Bayésien et les coûts de chaque observation et réparation. La deuxième partie du projet cherche à s'affranchir, au moins partiellement, de ces hypothèses simplificatrices, en supposant par exemple que les coûts ne sont pas parfaitement connus. Notre objectif sera alors d'utiliser des méthodes d'élicitation pour réduire les incertitudes sur les données du problème. Nous explorerons aussi des méthodes probabilistes de type Monte-Carlo pour le calcul de l'espérance de coût de réparation pour un algorithme donné et nous 
 
 \section{Contribution}
 \label{SecContribution}
 
+Cette section décrit les contributions principales au problème du \emph{Troubleshooting} réalisées dans ce projet. La	première contribution décrite concerne le calcul approché de $\ECR(E_0, S)$ pour une stratégie $S$ donnée et est détaillée dans la Section~\ref{SecCalculMonteCarlo}. On décrit ensuite, dans la Section~\ref{SecExacte}, les idées utilisées pour un algorithme résolvant \eqref{MainProblem} de façon exacte. Finalement, la Section~\ref{SecContribElicitation} décrit une méthode permettant de traiter le cas où les coûts de réparation sont inconnus et des techniques d'élicitation sont utilisées pour déterminer la meilleure stratégie à adopter.
+
+\subsection{Calcul de l'espérance de coût par une méthode de Monte-Carlo}
+\label{SecCalculMonteCarlo}
+
+Étant donné une stratégie $S$, le calcul de $\ECR(E_0, S)$ peut s'effectuer de façon inductive à travers le parcours de l'arbre décrit dans la Section~\ref{SecAbresEtStrategies}. À une stratégie $S$ donnée, ce parcours utilise beaucoup moins d'opérations que le calcul de la stratégie optimale pour \eqref{MainProblem}, puisque, à chaque nœud de décision, il suffit de parcourir la décision prise par la stratégie $S$. Les branchements interviennent seulement dans les nœuds de loterie, et en plus les nœuds de loterie consécutifs à une réparation donnent lieu à des branchements triviaux, dans le sens où une des branches conduit directement à une feuille. La complexité provient uniquement des branchements des nœuds de loterie correspondants à des observations globales, qui peut être importante dans des situations où de nombreuses observations globales sont disponibles.
+
+Même dans le cas où le calcul de $\ECR(E_0, S)$ se fait de façon assez rapide, un inconvénient de son calcul exact est qu'il ne donne que la valeur de l'espérance du coût de réparation. Il peut aussi être intéressant de considérer le coût de réparation comme une variable aléatoire, auquel cas on peut s'intéresser à d'autres de ses caractéristiques, comme son histogramme, mais aussi à d'autres variables aléatoires associées, comme le nombre de réparations ou d'observations faites avant que le problème du dispositif ne soit résolu.
+
+Pour cette raison, il peut être intéressant d'avoir des algorithmes de calcul empirique de $\ECR(E_0, S)$ qui, en plus de retourner une approximation de cette espérance en soi, permettent d'obtenir facilement d'autres statistiques sur le déploiement de la stratégie $S$.
+
+L'idée naturelle pour ce faire est de, étant donnée une stratégie $S$, la simuler un grand nombre $N$ de fois. La simulation d'une stratégie se fait en résolvant les nœuds de décision selon la stratégie et en tirant les résultats des loteries de façon aléatoire selon la loi obtenue à travers le réseau Bayésien représentant le problème et l'état de l'information dans le nœud courant. Au fur de l'exécution, des statistiques sur chaque simulation peuvent être collectées~: le coût total de réparation (de la feuille où l'algorithme s'arrête), le nombre de réparations réalisées, le nombre d'observations réalisées, et d'autres statistiques pouvant être pertinentes.
+
+Pour que ces statistiques collectées soient significatives, il faut que le nombre $N$ soit suffisamment grand. On propose ici le critère d'arrêt suivant. Soit $K$ la variable aléatoire donnant le coût total de réparation pour une simulation. La suite de simulations réalisées correspond ainsi à une suite $(K_i)_{i \in \mathbb N}$ de variables aléatoires indépendantes et identiquement distribuées de même loi que $K$. Comme $K$ est une variable aléatoire à support fini, on peut appliquer le Théorème central limite à la suite $K_i$, qui affirme que la suite de variables aléatoires $(Z_n)_{n \in \mathbb N}$ définie par
+\[
+Z_n = \frac{\overline K_n - \mu}{\sigma / \sqrt{n}}, \qquad \text{avec } \overline K_n = \frac{1}{n} \sum_{i=1}^n K_i,
+\]
+converge en loi vers une loi normale centrée réduite $\mathcal N(0, 1)$, où $\mu$ et $\sigma$ sont l'espérance et l'écart-type de $K$. Par définition, on a $\mu = \ECR(E_0, S)$.
+
+On peut alors proposer un critère d'arrêt de l'algorithme à partir de l'intervalle de confiance déduit de cette convergence. Soit $Z$ une variable aléatoire suivant la loi $\mathcal N(0, 1)$, fixons un niveau de confiance $\alpha \in (0, 1)$ et considérons la valeur $z_\alpha$ telle que $\mathbb P(-z_\alpha < Z < z_\alpha) = \alpha$. On a alors
+\[
+\lim_{n \to +\infty} \mathbb P\left(-z_\alpha < \frac{\overline K_n - \mu}{\sigma / \sqrt{n}} < z_\alpha\right) = \alpha.
+\]
+L'erreur relative commise en approximant $\mu$ par $\overline K_n$ est $\frac{\overline K_n - \mu}{\overline K_n}$. En manipulant l'expression ci-dessous afin de l'écrire en termes de cette quantité, on trouve
+\[
+\lim_{n \to +\infty} \mathbb P\left(-\frac{z_\alpha \sigma}{\overline K_n \sqrt{n}} < \frac{\overline K_n - \mu}{\overline K_n} < \frac{z_\alpha \sigma}{\overline K_n \sqrt{n}}\right) = \alpha.
+\]
+Ainsi, on peut garantir que l'erreur relative asymptotique est plus petite qu'une valeur $\varepsilon > 0$ donnée, avec un niveau de confiance de $\alpha$, dès lors que l'on a l'inégalité
+\[
+\frac{z_\alpha \sigma}{\overline K_n \sqrt{n}} < \varepsilon.
+\]
+Cette inégalité peut ainsi être utilisée comme critère d'arrêt de l'algorithme à un niveau de confiance $\alpha$ et une tolérance relative $\varepsilon$ données. Cependant, elle n'est pas encore pratique sous cette forme, puisque l'écart-type $\sigma$ de $K$ n'est pas connu. Comme usuel en statistiques, on propose ici le remplacement de $\sigma$ par l'écart-type empirique $s_n$ de l'échantillon $K_1, \dotsc, K_n$, ce qui conduit au critère d'arrêt
+\[
+\frac{z_\alpha s_n}{\overline K_n \sqrt{n}} < \varepsilon.
+\]
+
+\subsection{Résolution exacte}
+\label{SecExacte}
+
+\textcolor{red}{TODO~!}
+
 \subsection{Élicitation des coûts}
+\label{SecContribElicitation}
 
-Jusqu'à présent, on a considéré que les paramètres définissant le problème étaient fixes~: tables de probabilité du réseau Bayésien et coûts d'observation et de réparation de chaque composante. Dans cette partie, on considère le cas où il y a une incertitude sur les coûts, en supposant que l'on peut ne pas connaître leur valeur exacte mais uniquement un intervalle. Pour simplifier, on considère que seuls les coûts de réparation peuvent être incertains, mais que les coûts d'observation sont connus. Cette hypothèse simplificatrice facilite l'exposition de la méthode et son implémentation mais on peut facilement adapter ces méthodes au cas de coûts d'observation incertains.
+Jusqu'à présent, on a considéré que le problème de Troubleshooting satisfait les hypothèses de la définition donnée dans la Section~\ref{SecProbTrouble}. En particulier, les propriétés \ref{Defi-Bayes}, \ref{Defi-CoutReparation} et \ref{Defi-CoutObservation} impliquent que plusieurs paramètres définissant le problème --- tables de probabilité du réseau Bayésien et coûts d'observation et de réparation de chaque composante --- sont fixes et connus. Dans cette partie, on considère le cas où il y a une incertitude sur les coûts, en supposant que l'on peut ne pas connaître leur valeur exacte mais uniquement une loi de probabilité sur chaque coût. Pour simplifier, on considère que seuls les coûts de réparation peuvent être incertains, mais que les coûts d'observation sont connus. Cette hypothèse simplificatrice facilite l'exposition de la méthode et son implémentation mais on peut facilement adapter ces méthodes au cas de coûts d'observation incertains.
 
-Chaque coût de réparation est ainsi représenté par une paire donnant le coût minimal et le coût maximal, et on considère que le vrai coût de réparation est une variable aléatoire de loi uniforme sur cet intervalle. L'espérance d'un coût de réparation est ainsi la moyenne entre les coûts minimal et maximal correspondants. L'objectif est d'utiliser l'élicitation pour améliorer les connaissances sur les coûts de réparation, c'est-à-dire diminuer la taille des intervalles de valeur pour chaque coût. %, afin que l'algorithme de \emph{Troubleshooting} puisse ainsi proposer une séquence d'actions plus adaptée.
-Pour cela, on utilise la notion de valeur d'information décrite dans la Section~\ref{SecValeurInformation}.
+Plus précisément, on considère que l'hypothèse \ref{Defi-CoutReparation} de la Section~\ref{SecProbTrouble} est remplacée par l'hypothèse
+\begin{enumerate}
+\item[\ref{Defi-CoutReparation}$^\prime$.] une fonction $C_r: \mathcal C \to \mathcal P(\mathbb R_+)$ donnant, pour chaque composante, la \emph{loi de probabilité de son coût de réparation},
+\end{enumerate}
+où $\mathcal P(\mathbb R_+)$ dénote l'ensemble des lois de probabilité sur $\mathbb R_+$.
 
-Plus précisément, on considère que le coût $C(r_i)$ de réparer la composante $c_i$ est une variable aléatoire de loi uniforme sur l'intervalle $[C_{\min}(r_i), C_{\max}(r_i)]$. On remarque que cela comprend aussi le cas particulier où le coût $C(r_i)$ est connu de façon exacte car il suffit d'avoir $C_{\min}(r_i) = C_{\max}(r_i)$. On dénote par $\overline C(r_i)$ l'espérance de $C(r_i)$, soit
-\[\overline C(r_i) = \frac{C_{\min}(r_i) + C_{\max}(r_i)}{2}\]
-et on dénote par $\ECR_0$ l'espérance du coût de réparation calculée par la formule \eqref{EqECR} avec les coûts $\overline C(r_i)$.
+Afin de simplifier, on ne travaille dans la suite qu'avec des lois de probabilité uniformes sur des intervalles bornés de $\mathbb R_+$. Ainsi, la donnée de $C_r: \mathcal C \to \mathcal P(\mathbb R_+)$ équivaut à la donnée des fonctions $C_{r, \min}: \mathcal C \to \mathbb R_+$ et $C_{r, \max}: \mathcal C \to \mathbb R_+$ donnant les extrémités gauche et droite des supports des lois uniformes. On demande ainsi à ce que $C_{r, \min}(c) \leq C_{r, \max}(c)$ pour tout $c \in \mathcal C$, et on autorise le cas $C_{r, \min}(c) = C_{r, \max}(c)$ afin de pouvoir représenter le cas où le coût exact de réparation de $c$ est connu. On dénote par $\overline C_r: \mathcal C \to \mathbb R_+$ la fonction qui, à chaque $c \in \mathcal C$, associe l'espérance de la variable aléatoire $C_r(c)$, soit
+\[\overline C_r(c) = \frac{C_{r, \min}(c) + C_{r, \max}(c)}{2}.\]
 
-L'objectif est de déterminer quelle question poser en premier à l'utilisateur sur les coûts de réparation pour acquérir le plus d'information possible. Dans notre formulation, on choisit de regarder une question par composante, de la forme ``Est-ce que le coût de réparation de la composante $c_i$ est plus petit que $\alpha$~?'', où $\alpha$ est une valeur dans $[C_{\min}(r_i), C_{\max}(r_i)]$. Pour déterminer l'information apportée par la réponse de cette question, on calcule, pour un état initial d'information $E$ et une séquence de réparation $S$~:
+Une première heuristique pour traiter ce cas correspond à appliquer les algorithmes de \emph{Troubleshooting} décrits précédemment en utilisant $\overline C_r$ comme la fonction de coût de l'hypothèse \ref{Defi-CoutReparation} de la Section~\ref{SecProbTrouble}, c'est-à-dire, en considérant que les coûts de réparation sont déterministes et égaux aux espérances des lois fournies de coûts de réparations. L'objectif de cette section est de présenter une autre heuristique, basée sur l'élicitation, permettant de prendre en compte le caractère aléatoire des coûts au-delà de la simple espérance. On cherche ainsi à utiliser l'élicitation afin d'améliorer les connaissances sur les coûts de réparation, c'est-à-dire diminuer la taille des intervalles de valeur pour chaque coût. Pour cela, on utilise la notion de valeur d'information décrite dans la Section~\ref{SecValeurInformation}.
+
+On remarque d'abord que le coût espéré de réparation $\ECR(E_0, S)$ introduit dans la Section~\ref{SecAbresEtStrategies} dépend, entre autres choses, de la fonction $C_r$ donnant le coût (déterministe) de réparation de chaque composante. Afin de rendre cette dépendance plus explicite et simplifier l'exposition de la suite, on note cette valeur dans cette section par $\ECR(E_0, S, C_r)$.
+
+L'objectif est de déterminer quelle question poser en premier à l'utilisateur sur les coûts de réparation pour acquérir le plus d'information possible. Dans la formulation proposée ici, on choisit de regarder une question par composante de $\mathcal C = \{c_1, \dotsc, c_n\}$, de la forme ``Est-ce que le coût de réparation de la composante $c_i$ est plus petit que $\alpha$~?'', où $\alpha$ est une valeur dans $[C_{r, \min}(c_i), C_{r, \max}(c_i)]$. Pour déterminer l'information apportée par la réponse de cette question, on calcule, pour un état initial d'information $E$ et une séquence de réparation $S$~:
+
+% Continuer d'ici. Il faut changer les notations pour les mettre selon les notations introduites dans la Section 4. La preuve devra probablement changer un peu car on ne peut pas utiliser simplement la formule (3), il faut penser au calcul exact de la séquence de réparations.
+
 \begin{itemize}
 \item $\ECR_+(E, S, c_i, \alpha)$, qui est le coût espéré de la réparation dans le cas où la réponse à la question est non, calculé en remplaçant $\overline C(r_i)$ par l'espérance de la loi uniforme sur $[\alpha, C_{\max}(r_i)]$, soit $\frac{\alpha + C_{\max}(r_i)}{2}$~;
 \item $\ECR_-(E, S, c_i, \alpha)$, qui est le coût espéré de la réparation dans le cas où la réponse à la question est oui, calculé en remplaçant $\overline C(r_i)$ par l'espérance de la loi uniforme sur $[C_{\min}(r_i), \alpha]$, soit $\frac{C_{\min}(r_i) + \alpha}{2}$~;
@@ -586,6 +736,8 @@ Il reste encore la question de quel $\alpha$ choisir pour chaque composante. Not
 
 \section{Implémentation}
 \label{SecImplementation}
+
+
 
 \subsection{Élicitation des coûts}
 

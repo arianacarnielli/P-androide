@@ -81,7 +81,7 @@ class MainWindow(QMainWindow):
             'callService': {'service'}
         }
 
-        #On peut choisir quel algorithme utiliser entre les 4 algorithmes codés
+        #On peut choisir quel algorithme utiliser entre les 5 algorithmes codés
         self.algos_possibles = [
             "simple",
             "simple avec observations locales",
