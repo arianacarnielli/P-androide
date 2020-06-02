@@ -62,27 +62,28 @@ class MainWindow(QMainWindow):
         }
 
         # On initialise les types des noeuds du réseau
+        self.nodesAssociations = {
+            "car.batteryFlat": {"repairable", "observable"},
+            "oil.noOil": {"repairable", "observable"},
+            "tank.Empty": {"repairable"},
+            "tank.fuelLineBlocked": {"repairable", "observable"},
+            "starter.starterBroken": {"repairable", "observable"},
+            "car.lightsOk": {"unrepairable", "observable"},
+            "car.noOilLightOn": {"unrepairable", "observable"},
+            "oil.dipstickLevelOk": {"unrepairable", "observable"},
+            "car.carWontStart": {"problem-defining"},
+            "callService": {"service"}
+        }
+
+        # Une initialisation raccourcie pour ne pas surcharger des algorithmes exactes
         # self.nodesAssociations = {
         #     "car.batteryFlat": {"repairable", "observable"},
-        #     "oil.noOil": {"repairable", "observable"},
         #     "tank.Empty": {"repairable"},
-        #     "tank.fuelLineBlocked": {"repairable", "observable"},
-        #     "starter.starterBroken": {"repairable", "observable"},
-        #     "car.lightsOk": {"unrepairable", "observable"},
-        #     "car.noOilLightOn": {"unrepairable", "observable"},
+        #     "oil.noOil": {"repairable", "observable"},
         #     "oil.dipstickLevelOk": {"unrepairable", "observable"},
         #     "car.carWontStart": {"problem-defining"},
         #     "callService": {"service"}
         # }
-
-        self.nodesAssociations = {
-            'car.batteryFlat': {'repairable', 'observable'},
-            'tank.Empty': {'repairable'},
-            "oil.noOil": {"repairable", "observable"},
-            'oil.dipstickLevelOk': {'unrepairable', 'observable'},
-            'car.carWontStart': {'problem-defining'},
-            'callService': {'service'}
-        }
 
         # On peut choisir quel algorithme utiliser entre les 4 algorithmes codés
         self.algos_possibles = [
@@ -321,7 +322,6 @@ class MainWindow(QMainWindow):
         QApplication.exit()
 
     def calculateBF(self):
-        pbarMax = 0
         self.config.calcButton.setEnabled(False)
         self.obsRepCouples = self.config.checkObsRepCouples.isChecked()
         self.obsObsolete = self.config.checkObsObsObsolete.isChecked()
@@ -333,20 +333,7 @@ class MainWindow(QMainWindow):
             self.modeExec = "step-by-step"
         else:
             self.modeExec = "show-tree"
-        if self.obsRepCouples:
-            for node_name in self.tsp.repairable_nodes.union(self.tsp.observation_nodes).union(
-                    set() if self.modeCalc == "dp" else {self.tsp.service_node}):
-                if node_name in self.tsp.repairable_nodes.union({self.tsp.service_node}):
-                    pbarMax += len(self.tsp.repairable_nodes.union(self.tsp.observation_nodes))
-                else:
-                    pbarMax += len(self.tsp.repairable_nodes.union(self.tsp.observation_nodes)) ** 2
-        else:
-            for node_name in self.tsp.repairable_nodes.union(self.tsp.observation_nodes).union(
-                    set() if self.modeCalc == "dp" else {self.tsp.service_node}):
-                if node_name in self.tsp.repairable_nodes.union({self.tsp.service_node}):
-                    pbarMax += len(self.tsp.repairable_nodes) + len(self.tsp.observation_nodes)
-                if node_name in self.tsp.observation_nodes:
-                    pbarMax += (len(self.tsp.repairable_nodes) + len(self.tsp.observation_nodes)) ** 2
+        pbarMax = self.findPbarMax()
         self.config.progressBar.setRange(0, pbarMax)
         self.randomSocketPort = int(np.random.randint(1024, 10000, 1))
         if os.name == "nt":
@@ -437,7 +424,7 @@ class MainWindow(QMainWindow):
         sock.listen(1)
         conn, addr = sock.accept()
         while self.config.progressBar.value() < self.config.progressBar.maximum():
-            data = conn.recv(34).decode()
+            data = conn.recv(50).decode()
             if "0" in data:
                 self.config.progressBar.setValue(
                     self.config.progressBar.value() + data.count("0")
@@ -449,6 +436,34 @@ class MainWindow(QMainWindow):
                 self.config.progressBar.setValue(self.config.progressBar.maximum())
                 QApplication.processEvents()
         conn.close()
+
+    def findPbarMax(self):
+        pbarMax = 0
+        fnodesNum = (
+                len(self.tsp.repairable_nodes.union(self.tsp.observation_nodes)) + 1
+                if self.obsRepCouples else
+                len(self.tsp.repairable_nodes) + len(self.tsp.observation_nodes) + 1
+        )
+        if self.obsRepCouples and self.modeCalc == "dp":
+            for _ in self.tsp.repairable_nodes:
+                pbarMax += fnodesNum - 1
+            for node_name in self.tsp.observation_nodes:
+                if node_name not in self.tsp.repairable_nodes:
+                    pbarMax += 2 * (fnodesNum - 1)
+
+        elif self.obsRepCouples and self.modeCalc == "all":
+            pbarMax += fnodesNum * (fnodesNum - 1)
+
+        elif not self.obsRepCouples and self.modeCalc == "dp":
+            for _ in self.tsp.repairable_nodes:
+                pbarMax += fnodesNum - 1
+            for _ in self.tsp.observation_nodes:
+                pbarMax += 2 * (fnodesNum - 1)
+
+        elif not self.obsRepCouples and self.modeCalc == "all":
+            pbarMax += fnodesNum * (fnodesNum - 1)
+
+        return pbarMax + 1
 
     def quit(self):
         box = QMessageBox()
