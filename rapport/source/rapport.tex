@@ -287,9 +287,9 @@ Outre l'implémentation des techniques classiques de \emph{Troubleshooting} et l
 
 Étant donné un dispositif en panne, le problème du \emph{Troubleshooting} consiste à chercher une stratégie de réparation de coût total minimal. Plus précisément, on considère que le dispositif est constitué d'un nombre fini de composantes $c_1, \dotsc, c_n$, certaines pouvant être en panne, et que l'on dispose de 2 types d'actions qui peuvent être réalisées de façon séquentielle~: observations et réparations.
 
-Les observations, que l'on dénote par $o_1, \dotsc, o_m$,  peuvent être ``locales'', c'est-à-dire d'une seule composante du dispositif, ou ``globales'' quand elles dépendent de plusieurs composantes. Il peut y avoir de composantes qui n'ont pas d'observation locale associée. On considère aussi qu'on a une observation spéciale $o_0$ qui porte sur l'état général du dispositif. Les réparations portent toujours sur une seule composante à la fois et on note $r_i$ la réparation de la composante $i$. 
+Les observations, que l'on dénote par $o_1, \dotsc, o_m$,  peuvent être «~locales~», c'est-à-dire d'une seule composante du dispositif, ou «~globales~» quand elles dépendent de plusieurs composantes. Il peut y avoir de composantes qui n'ont pas d'observation locale associée. On considère aussi qu'on a une observation spéciale $o_0$ qui porte sur l'état général du dispositif. Les réparations portent toujours sur une seule composante à la fois et on note $r_i$ la réparation de la composante $i$. 
 
-Les ensembles d'observations, réparations et actions sont dénotés respectivement par $\mathcal O = \{ o_0, \dotsc, o_m\}$, $\mathcal R = \{r_1, \dotsc, r_n\}$ et $\mathcal A = \mathcal O \cup \mathcal R$. Chaque action $a \in \mathcal A$ a un coût associé $C(a) \geq 0$ et l'objectif est donc de mettre le dispositif en état de marche en minimisant le coût total \[\sum_i C(a_i),\] où $a_i$ appartiennent à l'ensemble des actions prises. Dans certaines situations, il peut être intéressant de rajouter à $\mathcal A$ une action spéciale, $a_0$, correspondant à ``appeler le service'', qui résout le problème avec certitude mais a un coût très élevé, représentant, par exemple, la possibilité d'envoyer le dispositif à un centre plus spécialisé ou d'en acheter un nouveau.
+Les ensembles d'observations, réparations et actions sont dénotés respectivement par $\mathcal O = \{ o_0, \dotsc, o_m\}$, $\mathcal R = \{r_1, \dotsc, r_n\}$ et $\mathcal A = \mathcal O \cup \mathcal R$. Chaque action $a \in \mathcal A$ a un coût associé $C(a) \geq 0$ et l'objectif est donc de mettre le dispositif en état de marche en minimisant le coût total \[\sum_i C(a_i),\] où $a_i$ appartiennent à l'ensemble des actions prises. Dans certaines situations, il peut être intéressant de rajouter à $\mathcal A$ une action spéciale, $a_0$, correspondant à «~appeler le service~», qui résout le problème avec certitude mais a un coût très élevé, représentant, par exemple, la possibilité d'envoyer le dispositif à un centre plus spécialisé ou d'en acheter un nouveau.
 
 \subsection{Théorie de la décision et fonctions d'utilité}
 
@@ -440,7 +440,7 @@ Les travaux \cite{heckerman1994troubleshooting, Heckerman_1995} présentent auss
 
 %\subsubsection{Exemple d'application}
 %
-%On reprend le réseau Bayésien du problème de démarrage de la voiture représenté sur la Figure~\ref{FigExplBayesien}. On considère que notre dispositif, la voiture, est faite de deux composantes, ``Carburant'' et ``Bougies d'allumage''. On a une observation globale $o_j$ 
+%On reprend le réseau Bayésien du problème de démarrage de la voiture représenté sur la Figure~\ref{FigExplBayesien}. On considère que notre dispositif, la voiture, est faite de deux composantes, «~Carburant~» et «~Bougies d'allumage~». On a une observation globale $o_j$ 
 
 \subsubsection{Extensions de l'approche myope}
 
@@ -468,14 +468,14 @@ Ainsi, l'élicitation peut être décomposée en deux étapes, une locale corres
 Afin d'avancer vers le problème d'élicitation, il faut décider comment on pourrait représenter les incertitudes sur l'utilité d'un utilisateur en particulier. L'article \cite{chajewska_making_2000} utilise une hypothèse centrale~: étant donnée une conséquence $O$ d'une décision $D$, on considère que son utilité $u_O$ est une variable aléatoire qui suit une loi de probabilité $P(u_O)$. L'article suppose empiriquement que la loi $P$ % (où $\textbf{u} = \{u_{O_1}, u_{O_2}, \dotsc, u_{O_m}\}$, et $\{O_1, O_2, \dotsc, O_m\}$ est un ensemble des conséquences possibles dans le domaine étudié)
 est une mixture de gaussiennes, possiblement tronquées. Lorsque l'on dispose des statistiques assez significatives, on aura la possibilité de reconstruire sa densité de probabilité pour un utilisateur générique. Il faut cependant adapter la loi pour chaque nouvel utilisateur pour prendre en compte les différences de leurs utilités.
 
-Pour faire cette adaptation, on pose des questions d'élicitation, dont les réponses mettent à jour la loi de probabilité de l'utilité. Bien que ces questions nous donnent des informations, on ne doit pas trop en poser car l'utilisateur peut se fatiguer de leur répondre. Par conséquent, il est nécessaire de déterminer un critère pour choisir quelles questions il vaut mieux poser. L'article \cite{chajewska_making_2000} définit de manière assez similaire qu'à la Section~\ref{SecValeurInformation} une notion de \emph{valeur de l'information} utilisée pour déterminer la question suivante à poser. Cependant, on remarque que cette approche est \emph{``myope''} car on ne considère que la valeur de l'information locale de chaque question. Une technique plus générale consisterait à observer toutes les combinaisons possibles que l'on pourrait construire à partir de questions prises en compte, mais il est bien évident que, pour la grande majorité de cas, une telle technique est intraitable à cause du nombre des combinaisons possibles qui augmente trop vite. C'est pourquoi l'approche proposée dans \cite{chajewska_making_2000} est une solution assez efficace afin de traiter ce problème.
+Pour faire cette adaptation, on pose des questions d'élicitation, dont les réponses mettent à jour la loi de probabilité de l'utilité. Bien que ces questions nous donnent des informations, on ne doit pas trop en poser car l'utilisateur peut se fatiguer de leur répondre. Par conséquent, il est nécessaire de déterminer un critère pour choisir quelles questions il vaut mieux poser. L'article \cite{chajewska_making_2000} définit de manière assez similaire qu'à la Section~\ref{SecValeurInformation} une notion de \emph{valeur de l'information} utilisée pour déterminer la question suivante à poser. Cependant, on remarque que cette approche est \emph{«~myope~»} car on ne considère que la valeur de l'information locale de chaque question. Une technique plus générale consisterait à observer toutes les combinaisons possibles que l'on pourrait construire à partir de questions prises en compte, mais il est bien évident que, pour la grande majorité de cas, une telle technique est intraitable à cause du nombre des combinaisons possibles qui augmente trop vite. C'est pourquoi l'approche proposée dans \cite{chajewska_making_2000} est une solution assez efficace afin de traiter ce problème.
 
 Par ailleurs, l'article \cite{boutilier_pomdp_2002} fournit une extension de \cite{chajewska_making_2000} qui approfondit l'idée de considérer la valeur d'utilité comme une variable aléatoire. En effet, il propose de modéliser le problème d'élicitation par un \emph{processus de décision markovien partiellement observable} (POMDP pour \emph{Partially Observed Markov Decision Process} en anglais) qui est une généralisation des \emph{processus de décision markoviens} (MDP pour \emph{Markov Decision Process} en anglais) où des chaînes des Markov simples sont remplacées par des chaînes cachées. L'article \cite{boutilier_pomdp_2002} suppose plus précisément que l'ensemble d'états du système modélisé est $U$, l'ensemble de toutes les fonctions d'utilité possibles, alors que l'ensemble d'observations est tout simplement l'ensemble de toutes les densités de probabilité définies sur $U$. De plus, le système est capable d'effectuer deux types d'actions~: poser des questions et prendre une décision. Ensuite, des méthodes particulières développées pour POMDP sont utilisées afin de résoudre le problème d'élicitation posé au début. %Pour les raisons spatiales l'on omet des détails, pourtant, l'on remarque qu'une description ainsi que des explications sur l'approche au-dessus se trouvent dans l'article concerné.
 
 Les techniques proposées dans \cite{chajewska_making_2000, boutilier_pomdp_2002} ont été développés dans \cite{braziunas_local_2005, Braziunas_2008}, comme décrit dans la Section~\ref{SecElicitationTroubleshooting}, pour des fonctions d'utilité satisfaisant l'hypothèse d'indépendance additive généralisée (voir \eqref{IndependanceAdditiveGeneralisee}). Ces articles montrent comment exploiter une élicitation myope utilisant la notion de \emph{valeur d'information} et proposent un moyen graphique pour représenter les relations d'indépendance.
 %De plus, une structure graphique y développée de ce problème permet de nous concentrer sur l'élicitation locale ce qui nous donne alors un avantage principal du modèle d'\emph{indépendance} additive qui n'est pas en même temps aussi flexible que celui \emph{généralisé}. C'est-à-dire, l'on obtient un modèle assez générique qui autorise, cependant, l'élicitation locale.
 
-Une autre extension possible de \cite{chajewska_making_2000, boutilier_pomdp_2002} est d'utiliser plutôt des \emph{ensembles optimaux de recommandations} pour choisir quelles questions poser au lieu de les déterminer de façon séquentielle. Cette idée a été explorée, par exemple, dans les articles \cite{price_optimal_2005, viappiani_optimal_2005}, et consiste à déterminer un ensemble d'alternatives ``convenables'' parmi celles proposées.
+Une autre extension possible de \cite{chajewska_making_2000, boutilier_pomdp_2002} est d'utiliser plutôt des \emph{ensembles optimaux de recommandations} pour choisir quelles questions poser au lieu de les déterminer de façon séquentielle. Cette idée a été explorée, par exemple, dans les articles \cite{price_optimal_2005, viappiani_optimal_2005}, et consiste à déterminer un ensemble d'alternatives «~convenables~» parmi celles proposées.
 
 Plus précisément, étant donné un décideur avec sa propre fonction d'utilité, on doit trouver les $m$ meilleures solutions parmi $\alpha_1, \alpha_2, \dotsc, \alpha_n$, où $m < n$. L'approche la plus simple consiste à trier les stratégies $\alpha_i$ en ordre décroissante de leurs utilités espérées et prendre ensuite les $m$ premières décisions de la liste triée. En pratique, cette approche n'est pas toujours suffisante \cite{price_optimal_2005} car dans la grande majorité de cas on ne connaît l'utilité du décideur qu'avec des incertitudes. Ce serait alors possible de choisir $m$ solutions trop similaires, en particulier si $n$ est relativement grand. Par exemple, supposons que l'on gère un magasin de livres en ligne et que l'on cherche un ensemble de $10$ livres à montrer à un utilisateur particulier qui seraient les plus susceptibles de l'intéresser. Supposons que l'on a élicité son utilité et que l'on lui propose les 10 meilleures alternatives selon cette utilité. Comme chaque livre a presque toujours des éditions différentes, il est souhaitable de ne montrer à cet utilisateur qu'une seule proposition parmi ces plusieurs éditions.
 
@@ -550,7 +550,7 @@ On appellera \emph{action} dans un problème de \emph{Troubleshooting} tout ce q
 On remarque que l'ensemble des actions admissibles dépend du cadre considéré et de l'ensemble des informations $E$. Ainsi, le cadre décrit dans la Section~\ref{SecMyope}, par exemple, n'autorise que les actions couplées d'observation-réparation pour les composantes observables, ne permettant pas que les actions de réparation ou d'observation soient réalisées de façon séparée pour ces composantes. En plus, si une composante a déjà été réparée, son action de réparation (ou d'observation-réparation, suivant le cadre) n'est plus disponible. Lorsqu'une observation est réalisée, sa nouvelle réalisation n'est pas disponible, jusqu'à ce qu'une action de réparation ne rende caduque l'information qui avait été apportée par cette observation. Enfin, lorsque $E$ contient le fait que le dispositif est réparé (ce qui arrive, par exemple, après l'action d'appel au service), aucune autre action n'est possible.
 
 \subsection{Arbres de décision et stratégies}
-\label{SecAbresEtStrategies}
+\label{SecArbresEtStrategies}
 
 Étant donné un problème de \emph{Troubleshooting} et un cadre définissant les actions admissibles, on peut associer à ce problème l'arbre de décision correspondant construit de façon inductive comme suit.
 
@@ -566,20 +566,20 @@ L'arbre ainsi construit est fini car le nombre d'actions possibles est fini, les
 
 À chaque feuille de l'arbre, on associe le \emph{coût total de réparation} de cette feuille, qui correspond à la somme de tous les coûts des actions prises dans le chemin qui va de la racine à cette feuille.
 
-Une \emph{stratégie} $S$ dans cet arbre est la donnée, pour chaque nœud de décision de l'arbre, d'une action à prendre dans ce nœud. L'\emph{espérance de coût} de la stratégie $S$ avec l'état d'informations initial $E_0$, $\ECR(E_0, S)$, est calculée de la façon suivante~: à chaque feuille de l'arbre, on associe son coût total de réparation. À chaque nœud de loterie de l'arbre dont les descendants ont été calculés, on associe l'espérance de la loterie correspondante. À chaque nœud de décision de l'arbre dont les descendants ont été calculés, on associe la valeur de son descendant choisi dans la stratégie $S$. La valeur $\ECR(E_0, S)$ est la valeur associée à la racine de l'arbre.
+Une \emph{stratégie} $S$ dans cet arbre est la donnée, pour chaque nœud de décision de l'arbre, d'une action à prendre dans ce nœud. L'\emph{espérance de coût} de la stratégie $S$ avec l'état d'informations initial $E_0$, $\EC(E_0, S)$, est calculée de la façon suivante~: à chaque feuille de l'arbre, on associe son coût total de réparation. À chaque nœud de loterie de l'arbre dont les descendants ont été calculés, on associe l'espérance de la loterie correspondante. À chaque nœud de décision de l'arbre dont les descendants ont été calculés, on associe la valeur de son descendant choisi dans la stratégie $S$. La valeur $\EC(E_0, S)$ est la valeur associée à la racine de l'arbre.
 
 En dénotant par $\mathcal S$ l'ensemble de toutes les stratégies possibles, le problème de \emph{Troubleshooting} peut être écrit, en termes de ces notations, comme le calcul de
 \begin{equation}
 \label{MainProblem}
-\argmin_{S \in \mathcal S} \ECR(E_0, S).
+\argmin_{S \in \mathcal S} \EC(E_0, S).
 \end{equation}
 
 \begin{remk}
-Étant donnée une stratégie $S$, lorsque l'on se place dans un nœud de décision quelconque dans lequel la stratégie $S$ donne un choix d'action $a$, la valeur de $\ECR(E_0, S)$ ne change pas si on modifie la stratégie $S$ dans les sous-arbres issues de ce nœud de décision ne correspondant pas à l'action $a$. Dans la suite, on identifie deux stratégies qui peuvent être obtenues l'une à partir de l'autre avec ce type de modification.
+Étant donnée une stratégie $S$, lorsque l'on se place dans un nœud de décision quelconque dans lequel la stratégie $S$ donne un choix d'action $a$, la valeur de $\EC(E_0, S)$ ne change pas si on modifie la stratégie $S$ dans les sous-arbres issues de ce nœud de décision ne correspondant pas à l'action $a$. Dans la suite, on identifie deux stratégies qui peuvent être obtenues l'une à partir de l'autre avec ce type de modification.
 \end{remk}
 
 \begin{remk}
-Dans le cas particulier où l'ensemble des actions possibles ne contient que des réparations ou des paires observation-réparation, une stratégie $S$ peut être identifiée à une séquence d'actions $(a_1, \dotsc, a_k)$, où $a_1$ est l'action à prendre dans le nœud de décision racine, $a_2$ est la décision à prendre si l'action $a_1$ ne résout pas le problème, et ainsi de suite. Cela arrive car, dans ce cas, les seuls nœuds de loterie possibles sont binaires, à la suite des réparations, avec un arc qui mène directement à une feuille. Ce cadre correspond à celui décrit dans la Section~\ref{SecAlgoSimple} et dans la première partie de la Section~\ref{SecMyope}, et la définition de $\ECR(E_0, S)$ donnée ici coïncide avec \eqref{EqECR}.
+Dans le cas particulier où l'ensemble des actions possibles ne contient que des réparations ou des paires observation-réparation, une stratégie $S$ peut être identifiée à une séquence d'actions $(a_1, \dotsc, a_k)$, où $a_1$ est l'action à prendre dans le nœud de décision racine, $a_2$ est la décision à prendre si l'action $a_1$ ne résout pas le problème, et ainsi de suite. Cela arrive car, dans ce cas, les seuls nœuds de loterie possibles sont binaires, à la suite des réparations, avec un arc qui mène directement à une feuille. Ce cadre correspond à celui décrit dans la Section~\ref{SecAlgoSimple} et dans la première partie de la Section~\ref{SecMyope}, et la définition de $\EC(E_0, S)$ donnée ici coïncide avec la définition de $\ECR(E_0, S)$ de \eqref{EqECR}.
 \end{remk}
 
 \subsection{Méthodes classiques d'approximation}
@@ -599,16 +599,16 @@ La description de l'implémentation de ces algorithmes est donnée dans la Secti
 \section{Contribution}
 \label{SecContribution}
 
-Cette section décrit les contributions principales au problème du \emph{Troubleshooting} réalisées dans ce projet. La	première contribution décrite concerne le calcul approché de $\ECR(E_0, S)$ pour une stratégie $S$ donnée et est détaillée dans la Section~\ref{SecCalculMonteCarlo}. On décrit ensuite, dans la Section~\ref{SecExacte}, les idées utilisées pour un algorithme résolvant \eqref{MainProblem} de façon exacte. Finalement, la Section~\ref{SecContribElicitation} décrit une méthode permettant de traiter le cas où les coûts de réparation sont inconnus et des techniques d'élicitation sont utilisées pour déterminer la meilleure stratégie à adopter.
+Cette section décrit les contributions principales au problème du \emph{Troubleshooting} réalisées dans ce projet. La	première contribution décrite concerne le calcul approché de $\EC(E_0, S)$ pour une stratégie $S$ donnée et est détaillée dans la Section~\ref{SecCalculMonteCarlo}. On décrit ensuite, dans la Section~\ref{SecExacte}, les idées utilisées pour un algorithme résolvant \eqref{MainProblem} de façon exacte. Finalement, la Section~\ref{SecContribElicitation} décrit une méthode permettant de traiter le cas où les coûts de réparation sont inconnus et des techniques d'élicitation sont utilisées pour déterminer la meilleure stratégie à adopter.
 
 \subsection{Calcul de l'espérance de coût par une méthode de Monte-Carlo}
 \label{SecCalculMonteCarlo}
 
-Étant donné une stratégie $S$, le calcul de $\ECR(E_0, S)$ peut s'effectuer de façon inductive à travers le parcours de l'arbre décrit dans la Section~\ref{SecAbresEtStrategies}. À une stratégie $S$ donnée, ce parcours utilise beaucoup moins d'opérations que le calcul de la stratégie optimale pour \eqref{MainProblem}, puisque, à chaque nœud de décision, il suffit de parcourir la décision prise par la stratégie $S$. Les branchements interviennent seulement dans les nœuds de loterie, et en plus les nœuds de loterie consécutifs à une réparation donnent lieu à des branchements triviaux, dans le sens où une des branches conduit directement à une feuille. La complexité provient uniquement des branchements des nœuds de loterie correspondants à des observations globales, qui peut être importante dans des situations où de nombreuses observations globales sont disponibles.
+Étant donné une stratégie $S$, le calcul de $\EC(E_0, S)$ peut s'effectuer de façon inductive à travers le parcours de l'arbre décrit dans la Section~\ref{SecArbresEtStrategies}. À une stratégie $S$ donnée, ce parcours utilise beaucoup moins d'opérations que le calcul de la stratégie optimale pour \eqref{MainProblem}, puisque, à chaque nœud de décision, il suffit de parcourir la décision prise par la stratégie $S$. Les branchements interviennent seulement dans les nœuds de loterie, et en plus les nœuds de loterie consécutifs à une réparation donnent lieu à des branchements triviaux, dans le sens où une des branches conduit directement à une feuille. La complexité provient uniquement des branchements des nœuds de loterie correspondants à des observations globales, qui peut être importante dans des situations où de nombreuses observations globales sont disponibles.
 
-Même dans le cas où le calcul de $\ECR(E_0, S)$ se fait de façon assez rapide, un inconvénient de son calcul exact est qu'il ne donne que la valeur de l'espérance du coût de réparation. Il peut aussi être intéressant de considérer le coût de réparation comme une variable aléatoire, auquel cas on peut s'intéresser à d'autres de ses caractéristiques, comme son histogramme, mais aussi à d'autres variables aléatoires associées, comme le nombre de réparations ou d'observations faites avant que le problème du dispositif ne soit résolu.
+Même dans le cas où le calcul de $\EC(E_0, S)$ se fait de façon assez rapide, un inconvénient de son calcul exact est qu'il ne donne que la valeur de l'espérance du coût de réparation. Il peut aussi être intéressant de considérer le coût de réparation comme une variable aléatoire, auquel cas on peut s'intéresser à d'autres de ses caractéristiques, comme son histogramme, mais aussi à d'autres variables aléatoires associées, comme le nombre de réparations ou d'observations faites avant que le problème du dispositif ne soit résolu.
 
-Pour cette raison, il peut être intéressant d'avoir des algorithmes de calcul empirique de $\ECR(E_0, S)$ qui, en plus de retourner une approximation de cette espérance en soi, permettent d'obtenir facilement d'autres statistiques sur le déploiement de la stratégie $S$.
+Pour cette raison, il peut être intéressant d'avoir des algorithmes de calcul empirique de $\EC(E_0, S)$ qui, en plus de retourner une approximation de cette espérance en soi, permettent d'obtenir facilement d'autres statistiques sur le déploiement de la stratégie $S$.
 
 L'idée naturelle pour ce faire est de, étant donnée une stratégie $S$, la simuler un grand nombre $N$ de fois. La simulation d'une stratégie se fait en résolvant les nœuds de décision selon la stratégie et en tirant les résultats des loteries de façon aléatoire selon la loi obtenue à travers le réseau Bayésien représentant le problème et l'état de l'information dans le nœud courant. Au fur de l'exécution, des statistiques sur chaque simulation peuvent être collectées~: le coût total de réparation (de la feuille où l'algorithme s'arrête), le nombre de réparations réalisées, le nombre d'observations réalisées, et d'autres statistiques pouvant être pertinentes.
 
@@ -616,7 +616,7 @@ Pour que ces statistiques collectées soient significatives, il faut que le nomb
 \[
 Z_n = \frac{\overline K_n - \mu}{\sigma / \sqrt{n}}, \qquad \text{avec } \overline K_n = \frac{1}{n} \sum_{i=1}^n K_i,
 \]
-converge en loi vers une loi normale centrée réduite $\mathcal N(0, 1)$, où $\mu$ et $\sigma$ sont l'espérance et l'écart-type de $K$. Par définition, on a $\mu = \ECR(E_0, S)$.
+converge en loi vers une loi normale centrée réduite $\mathcal N(0, 1)$, où $\mu$ et $\sigma$ sont l'espérance et l'écart-type de $K$. Par définition, on a $\mu = \EC(E_0, S)$.
 
 On peut alors proposer un critère d'arrêt de l'algorithme à partir de l'intervalle de confiance déduit de cette convergence. Soit $Z$ une variable aléatoire suivant la loi $\mathcal N(0, 1)$, fixons un niveau de confiance $\alpha \in (0, 1)$ et considérons la valeur $z_\alpha$ telle que $\mathbb P(-z_\alpha < Z < z_\alpha) = \alpha$. On a alors
 \[
@@ -630,7 +630,7 @@ Ainsi, on peut garantir que l'erreur relative asymptotique est plus petite qu'un
 \[
 \frac{z_\alpha \sigma}{\overline K_n \sqrt{n}} < \varepsilon.
 \]
-Cette inégalité peut ainsi être utilisée comme critère d'arrêt de l'algorithme à un niveau de confiance $\alpha$ et une tolérance relative $\varepsilon$ données. Cependant, elle n'est pas encore pratique sous cette forme, puisque l'écart-type $\sigma$ de $K$ n'est pas connu. Comme usuel en statistiques, on propose ici le remplacement de $\sigma$ par l'écart-type empirique $s_n$ de l'échantillon $K_1, \dotsc, K_n$, ce qui conduit au critère d'arrêt
+Cette inégalité peut ainsi être utilisée comme critère d'arrêt de l'algorithme à un niveau de con\-fiance $\alpha$ et une tolérance relative $\varepsilon$ données. Cependant, elle n'est pas encore pratique sous cette forme, puisque l'écart-type $\sigma$ de $K$ n'est pas connu. Comme usuel en statistiques, on propose ici le remplacement de $\sigma$ par l'écart-type empirique $s_n$ de l'échantillon $K_1, \dotsc, K_n$, ce qui conduit au critère d'arrêt
 \[
 \frac{z_\alpha s_n}{\overline K_n \sqrt{n}} < \varepsilon.
 \]
@@ -656,92 +656,108 @@ Afin de simplifier, on ne travaille dans la suite qu'avec des lois de probabilit
 
 Une première heuristique pour traiter ce cas correspond à appliquer les algorithmes de \emph{Troubleshooting} décrits précédemment en utilisant $\overline C_r$ comme la fonction de coût de l'hypothèse \ref{Defi-CoutReparation} de la Section~\ref{SecProbTrouble}, c'est-à-dire, en considérant que les coûts de réparation sont déterministes et égaux aux espérances des lois fournies de coûts de réparations. L'objectif de cette section est de présenter une autre heuristique, basée sur l'élicitation, permettant de prendre en compte le caractère aléatoire des coûts au-delà de la simple espérance. On cherche ainsi à utiliser l'élicitation afin d'améliorer les connaissances sur les coûts de réparation, c'est-à-dire diminuer la taille des intervalles de valeur pour chaque coût. Pour cela, on utilise la notion de valeur d'information décrite dans la Section~\ref{SecValeurInformation}.
 
-On remarque d'abord que le coût espéré de réparation $\ECR(E_0, S)$ introduit dans la Section~\ref{SecAbresEtStrategies} dépend, entre autres choses, de la fonction $C_r$ donnant le coût (déterministe) de réparation de chaque composante. Afin de rendre cette dépendance plus explicite et simplifier l'exposition de la suite, on note cette valeur dans cette section par $\ECR(E_0, S, C_r)$.
+On remarque d'abord que le coût espéré $\EC(E_0, S)$ introduit dans la Section~\ref{SecArbresEtStrategies} dépend, entre autres choses, de la fonction $C_r$ donnant le coût (déterministe) de réparation de chaque composante. Afin de rendre cette dépendance plus explicite et simplifier l'exposition de la suite, on note cette valeur dans cette section par $\EC(E_0, S, C_r)$.
 
-L'objectif est de déterminer quelle question poser en premier à l'utilisateur sur les coûts de réparation pour acquérir le plus d'information possible. Dans la formulation proposée ici, on choisit de regarder une question par composante de $\mathcal C = \{c_1, \dotsc, c_n\}$, de la forme ``Est-ce que le coût de réparation de la composante $c_i$ est plus petit que $\alpha$~?'', où $\alpha$ est une valeur dans $[C_{r, \min}(c_i), C_{r, \max}(c_i)]$. Pour déterminer l'information apportée par la réponse de cette question, on calcule, pour un état initial d'information $E$ et une séquence de réparation $S$~:
+L'objectif est de déterminer quelle question poser en premier à l'utilisateur sur les coûts de réparation pour acquérir le plus d'information possible. Dans la formulation proposée ici, on choisit de regarder une question par composante de $\mathcal C = \{c_1, \dotsc, c_n\}$, de la forme «~Est-ce que le coût de réparation de la composante $c_i$ est plus petit que $\alpha$~?~», où $\alpha$ est une valeur dans $[C_{r, \min}(c_i), C_{r, \max}(c_i)]$. Pour déterminer l'information apportée par la réponse de cette question, on définit d'abord les fonctions de coûts espérés $C_{r, i}^-: \mathcal C \to \mathbb R_+$ et $C_{r, i}^+: \mathcal C \to \mathbb R_+$ sous une réponse affirmative ou négative à la question, données respectivement par
+\begin{equation}
+\label{EqDefiCpm}
+C_{r, i}^-(c) = \begin{dcases*}
+\overline C_r(c) & si $c \neq c_i$, \\
+\frac{C_{r, \min}(c_i) + \alpha}{2} & si $c = c_i$,
+\end{dcases*} \qquad C_{r, i}^+(c) = \begin{dcases*}
+\overline C_r(c) & si $c \neq c_i$, \\
+\frac{\alpha + C_{r, \max}(c_i)}{2} & si $c = c_i$,
+\end{dcases*}
+\end{equation}
+c'est-à-dire que les coûts de réparation de toutes les autres composantes restent inchangés mais le coût de réparation de $c_i$ devient l'espérance $C_{r, i}^-(c_i) = \frac{C_{r, \min}(c_i) + \alpha}{2}$ de la loi uniforme sur $[C_{r, \min}(c_i), \alpha]$ si la réponse à la question est affirmative ou l'espérance $C_{r, i}^+(c_i) = \frac{\alpha + C_{r, \max}(c_i)}{2}$ de la loi uniforme sur $[\alpha, C_{r, \max}(c_i)]$ si la réponse à la question est négative.
 
-% Continuer d'ici. Il faut changer les notations pour les mettre selon les notations introduites dans la Section 4. La preuve devra probablement changer un peu car on ne peut pas utiliser simplement la formule (3), il faut penser au calcul exact de la séquence de réparations.
+On peut alors considérer, étant donné un état initial d'information $E$, une composante $c_i \in \mathcal C$, et une valeur $\alpha \in [C_{r, \min}(c_i), C_{r, \max}(c_i)]$, la valeur espérée de l'information $\EVOI(E, c_i, \alpha)$ apportée par la réponse à la question précédente, définie, selon le principe de la formule \eqref{EsperanceObservation}, par
+\begin{equation}
+\label{EqDefiEVOI}
+\EVOI(E, c_i, \alpha) = \EC(E, S^\ast, \overline C_r) - \left[\EC(E, S_-^\ast, C_{r, i}^-) P(C(r_i) < \alpha \mid E) + \EC(E, S_+^\ast, C_{r, i}^+) P(C_r(c_i) \geq \alpha \mid E)\right],
+\end{equation}
+où $S^\ast$, $S_-^\ast$ et $S_+^\ast$ sont les stratégies optimales pour les coûts $\overline C_r$, $C_{r, i}^-$ et $C_{r, i}^+$, respectivement, c'est-à-dire,
+\begin{equation}
+\label{EqSAsts}
+S^\ast = \argmin_{S \in \mathcal S} \EC(E, S, \overline C_r), \quad S_-^\ast = \argmin_{S \in \mathcal S} \EC(E, S, C_{r, i}^-), \quad S_+^\ast = \argmin_{S \in \mathcal S} \EC(E, S, C_{r, i}^+).
+\end{equation}
+Par rapport à \eqref{EsperanceObservation}, la formule ci-dessus a un changement de signe, puisque ici il s'agit d'un problème de minimisation de coûts, alors que \eqref{EsperanceObservation} a été présentée pour la maximisation d'une utilité.
 
-\begin{itemize}
-\item $\ECR_+(E, S, c_i, \alpha)$, qui est le coût espéré de la réparation dans le cas où la réponse à la question est non, calculé en remplaçant $\overline C(r_i)$ par l'espérance de la loi uniforme sur $[\alpha, C_{\max}(r_i)]$, soit $\frac{\alpha + C_{\max}(r_i)}{2}$~;
-\item $\ECR_-(E, S, c_i, \alpha)$, qui est le coût espéré de la réparation dans le cas où la réponse à la question est oui, calculé en remplaçant $\overline C(r_i)$ par l'espérance de la loi uniforme sur $[C_{\min}(r_i), \alpha]$, soit $\frac{C_{\min}(r_i) + \alpha}{2}$~;
-\item $\EVOI(E, S, c_i, \alpha)$, calculé, selon le principe de la formule \eqref{EsperanceObservation}, par
-\begin{multline*}
-\EVOI(E, S, c_i, \alpha) = \\ \ECR_0(E, S) - \left[\ECR_+(E, S, c_i, \alpha) P(C(r_i) \geq \alpha \mid E) + \ECR_-(E, S, c_i, \alpha) P(C(r_i) < \alpha \mid E)\right].
-\end{multline*}
-\end{itemize}
-On cherche alors à choisir la question qui maximise $\EVOI(E, S, c_i, \alpha)$ afin d'obtenir le plus d'information possible. Par rapport à \eqref{EsperanceObservation}, la formule ci-dessus a un changement de signe, puisque ici il s'agit d'un problème de minimisation de coûts, alors que \eqref{EsperanceObservation} a été présentée pour la maximisation d'une utilité.
-
-On dénote par $\ECR_0^\ast(E)$, $\ECR_+^\ast(E, c_i, \alpha)$
- On a la propriété suivante~:
+On a la propriété suivante de la valeur espérée de l'information~:
 
 \begin{prop}
-Si les coûts espérés de réparation minimaux $\ECR$ sont calculés de façon exacte, alors $\EVOI(c_i, \alpha) \geq 0$ pour tous $c_i$ et $\alpha \in [C_{\min}(r_i), C_{\max}(r_i)]$.
+Pour tout état initial d'information $E$, toute composante $c_i \in \mathcal C$ et toute valeur $\alpha \in [C_{r, \min}(c_i), C_{r, \max}(c_i)]$, on a $\EVOI(E, c_i, \alpha) \geq 0$.
 \end{prop}
 
 \begin{proof}
-Soit $s_0 = (a_1, \dotsc, a_k)$ la séquence d'actions qui donne le coût espéré total $\ECR_0$ avec les coûts de réparations individuels $\overline C(r_i)$. On dénote par $\ECR_+(c_i, \alpha, s_0)$ (resp.\ $\ECR_-(c_i, \alpha, s_0)$) le coût espéré de réparation en suivant la même séquence $s_0$ mais avec le coût de réparation de la composante $c_i$ donnée par $\frac{\alpha + C_{\max}(r_i)}{2}$ (resp.\ $\frac{C_{\min}(r_i) + \alpha}{2}$). On fixe une composante $c_i$ et une valeur de $\alpha \in [C_{\min}(r_i), C_{\max}(r_i)]$. La stratégie de la suite de la preuve est la suivante~: on montre d'abord que
+On remarque d'abord que, étant donnée une fonction de coût quelconque $\mathfrak C: \mathcal C \to \mathbb R_+$, d'après la définition de $\EC(E, S, \mathfrak C)$ donnée dans la Section~\ref{SecArbresEtStrategies}, pour une stratégie $S$ \emph{donnée}, $\EC(E, S, \mathfrak C)$ est une combinaison \emph{linéaire} des coûts $\mathfrak C(c)$ pour $c \in \mathcal C$ et des coûts d'observation, avec coefficients qui ne dépendent que de la stratégie $S$ et des probabilités du réseau Bayésien. Alors, quitte à regrouper toutes les occurrences du coût de réparation de $c_i$ dans les formules de $\EC$, il existe des constantes $C_0$ et $p_0$ ne dépendant que de $S$, des probabilités du réseau Bayésien, des coûts d'observation et des coûts de réparation $\overline C_r(c)$ pour $c \neq c_i$ telles que
 \begin{equation}
-\label{ProofEVOIFirstPart}
-\ECR_0 - \left[\ECR_+(c_i, \alpha, s_0) P(C(r_i) \geq \alpha) + \ECR_-(c_i, \alpha, s_0) P(C(r_i) < \alpha)\right] = 0,
+\label{EqECs}
+\begin{aligned}
+\EC(E, S, \overline C_r) & = C_0 + p_0 \overline C_r(c_i) \\
+\EC(E, S, C_{r, i}^-) & = C_0 + p_0 C_{r, i}^-(c_i) \\
+\EC(E, S, C_{r, i}^+) & = C_0 + p_0 C_{r, i}^+ (c_i)
+\end{aligned}
 \end{equation}
-(ce qui veut dire que, si la séquence de réparations ne change pas, la valeur de l'information est nulle) et ensuite que
+
+Soit $S^\ast$ donné comme dans \eqref{EqSAsts}. On montre d'abord que
 \begin{equation}
-\label{ProofEVOISecondPart}
-\ECR_+(c_i, \alpha) \leq \ECR_+(c_i, \alpha, s_0) \qquad \text{ et } \qquad \ECR_-(c_i, \alpha) \leq \ECR_-(c_i, \alpha, s_0).
+\label{EqEVOIZero}
+\EC(E, S^\ast, \overline C_r) = \EC(E, S^\ast, C_{r, i}^-) P(C(r_i) < \alpha \mid E) + \EC(E, S^\ast, C_{r, i}^+) P(C_r(c_i) \geq \alpha \mid E).
 \end{equation}
-Cela impliquera alors que
-\[
-\EVOI(c_i, \alpha) = \ECR_0 - \left[\ECR_+(c_i, \alpha) P(C(r_i) \geq \alpha) + \ECR_-(c_i, \alpha) P(C(r_i) < \alpha)\right] \geq 0.
-\]
-
-Commençons par montrer \eqref{ProofEVOIFirstPart}. Soit $a_j$ l'action dans la séquence $s_0$ qui correspond à la composante $c_i$. On peut réécrire la formule \eqref{EqECR} pour le calcul de $\ECR_0$ comme
-\[
-\ECR_0 = C + p C^{or}(a_j, E_{j-1})
-\]
-où $p = P(o_0 \neq \text{normal} \mid E_1) \dotsm P(o_0 \neq \text{normal} \mid E_{j-1})$ et $C$ représente les termes de la formule \eqref{EqECR} correspondant aux actions $a_1, \dotsc, a_{j-1}, a_{j+1}, \dotsc, a_k$. On rappelle aussi que, d'après \eqref{EqCor},
-\[
-C^{or}(a_j, E_{j-1}) = C(o_i) + P(o_i \neq \text{normal} \mid E_{j-1}) \overline C(r_i),
-\]
-ce qui veut dire que
-\[
-\ECR_0 = C + p C(o_i) + p P(o_i \neq \text{normal} \mid E_{j-1}) \overline C(r_i) = \hat C + \hat p \overline C(r_i)
-\]
-avec $\hat C = C + p C(o_i)$ et $\hat p = p P(o_i \neq \text{normal} \mid E_{j-1})$. Comme les coûts espérés $\ECR_+(c_i, \alpha, s_0)$ et $\ECR_-(c_i, \alpha, s_0)$ suivent la même séquence d'actions $s_0$ que $\ECR_0$ avec les mêmes coûts de réparation sauf celui de $r_i$, les valeurs de $\hat C$ et $\hat p$ restent les mêmes et on a alors
+En effet, on a, en utilisant \eqref{EqDefiCpm} et \eqref{EqECs},
 \begin{align*}
-\ECR_+(c_i, \alpha, s_0) & = \hat C + \hat p \frac{\alpha + C_{\max}(r_i)}{2}, \\
-\ECR_-(c_i, \alpha, s_0) & = \hat C + \hat p \frac{C_{\min}(r_i) + \alpha}{2}.
+& \EC(E, S^\ast, C_{r, i}^-) P(C(r_i) < \alpha \mid E) + \EC(E, S^\ast, C_{r, i}^+) P(C_r(c_i) \geq \alpha \mid E) \\
+{} = {} & \bigl(C_0 + p_0 C_{r, i}^-(c_i)\bigr) P(C(r_i) < \alpha \mid E) + \bigl(C_0 + p_0 C_{r, i}^+ (c_i)\bigr) P(C_r(c_i) \geq \alpha \mid E) \displaybreak[0] \\
+{} = {} & C_0 + p_0 \bigl(C_{r, i}^-(c_i) P(C(r_i) < \alpha \mid E) + C_{r, i}^+ (c_i) P(C_r(c_i) \geq \alpha \mid E)\bigr) \displaybreak[0] \\
+{} = {} & C_0 + p_0 \left(\frac{C_{r, \min}(c_i) + \alpha}{2} \frac{\alpha - C_{r, \min}(c_i)}{C_{r, \max}(c_i) - C_{r, \min}(c_i)} + \frac{\alpha + C_{r, \max}(c_i)}{2} \frac{C_{r, \max}(c_i) - \alpha}{C_{r, \max}(c_i) - C_{r, \min}(c_i)}\right) \displaybreak[0] \\
+{} = {} & C_0 + p_0 \frac{C_{r, \max}(c_i)^2 - C_{r, \min}(c_i)^2}{2 (C_{r, \max}(c_i) - C_{r, \min}(c_i))} \displaybreak[0] \\
+{} = {} & C_0 + p_0 \frac{C_{r, \max}(c_i) + C_{r, \min}(c_i)}{2} = C_0 + p_0 \overline C_r(c_i) = \EC(E, S^\ast, \overline C_r).
 \end{align*}
-Comme $C(r_i)$ suit une loi uniforme sur $[C_{\min}(r_i), C_{\max}(r_i)]$ et $\alpha$ appartient à cet intervalle, on a $P(C(r_i) \geq \alpha) = \frac{C_{\max}(r_i) - \alpha}{C_{\max}(r_i) - C_{\min}(r_i)}$ et $P(C(r_i) < \alpha) = \frac{\alpha - C_{\min}(r_i)}{C_{\max}(r_i) - C_{\min}(r_i)}$. En utilisant en plus que $\overline C(r_i) = \frac{C_{\max}(r_i) + C_{\min}(r_i)}{2}$, on a
-\begin{align*}
-& \ECR_+(c_i, \alpha, s_0) P(C(r_i) \geq \alpha) + \ECR_-(c_i, \alpha, s_0) P(C(r_i) < \alpha) \displaybreak[0] \\
-{} = {} & \left(\hat C + \hat p \frac{\alpha + C_{\max}(r_i)}{2}\right) P(C(r_i) \geq \alpha) + \left(\hat C + \hat p \frac{C_{\min}(r_i) + \alpha}{2}\right) P(C(r_i) < \alpha) \displaybreak[0] \\
-{} = {} & \hat C + \hat p \frac{\alpha + C_{\max}(r_i)}{2} P(C(r_i) \geq \alpha) + \hat p \frac{C_{\min}(r_i) + \alpha}{2} P(C(r_i) < \alpha) \displaybreak[0] \\
-{} = {} & \hat C + \hat p \frac{\alpha + C_{\max}(r_i)}{2} \frac{C_{\max}(r_i) - \alpha}{C_{\max}(r_i) - C_{\min}(r_i)} + \hat p \frac{C_{\min}(r_i) + \alpha}{2} \frac{\alpha - C_{\min}(r_i)}{C_{\max}(r_i) - C_{\min}(r_i)} \displaybreak[0] \\
-{} = {} & \hat C + \hat p \frac{(\alpha + C_{\max}(r_i)) (C_{\max}(r_i) - \alpha) + (C_{\min}(r_i) + \alpha) (\alpha - C_{\min}(r_i))}{2 (C_{\max}(r_i) - C_{\min}(r_i))} \displaybreak[0] \\
-{} = {} & \hat C + \hat p \frac{C_{\max}(r_i)^2 - \alpha^2 + \alpha^2 - C_{\min}(r_i)^2}{2 (C_{\max}(r_i) - C_{\min}(r_i))} \displaybreak[0] \\
-{} = {} & \hat C + \hat p \frac{(C_{\max}(r_i) - C_{\min}(r_i)) (C_{\max}(r_i) + C_{\min}(r_i))}{2 (C_{\max}(r_i) - C_{\min}(r_i))} \displaybreak[0] \\
-{} = {} & \hat C + \hat p \frac{C_{\max}(r_i) + C_{\min}(r_i)}{2} = \hat C + \hat p \overline C(r_i) = \ECR_0,
-\end{align*}
-ce qui montre \eqref{ProofEVOIFirstPart}.
 
-Pour montrer \eqref{ProofEVOISecondPart}, on observe que $\ECR_+(c_i, \alpha, s_0)$ donne un coût espéré de réparation si l'on suit la séquence d'actions $s_0$ lorsque la réparation $r_i$ a un coût $\frac{\alpha + C_{\max}(r_i)}{2}$. D'après notre hypothèse, $\ECR_+(c_i, \alpha)$ donne le coût exact, c'est-à-dire le plus petit coût de réparation par rapport à toutes les séquences d'actions possibles. Comme $s_0$ est une séquence d'action possible, on a alors forcément $\ECR_+(c_i, \alpha) \leq \ECR_+(c_i, \alpha, s_0)$. Le même raisonnement montre que $\ECR_-(c_i, \alpha) \leq \ECR_-(c_i, \alpha, s_0)$.
+D'autre part, d'après les définitions de $S_-^\ast$ et $S_+^\ast$ de \eqref{EqSAsts}, on a
+\begin{equation}
+\label{EqSpmOptimal}
+\EC(E, S_-^\ast, C_{r, i}^-) \leq \EC(E, S^\ast, C_{r, i}^-), \quad \EC(E, S_+^\ast, C_{r, i}^+) \leq \EC(E, S^\ast, C_{r, i}^+).
+\end{equation}
+En combinant \eqref{EqEVOIZero} avec \eqref{EqSpmOptimal}, on en déduit que
+\[
+\EC(E, S^\ast, \overline C_r) \geq \EC(E, S_-^\ast, C_{r, i}^-) P(C(r_i) < \alpha \mid E) + \EC(E, S_+^\ast, C_{r, i}^+) P(C_r(c_i) \geq \alpha \mid E),
+\]
+et alors la définition \eqref{EqDefiEVOI} de $\EVOI(E, c_i, \alpha)$ permet de conclure que $\EVOI(E, c_i, \alpha) \geq 0$.
 \end{proof}
 
-Notre implémentation permet à l'utilisateur de choisir à quel moment il veut répondre à des questions sur les coûts. Lorsque l'utilisateur le choisit, on calcule les $\EVOI(c_i, \alpha)$ pour tous les composants réparables $c_i$ et, comme d'après la propriété précédente, tous ces $\EVOI$ sont positifs, on choisit celui de plus grande valeur. Si cette valeur est $0$, il n'y a aucune question intéressante à poser et on informe cela à l'utilisateur. Dans le cas contraire, on pose la question correspondante et, en fonction de la réponse de l'utilisateur, on met à jour l'intervalle $[C_{\max}(r_i), C_{\min}(r_i)]$.
+Afin de déterminer quelle est la meilleure question à poser à partir d'un état d'information $E$ donné, on peut calculer les valeurs de $\EVOI(E, c_i, \alpha_i)$ pour toutes les composantes $c_i$ encore réparables dans l'état $E$, avec un $\alpha_i$ choisi dans $[C_{r, \min}(c_i), C_{r, \max}(c_i)]$. Avec la propriété montrée dans la proposition et suivant le principe de la Section~\ref{SecValeurInformation}, on choisit ainsi de poser la question donnant la plus grande valeur de $\EVOI(E, c_i, \alpha_i)$. Si toutes ces $\EVOI$ sont égales à $0$, il n'y a aucune question intéressante à poser.
 
-La propriété démontrée ci-dessus fait l'hypothèse cruciale que les valeurs de $\ECR$ sont exactes. Or, l'algorithme que l'on utilise, basée sur l'idée de \cite{heckerman1994troubleshooting, Heckerman_1995}, est un algorithme heuristique glouton qui, malgré ses bons résultats pratiques, ne donne pas toujours la séquence de réparation avec le plus petit coût espéré, même si cela est souvent le cas. Ainsi, il se peut que l'on puisse trouver des valeurs négatives dans le calcul des $\EVOI$. En pratique, en testant avec des valeurs aléatoires pour les intervalles des coûts $[C_{\min}(r_i), C_{\max}(r_i)]$, on a observé des valeurs négatives pour $\EVOI$ dans $6\%$ des cas, mais cette valeur négative restait toujours petite, de l'ordre au maximum de $10^{-2}$, ce qui illustre d'ailleurs que l'algorithme de \cite{heckerman1994troubleshooting, Heckerman_1995} donne une bonne approximation.
+Il reste encore la question de quel $\alpha_i$ choisir pour chaque composante $c_i$. Idéalement, il faudrait trouver, pour chaque composante $c_i$, la valeur $\alpha_i$ qui maximise $\EVOI(E, c_i, \alpha_i)$. Cependant, il y a une infinité de valeurs possibles de $\alpha_i$ et le problème de maximiser $\EVOI(E, c_i, \alpha_i)$ est alors un problème difficile. Afin de simplifier, un choix heuristique possible pour $\alpha_i$ est $\alpha_i = \overline C_r(c_i)$, ce qui est un choix raisonnable en absence d'autres informations car $\overline C_r(c_i)$ est l'espérance de la loi uniforme $C_r(c_i)$.
 
-Il reste encore la question de quel $\alpha$ choisir pour chaque composante. Notre implémentation choisit toujours $\alpha = \overline C(r_i)$ pour la question correspondante à la composante $c_i$, ce qui est un choix raisonnable en absence d'autres informations car $\overline C(r_i)$ est l'espérance de la loi uniforme que l'on considère pour le coût $C(r_i)$. L'amélioration de ce choix naïf est une question intéressante qui pourrait permettre de poser des questions plus pertinentes à l'utilisateur. Pour espérer d'améliorer ce choix, il faut avoir plus d'information, ce que l'on pourrait obtenir, par exemple, en regardant ce que l'utilisateur choisit de faire lorsqu'il ne suit pas les recommandations du logiciel. En effet, dans ce cas, le fait que l'utilisateur n'a pas suivi une recommandation du logiciel indique qu'il a une connaissance en plus sur les valeurs de coût, ce que lui a fait de choisir une autre action. L'idée serait alors d'exploiter cette connaissance afin de modifier la loi de probabilité des coûts $C(r_i)$.
+Le calcul d'$\EVOI$ nécessite la résolution de trois problèmes de minimisation de $\EC$. La minimisation d'$\EC$ est l'objet d'étude de ce projet et, comme indiqué dans la Section~\ref{SecAlgoExacte}, sa résolution exacte est un problème difficile qui motive toutes les techniques considérées dans ce projet. Ainsi, il ne serait pas faisable, dans des implémentations pratiques, de calculer $\EVOI$ de façon exacte, et des approximations se font nécessaires. On remarque que, suivant l'algorithme d'approximation utilisé, la valeur d'$\EVOI$ trouvée peut être négative. Dans ce cas, la meilleure heuristique semble d'ignorer ces valeurs négatives, les traitant comme des zéros, et ne considérer dans le choix de la question que les composantes dont le calcul d'$\EVOI$ a donné des valeurs positives.
 
 \section{Implémentation}
 \label{SecImplementation}
 
+\subsection{Algorithme simple}
 
+\subsection{Algorithme simple avec observations locales}
 
-\subsection{Élicitation des coûts}
+\subsection{Algorithme myope}
+
+\subsection{Algorithme myope avec élicitation des coûts}
 
 Nous avons alors adapté le code précédent pour, dans un premier temps, faire la même approche myope qu'avant mais en prenant en compte dans les calculs les espérances des coûts de réparation de chaque composante.
+
+
+Notre implémentation permet à l'utilisateur de choisir à quel moment il veut répondre à des questions sur les coûts. Lorsque l'utilisateur le choisit, on calcule les $\EVOI(c_i, \alpha)$ pour tous les composants réparables $c_i$ et, comme d'après la propriété précédente, tous ces $\EVOI$ sont positifs, on choisit celui de plus grande valeur. Si cette valeur est $0$, il n'y a aucune question intéressante à poser et on informe cela à l'utilisateur. Dans le cas contraire, on pose la question correspondante et, en fonction de la réponse de l'utilisateur, on met à jour l'intervalle $[C_{\max}(r_i), C_{\min}(r_i)]$.
+
+La propriété démontrée ci-dessus fait l'hypothèse cruciale que les valeurs de $\EC$ sont exactes. Or, l'algorithme que l'on utilise, basée sur l'idée de \cite{heckerman1994troubleshooting, Heckerman_1995}, est un algorithme heuristique glouton qui, malgré ses bons résultats pratiques, ne donne pas toujours la séquence de réparation avec le plus petit coût espéré, même si cela est souvent le cas. Ainsi, il se peut que l'on puisse trouver des valeurs négatives dans le calcul des $\EVOI$. En pratique, en testant avec des valeurs aléatoires pour les intervalles des coûts $[C_{\min}(r_i), C_{\max}(r_i)]$, on a observé des valeurs négatives pour $\EVOI$ dans $6\%$ des cas, mais cette valeur négative restait toujours petite, de l'ordre au maximum de $10^{-2}$, ce qui illustre d'ailleurs que l'algorithme de \cite{heckerman1994troubleshooting, Heckerman_1995} donne une bonne approximation.
+
+Il reste encore la question de quel $\alpha$ choisir pour chaque composante. Notre implémentation choisit toujours $\alpha = \overline C(r_i)$ pour la question correspondante à la composante $c_i$, ce qui est un choix raisonnable en absence d'autres informations car $\overline C(r_i)$ est l'espérance de la loi uniforme que l'on considère pour le coût $C(r_i)$. L'amélioration de ce choix naïf est une question intéressante qui pourrait permettre de poser des questions plus pertinentes à l'utilisateur. Pour espérer d'améliorer ce choix, il faut avoir plus d'information, ce que l'on pourrait obtenir, par exemple, en regardant ce que l'utilisateur choisit de faire lorsqu'il ne suit pas les recommandations du logiciel. En effet, dans ce cas, le fait que l'utilisateur n'a pas suivi une recommandation du logiciel indique qu'il a une connaissance en plus sur les valeurs de coût, ce que lui a fait de choisir une autre action. L'idée serait alors d'exploiter cette connaissance afin de modifier la loi de probabilité des coûts $C(r_i)$.
+
+\subsection{Algorithme exact}
+
+\subsection{Calcul de l'espérance de coût par une méthode de Monte-Carlo}
+
+\subsection{Interface graphique}
 
 \section{Résultats}
 \label{SecResultats}

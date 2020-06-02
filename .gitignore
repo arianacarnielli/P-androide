@@ -7,4 +7,5 @@ code/__pycache__/
 *.synctex.gz
 *.out
 *.tcp
+*.toc
 *.tps
