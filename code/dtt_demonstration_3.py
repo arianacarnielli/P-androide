@@ -75,12 +75,7 @@ if __name__ == '__main__':
     # Initialisation courante qui est raccourcie pour ne pas surcharger un algo de recherche exhaustive
     nodes_associations = {
         'car.batteryFlat': {'repairable', 'observable'},
-        'oil.noOil': {'repairable', 'observable'},
         'tank.Empty': {'repairable'},
-        'tank.fuelLineBlocked': {'repairable', 'observable'},
-        'starter.starterBroken': {'repairable', 'observable'},
-        'car.lightsOk': {'unrepairable', 'observable'},
-        'car.noOilLightOn': {'unrepairable', 'observable'},
         'oil.dipstickLevelOk': {'unrepairable', 'observable'},
         'car.carWontStart': {'problem-defining'},
         'callService': {'service'}
@@ -88,7 +83,8 @@ if __name__ == '__main__':
 
     # Une variable boléenne qui indique si on considère des couples observation-réparation ou pas
     obs_rep_couples = True
-    # TODO COMMENTAIRE
+    # une variable boléenne qui indique si on suppose des " observations obsolètes ",
+    # i.e. si c'est possible de faire une observation obsolète réparant une composante, objet du type bool.
     obs_obsolete = True
     # Un nombre maximal de simulations
     nb_max = 1000
@@ -118,18 +114,18 @@ if __name__ == '__main__':
     tsp = dtt.TroubleShootingProblem(bn_car, [costs_rep, costs_obs], nodes_associations)
 
     # Un lancement de l'algo avec le dénombrement complet de tous les arbres possibles
-    # best_tree, best_ecr = tsp.brute_force_solver(
-    #     debug=(True, False), obs_rep_couples=obs_rep_couples, obs_obsolete=obs_obsolete)
-    # print('\n\nLes meilleurs résultats pour ALL\n\n')
-    # print('ECR : %f' % best_ecr)
-    # print('Arbre : %s' % best_tree)
-    # plb.pdfize(bn_car, "test")
-    # best_tree.visualize("last_best_ST_full.gv")
-    #
-    # res_all = tsp.brute_force_solver_tester(
-    #     costs_rep, epsilon, obs_rep_couples=obs_rep_couples, nb_max=nb_max, strategy_tree=best_tree
-    # )
-    # print('Le coût moyen pour une approche exacte (ALL): %f' % res_all[1])
+    best_tree, best_ecr = tsp.brute_force_solver(
+        debug=(True, False), obs_rep_couples=obs_rep_couples, obs_obsolete=obs_obsolete)
+    print('\n\nLes meilleurs résultats pour ALL\n\n')
+    print('ECR : %f' % best_ecr)
+    print('Arbre : %s' % best_tree)
+    plb.pdfize(bn_car, "test")
+    best_tree.visualize("last_best_ST_full.gv")
+
+    res_all = tsp.brute_force_solver_tester(
+        costs_rep, epsilon, obs_rep_couples=obs_rep_couples, nb_max=nb_max, strategy_tree=best_tree
+    )
+    print('Le coût moyen pour une approche exacte (ALL): %f' % res_all[1])
 
     # Un lancement de l'algo qui utilise une programmation dynamique
     best_tree_dp, best_ecr_dp = tsp.brute_force_solver(debug=(True, False), mode='dp', obs_rep_couples=obs_rep_couples)
@@ -145,8 +141,12 @@ if __name__ == '__main__':
     )
     print('Le coût moyen pour une approche exacte (DP): %f' % res_dp[1])
 
-    res_myopic = tsp.myopic_solver_tester(costs_rep, epsilon, nb_max=nb_max)
+    res_myopic = tsp.brute_force_solver_tester(
+        costs_rep, epsilon, nb_max=nb_max, strategy_tree=tsp.myopic_solver_st())
     print('Le coût moyen pour une approche myope : %f' % res_myopic[1])
+    tsp.myopic_solver_st().visualize("TEST_MYOPIC.gv")
+    print('Le coût moyen théorique pour une approche myope : %f' %
+          tsp.expected_cost_of_repair(tsp.myopic_solver_st(), obs_obsolete=obs_obsolete))
 
     # L'un des arbres optimales pour une config #1 qui est différent de celui retourné si obs_rep_couples=False
     # n0 = st.Observation('0', tsp.costs_obs['oil.dipstickLevelOk'], 'oil.dipstickLevelOk')
