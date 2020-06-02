@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import re
 import numpy as np
@@ -5,6 +6,7 @@ import pyAgrum as gum
 import time as time
 import StrategyTree as st
 import socket as socket
+import os as os
 from multiprocessing import Process
 
 
@@ -35,10 +37,11 @@ class MainWindow(QMainWindow):
 ###################################################
 
         # Le problème est modélisé par un réseau bayésien de PyAgrum
-        bnCar = gum.loadBN("simpleCar2.bif")
+        self.bnCarFilename = "simpleCar2.bif"
+        bnCar = gum.loadBN(self.bnCarFilename)
 
         # On initialise les coûts des réparations et observations
-        costsRep = {
+        self.costsRep = {
             "car.batteryFlat": [100, 300],
             "oil.noOil": [50, 100],
             "tank.Empty": [40, 60],
@@ -47,7 +50,7 @@ class MainWindow(QMainWindow):
             "callService": 500
         }
 
-        costsObs = {
+        self.costsObs = {
             "car.batteryFlat": 20,
             "oil.noOil": 50,
             "tank.Empty": 5,
@@ -59,29 +62,31 @@ class MainWindow(QMainWindow):
         }
 
         # On initialise les types des noeuds du réseau
-        # nodesAssociations = {
+        self.nodesAssociations = {
+            "car.batteryFlat": {"repairable", "observable"},
+            "oil.noOil": {"repairable", "observable"},
+            "tank.Empty": {"repairable"},
+            "tank.fuelLineBlocked": {"repairable", "observable"},
+            "starter.starterBroken": {"repairable", "observable"},
+            "car.lightsOk": {"unrepairable", "observable"},
+            "car.noOilLightOn": {"unrepairable", "observable"},
+            "oil.dipstickLevelOk": {"unrepairable", "observable"},
+            "car.carWontStart": {"problem-defining"},
+            "callService": {"service"}
+        }
+
+        # Une initialisation raccourcie pour ne pas surcharger des algorithmes exactes
+        # self.nodesAssociations = {
         #     "car.batteryFlat": {"repairable", "observable"},
-        #     "oil.noOil": {"repairable", "observable"},
         #     "tank.Empty": {"repairable"},
-        #     "tank.fuelLineBlocked": {"repairable", "observable"},
-        #     "starter.starterBroken": {"repairable", "observable"},
-        #     "car.lightsOk": {"unrepairable", "observable"},
-        #     "car.noOilLightOn": {"unrepairable", "observable"},
+        #     "oil.noOil": {"repairable", "observable"},
         #     "oil.dipstickLevelOk": {"unrepairable", "observable"},
         #     "car.carWontStart": {"problem-defining"},
         #     "callService": {"service"}
         # }
 
-        nodesAssociations = {
-            'car.batteryFlat': {'repairable', 'observable'},
-            'tank.Empty': {'repairable'},
-            "oil.noOil": {"repairable", "observable"},
-            'oil.dipstickLevelOk': {'unrepairable', 'observable'},
-            'car.carWontStart': {'problem-defining'},
-            'callService': {'service'}
-        }
-
         #On peut choisir quel algorithme utiliser entre les 5 algorithmes codés
+
         self.algos_possibles = [
             "simple",
             "simple avec observations locales",
@@ -162,7 +167,7 @@ class MainWindow(QMainWindow):
 ###################################################
 
         # On crée l'objet pour résoudre le problème
-        self.tsp = dtt.TroubleShootingProblem(bnCar, [costsRep, costsObs], nodesAssociations)
+        self.tsp = dtt.TroubleShootingProblem(bnCar, [self.costsRep, self.costsObs], self.nodesAssociations)
 
         self.repairables = self.tsp.repairable_nodes.copy()
         self.repairables.add(self.tsp.service_node)
@@ -177,7 +182,7 @@ class MainWindow(QMainWindow):
 
         self.optimalStrategyTree = None
         self.optimalStrategyTreeCopy = None
-        self.optimalECR = costsRep[self.tsp.service_node]
+        self.optimalECR = self.costsRep[self.tsp.service_node]
         self.obsRepCouples = None
         self.obsObsolete = None
         self.modeCalc = None
@@ -318,7 +323,6 @@ class MainWindow(QMainWindow):
         QApplication.exit()
 
     def calculateBF(self):
-        pbarMax = 0
         self.config.calcButton.setEnabled(False)
         self.obsRepCouples = self.config.checkObsRepCouples.isChecked()
         self.obsObsolete = self.config.checkObsObsObsolete.isChecked()
@@ -330,23 +334,19 @@ class MainWindow(QMainWindow):
             self.modeExec = "step-by-step"
         else:
             self.modeExec = "show-tree"
-        if self.obsRepCouples:
-            for node_name in self.tsp.repairable_nodes.union(self.tsp.observation_nodes).union(
-                    set() if self.modeCalc == "dp" else {self.tsp.service_node}):
-                if node_name in self.tsp.repairable_nodes.union({self.tsp.service_node}):
-                    pbarMax += len(self.tsp.repairable_nodes.union(self.tsp.observation_nodes))
-                else:
-                    pbarMax += len(self.tsp.repairable_nodes.union(self.tsp.observation_nodes)) ** 2
-        else:
-            for node_name in self.tsp.repairable_nodes.union(self.tsp.observation_nodes).union(
-                    set() if self.modeCalc == "dp" else {self.tsp.service_node}):
-                if node_name in self.tsp.repairable_nodes.union({self.tsp.service_node}):
-                    pbarMax += len(self.tsp.repairable_nodes) + len(self.tsp.observation_nodes)
-                if node_name in self.tsp.observation_nodes:
-                    pbarMax += (len(self.tsp.repairable_nodes) + len(self.tsp.observation_nodes)) ** 2
+        pbarMax = self.findPbarMax()
         self.config.progressBar.setRange(0, pbarMax)
         self.randomSocketPort = int(np.random.randint(1024, 10000, 1))
-        self.bfProcess = Process(target=self.launchBruteForceMultiProcessing)
+        if os.name == "nt":
+            self.bfProcess = Process(
+                target=launch_brute_force_multi_processing_windows,
+                args=(
+                    self.bnCarFilename, [self.costsRep, self.costsObs], self.nodesAssociations, self.randomSocketPort,
+                    self.modeCalc, self.obsRepCouples, self.obsObsolete, self.exchangeFileName
+                )
+            )
+        else:
+            self.bfProcess = Process(target=self.launchBruteForceMultiProcessing)
         self.bfProcess.start()
         self.managePbar()
 
@@ -425,7 +425,7 @@ class MainWindow(QMainWindow):
         sock.listen(1)
         conn, addr = sock.accept()
         while self.config.progressBar.value() < self.config.progressBar.maximum():
-            data = conn.recv(34).decode()
+            data = conn.recv(50).decode()
             if "0" in data:
                 self.config.progressBar.setValue(
                     self.config.progressBar.value() + data.count("0")
@@ -437,6 +437,34 @@ class MainWindow(QMainWindow):
                 self.config.progressBar.setValue(self.config.progressBar.maximum())
                 QApplication.processEvents()
         conn.close()
+
+    def findPbarMax(self):
+        pbarMax = 0
+        fnodesNum = (
+                len(self.tsp.repairable_nodes.union(self.tsp.observation_nodes)) + 1
+                if self.obsRepCouples else
+                len(self.tsp.repairable_nodes) + len(self.tsp.observation_nodes) + 1
+        )
+        if self.obsRepCouples and self.modeCalc == "dp":
+            for _ in self.tsp.repairable_nodes:
+                pbarMax += fnodesNum - 1
+            for node_name in self.tsp.observation_nodes:
+                if node_name not in self.tsp.repairable_nodes:
+                    pbarMax += 2 * (fnodesNum - 1)
+
+        elif self.obsRepCouples and self.modeCalc == "all":
+            pbarMax += fnodesNum * (fnodesNum - 1)
+
+        elif not self.obsRepCouples and self.modeCalc == "dp":
+            for _ in self.tsp.repairable_nodes:
+                pbarMax += fnodesNum - 1
+            for _ in self.tsp.observation_nodes:
+                pbarMax += 2 * (fnodesNum - 1)
+
+        elif not self.obsRepCouples and self.modeCalc == "all":
+            pbarMax += fnodesNum * (fnodesNum - 1)
+
+        return pbarMax + 1
 
     def quit(self):
         box = QMessageBox()
@@ -450,6 +478,26 @@ class MainWindow(QMainWindow):
         if self.bfProcess is not None:
             self.bfProcess.join()
         self.quit()
+
+
+def launch_brute_force_multi_processing_windows(
+        bayesian_network_filename, costs, nodes_types, port, mode_calc, obs_rep_couples, obs_obsolete,
+        exchange_file_name
+):
+    tsp = dtt.TroubleShootingProblem(gum.loadBN(bayesian_network_filename), costs, nodes_types)
+    sock = socket.socket()
+    sock.connect(("localhost", port))
+    best_tree, best_ecr = tsp.brute_force_solver(
+        mode=mode_calc, obs_rep_couples=obs_rep_couples, obs_obsolete=obs_obsolete, sock=sock
+    )
+    filename = exchange_file_name
+    best_tree.to_file(filename)
+    fout = open(filename, "a")
+    fout.write(best_tree.fout_newline + str(best_ecr) + best_tree.fout_newline)
+    fout.close()
+
+    sock.send("1".encode())
+    sock.close()
 
 
 if __name__ == "__main__":
