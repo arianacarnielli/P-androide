@@ -1864,26 +1864,35 @@ class TroubleShootingProblem:
         elif debug is True:
             debug = (True, True)
         rep_string, obs_string = '_repair', '_observation'
-        rep_nodes = {n + ('' if obs_rep_couples and n in self.observation_nodes else rep_string)
+        rep_nodes = {n + ('' if obs_rep_couples and n in \
+                          self.observation_nodes else rep_string)
                      for n in self.repairable_nodes}
-        obs_nodes = {n + ('' if obs_rep_couples and n in self.repairable_nodes else obs_string)
+        obs_nodes = {n + ('' if obs_rep_couples and n in self.repairable_nodes \
+                          else obs_string)
                      for n in self.observation_nodes}
-        feasible_nodes_names = {self.service_node}.union(rep_nodes).union(obs_nodes)
+        feasible_nodes_names = \
+            {self.service_node}.union(rep_nodes).union(obs_nodes)
         self._nodes_ids_db_brute_force = []
-        feasible_nodes = self._create_nodes(feasible_nodes_names, rep_string, obs_string, obs_rep_couples)
+        feasible_nodes = self._create_nodes(feasible_nodes_names, rep_string, \
+                                            obs_string, obs_rep_couples)
 
-        call_service_node = st.Repair('0', self.costs_rep[self.service_node], self.service_node)
-        call_service_tree = st.StrategyTree(call_service_node, [call_service_node])
+        call_service_node = st.Repair('0', self.costs_rep[self.service_node], \
+                                      self.service_node)
+        call_service_tree = st.StrategyTree(call_service_node, \
+                                            [call_service_node])
         self._best_st = call_service_tree
         self._best_ecr = self.expected_cost_of_repair(call_service_tree)
 
         if mode == 'dp':
-            self._best_st, self._best_ecr = self.dynamic_programming_solver(
-                feasible_nodes, debug_iter=debug[0], debug_st=debug[1], obs_rep_couples=obs_rep_couples,
+            self._best_st, self._best_ecr = \
+                self.dynamic_programming_solver(feasible_nodes, \
+                debug_iter=debug[0], debug_st=debug[1], \
+                    obs_rep_couples=obs_rep_couples, \
                 obs_obsolete=obs_obsolete, sock=sock)
         elif mode == 'all':
             self._evaluate_all_st(
-                feasible_nodes, debug_iter=debug[0], debug_st=debug[1], obs_rep_couples=obs_rep_couples,
+                feasible_nodes, debug_iter=debug[0], debug_st=debug[1], \
+                    obs_rep_couples=obs_rep_couples, \
                 obs_obsolete=obs_obsolete, sock=sock)
 
         self._nodes_ids_db_brute_force = []
