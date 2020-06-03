@@ -583,6 +583,7 @@ Dans le cas particulier où l'ensemble des actions possibles ne contient que des
 \end{remk}
 
 \subsection{Méthodes classiques d'approximation}
+\label{SecMethodesClassiques}
 
 Comme rappelé dans la Section~\ref{SecAlgoExacte}, la résolution exacte de \eqref{MainProblem} est un problème difficile. Afin d'approcher ce minimum, plusieurs algorithmes basés sur des heuristiques ont été proposés, comme détaillé dans la Section~\ref{SecApprochesTrouble}. Ce projet s'intéresse à trois d'entre deux, donnés dans \cite{Heckerman_1995, heckerman1994troubleshooting} et décrits dans les Sections~\ref{SecAlgoSimple} et \ref{SecMyope}~:
 \begin{enumerate}
@@ -631,9 +632,10 @@ Ainsi, on peut garantir que l'erreur relative asymptotique est plus petite qu'un
 \frac{z_\alpha \sigma}{\overline K_n \sqrt{n}} < \varepsilon.
 \]
 Cette inégalité peut ainsi être utilisée comme critère d'arrêt de l'algorithme à un niveau de con\-fiance $\alpha$ et une tolérance relative $\varepsilon$ données. Cependant, elle n'est pas encore pratique sous cette forme, puisque l'écart-type $\sigma$ de $K$ n'est pas connu. Comme usuel en statistiques, on propose ici le remplacement de $\sigma$ par l'écart-type empirique $s_n$ de l'échantillon $K_1, \dotsc, K_n$, ce qui conduit au critère d'arrêt
-\[
+\begin{equation}
+\label{EqCritereArret}
 \frac{z_\alpha s_n}{\overline K_n \sqrt{n}} < \varepsilon.
-\]
+\end{equation}
 
 \subsection{Résolution exacte}
 \label{SecExacte}
@@ -736,32 +738,99 @@ Le calcul d'$\EVOI$ nécessite la résolution de trois problèmes de minimisatio
 \section{Implémentation}
 \label{SecImplementation}
 
+Cette section décrit les implémentations réalisées dans le cadre de ce projet, qui ont été faites en Python. La description présentée ici est synthétique mais une documentation détaillée, produite avec Sphynx, est fournie avec le code.
+
+Dans un premier temps, on décrit dans la Section~\ref{SecImplRepresentation} la représentation choisie pour le problème de \emph{Troubleshooting}. Les Sections~\ref{SecImplAlgoSimple}, \ref{SecImplAlgoSimpleObs} et \ref{SecImplMyope} décrivent l'implémentation des trois algorithmes classiques énumérés précédemment dans la Section~\ref{SecMethodesClassiques}. Ensuite, on décrit, dans les Sections~\ref{SecImplElicitation}, \ref{SecImplExact} et \ref{SecImplMC} les implémentations de nos contributions présentées dans la Section~\ref{SecContribution}. Finalement, la Section~\ref{SecImplInterface} détaille l'implémentation de l'interface graphique
+
+\subsection{Représentation du problème de \emph{Troubleshooting}}
+\label{SecImplRepresentation}
+
+Nous avons décidé de représenter un problème de \emph{Troubleshooting} à travers une classe principale \texttt{TroubleShootingProblem}, qui doit contenir toutes les informations importantes pour un problème de \emph{Troubleshooting} selon les spécifications de la Section~\ref{SecProbTrouble}.
+
+La représentation du réseau Bayésien d'un problème de \emph{Troubleshooting} se fait à l'aide du module \texttt{pyAgrum} de Python. Dans tout le formalisme précédent, le réseau Bayésien doit être connu, et nous supposons ainsi que le réseau Bayésien doit être fourni à la classe principale \texttt{TroubleShootingProblem} sous le format d'un réseau du type \texttt{pyAgrum.BayesNet}, qui peut par exemple avoir été préalablement chargé à partir d'un fichier dans le format \texttt{.bif}.
+
+L'obtention des réseaux Bayésiens représentant les problèmes de \emph{Troubleshooting} n'est pas évidente car la plupart des réseaux existants ne sont pas dans le domaine public. Même si notre implémentation permet, bien sûr, l'utilisation de n'importe quel réseau Bayésien comme décrit dans la Section~\ref{SecBayesTroubleshooting}, nous avons fixé, dans tous les tests, un réseau Bayésien classique représentant le problème de démarrage de la voiture, représenté sur la Figure~\ref{FigReseauBayes}. Cela est motivé par le fait que ce réseau n'est pas trop grand pour que l'on soit capable de comparer les méthodes d'approximation implémentées avec une résolution exacte, mais il a déjà assez de nœuds pour être non-trivial.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{Figures/simpleCar2.pdf}
+\caption{Réseau Bayésien utilisé pour tester les méthodes implémentées}
+\label{FigReseauBayes}
+\end{figure}
+
+Dans les calculs de probabilités qu'il faut faire pour implémenter les algorithmes qui nous intéressent dans ce projet, les probabilités à calculer sont le plus souvent conditionnelles aux informations acquises. Afin de représenter les informations acquises et calcules les probabilités nécessaires de façon simple, nous utilisons la classe d'inférence exacte \texttt{LazyPropagation} de \texttt{pyAgrum}. Cette classe permet d'ajouter ou supprimer facilement des évidences au réseau Bayésien et obtenir facilement les lois de probabilité conditionnelles à ces évidences.
+
+Cependant, la classe \texttt{LazyPropagation} ne permet pas de représenter les informations d'ordre \emph{temporelle}. En effet, assez souvent, les algorithmes demandent le calcul d'une probabilité de la forme «~quelle est la probabilité que le dispositif marche étant donné que l'on a fait telles et telles réparations et que le dispositif ne marchait pas avant~?~» Ce type de question demande de considérer l'état du dispositif à deux instants différents, alors qu'il n'est représenté que par un seul nœud dans le réseau Bayésien. Il faudrait dans ce cas utiliser des réseaux Bayésiens qui prennent en compte l'aspect temporel, ce qui est possible mais a pour conséquence d'augmenter la complexité à la fois d'implémentation et de calcul.
+
+Afin de simplifier, nous utilisons alors une approximation proposée dans \cite{Heckerman_1995, heckerman1994troubleshooting}. Lorsque le dispositif n'a qu'une seule composante en panne (on parle alors de \emph{single fault assumption}), la probabilité que le dispositif marche suite à la réparation d'une composante $c_i$ est égale à la probabilité que cette composante était en panne avant sa réparation, soit
+\[
+P(o_0 = \text{normal} \mid c_i = \text{normal}, E) = P(c_i \neq \text{normal} \mid E).
+\]
+Selon \cite{Heckerman_1995, heckerman1994troubleshooting}, cette égalité, qui n'est plus valide sans la \emph{single fault assumption}, reste encore une bonne approximation pour la plupart de problèmes de \emph{Troubleshooting} d'intérêt, car il est rare en pratique qu'un dispositif tombe en panne à cause de plusieurs composantes simultanément fautives. Cette approximation a donc été utilisée dans toute l'implémentation présentée ici.
+
+Outre le réseau Bayésien, la classe \texttt{TroubleShootingProblem} doit prendre en argument aussi les autres informations concernant le problème de \emph{Troubleshooting}~: quels nœuds du réseau Bayésien correspondent à des observations globales, à des composantes observables, à des composantes non-observables, au \emph{problem defining node} et à l'appel au service. En plus, il faut fournir également les coûts d'observation et de réparation nécessaires (ou les intervalles de coûts de réparation dans le cadre de la Section~\ref{SecContribElicitation}). Ces informations sont fournies par des dictionnaires passés en arguments lors de l'appel au constructeur de la classe \texttt{TroubleShootingProblem}.
+
+La description de la Section~\ref{SecProbTrouble} demande aussi la donnée de l'état initial des informations, $E_0$. Lors de la création d'une instance de la classe \texttt{TroubleShootingProblem}, nous supposons que $E_0$ se réduit à la seule information que le dispositif ne marche pas à l'état initial. Il est possible de rajouter ou supprimer des informations manuellement à l'aide des méthodes \texttt{add\_evidence} et \texttt{remove\_evidence} avant d'appeler les algorithmes de résolution pour modifier le contenu de $E_0$.
+
 \subsection{Algorithme simple}
+\label{SecImplAlgoSimple}
+
+Une première implémentation réalisée est celle de l'algorithme donné dans la Section~\ref{SecAlgoSimple}, qui a été codé dans la méthode \texttt{simple\_solver}. Cet algorithme polynomial résout le problème de \emph{Troubleshooting} de façon exacte sous les hypothèses simplificatrices de la Section~\ref{SecAlgoSimple} et peut être vu comme une première heuristique simple pour trouver une solution approchée de \eqref{MainProblem}. Seules les actions de réparation des composantes sont prises en compte. Comme rappelé dans une remarque dans la Section~\ref{SecArbresEtStrategies}, dans ce cadre simplifié une stratégie peut être vue comme une séquence d'actions. L'algorithme retourne alors cette séquence $S$, ainsi que l'espérance de coût $\EC(E_0, S)$.
 
 \subsection{Algorithme simple avec observations locales}
+\label{SecImplAlgoSimpleObs}
+
+La deuxième implémentation réalisée est celle décrite au début de la Section~\ref{SecMyope}, qui correspond à une amélioration de l'algorithme simple et a été codée dans la méthode \texttt{simple\_solver\_\allowbreak{}obs}. Elle suppose que les seules actions possibles sont la réparation de composantes non-ob\-ser\-vables ou la paire observation-réparation des composantes observables. Comme pour l'implémentation précédente, une stratégie se réduit à une séquence d'actions et l'algorithme retourne la séquence calculée $S$ et l'espérance de coût correspondante $\EC(E_0, S)$.
 
 \subsection{Algorithme myope}
+\label{SecImplMyope}
+
+L'algorithme myope décrit dans la Section~\ref{SecMyope} a été codé dans la méthode \texttt{myopic\_solver}. Par rapport aux deux algorithmes simples, l'algorithme myope rajoute la possibilité de réaliser des observations globales. Dans ce cas, la stratégie calculée $S$ n'est plus une simple séquence d'actions, car, à chaque fois qu'une observation est réalisée, la suite de l'algorithme dépend du résultat de cette observation et ne peut donc pas être connue au préalable.
+
+On a ainsi fait le choix d'implémenter \texttt{myopic\_solver} de façon à faire \emph{un pas} de la résolution du problème de \emph{Troubleshooting} à chaque appel. L'idée est ainsi qu'un utilisateur doit faire appel à \texttt{myopic\_solver} pour savoir quelle est la prochaine action recommandée, cependant, l'action n'est pas réalisée~: c'est à l'utilisateur de la faire (ou décider d'en faire une autre s'il le souhaite) à travers les autres méthodes fournies et ensuite appeler à nouveau la fonction s'il souhaite connaître le prochain pas à réaliser. Une interface interactive en mode texte a été implémentée dans la méthode \texttt{myopic\_wraper}.
+
+Une subtilité de \texttt{myopic\_solver} est qu'il faut parfois remettre en cause les résultats des observations. Si une observation a été réalisée et ensuite on réalise une réparation d'une composante qui peut affecter le résultat de cette observation, le résultat précédent n'est plus valide et il faut l'effacer. On a ainsi codé une méthode \texttt{observation\_obsolete} qui, étant donné un nœud qui vient d'être réparé, calcule tous les nœuds d'observation qui sont impactés par cette réparation. Cette fonction est utilisée par \texttt{myopic\_wraper} (et par l'interface graphique décrite dans la Section~\ref{SecImplInterface}) pour effacer ainsi les informations d'observations devenues obsolètes suite à une réparation.
+
+La fonction \texttt{myopic\_solver} calcule, dans un premier temps, le coût espéré de réparation $\ECR$ sans la réalisation d'observations globales à l'aide de la méthode \texttt{simple\_solver\_obs}. Ensuite, pour chaque observation globale possible, la méthode calcule la valeur du coût espéré de réparation $\ECO$ si on réalise cette observation et puis applique \texttt{simple\_solver\_obs} pour trouver la suite des actions. La méthode choisit alors, parmi l'action proposée par le premier appel de \texttt{simple\_solver\_obs} et les observations globales, celle de plus petite espérance de coût.
+
+Un autre point de vue possible et très similaire à l'approche myope est de considérer que, plutôt que de comparer chaque observation globale avec l'action retournée par \texttt{simple\_solver\_obs}, on peut comparer \emph{toutes} les actions possibles entre elles. Pour chaque action, on l'effectue et on utilise \texttt{simple\_solver\_obs} pour avoir une estimée du coût de réparation du reste de la séquence, et on choisit comme prochaine action à réaliser celle qui donne la plus petite valeur de coût espéré. L'avantage de cette méthode est de donner, à chaque action, une valeur d'espérance de coût, qui est celle estimée si l'action correspondante est la prochaine action à être prise. Cette modification de l'algorithme myope a été implémentée dans la méthode \texttt{ECR\_ECO\_wrapper}, qui retourne la meilleure action, son type, et les espérances de coût de toutes les autres actions possibles.
 
 \subsection{Algorithme myope avec élicitation des coûts}
+\label{SecImplElicitation}
 
-Nous avons alors adapté le code précédent pour, dans un premier temps, faire la même approche myope qu'avant mais en prenant en compte dans les calculs les espérances des coûts de réparation de chaque composante.
+Après avoir implémenté les trois algorithmes classiques de la Section~\ref{SecMethodesClassiques}, nous avons commencé l'implémentation des algorithmes décrits dans la Section~\ref{SecContribution} par celui de la Section~\ref{SecContribElicitation}, qui utilise l'élicitation pour améliorer les calculs quand on ne connaît pas la valeur exacte des coûts de réparation de quelques composantes. Puisque l'idée est de l'utiliser avec la méthode \texttt{myopic\_solver} (ou \texttt{ECR\_ECO\_solver}), les méthodes \texttt{best\_EVOI} et \texttt{elicitation} implémentées font uniquement la partie d'élicitation.
 
+Notre implémentation permet à l'utilisateur de choisir à quel moment il veut répondre à des questions sur les coûts. Lorsque l'utilisateur le choisit, la méthode \texttt{best\_EVOI} doit être appelée. Cette méthode calcule les $\EVOI(E, c_i, \alpha)$ pour tous les composantes encore réparables $c_i$ et choisit celle de plus grande valeur. Comme indiqué dans la Section~\ref{SecContribElicitation}, le calcul des $\EVOI$ par la formule exacte \eqref{EqDefiEVOI} n'est pas souhaitable en pratique car cette formule fait intervenir la résolution exacte du problème de \emph{Troubleshooting}. On remplace ainsi le calcul exact des stratégies $S^\ast$, $S_-^\ast$ et $S_+^\ast$ de \eqref{EqSAsts} et des $\EC$ correspondants par un calcul approché en utilisant la méthode \texttt{simple\_solver\_obs}.
 
-Notre implémentation permet à l'utilisateur de choisir à quel moment il veut répondre à des questions sur les coûts. Lorsque l'utilisateur le choisit, on calcule les $\EVOI(c_i, \alpha)$ pour tous les composants réparables $c_i$ et, comme d'après la propriété précédente, tous ces $\EVOI$ sont positifs, on choisit celui de plus grande valeur. Si cette valeur est $0$, il n'y a aucune question intéressante à poser et on informe cela à l'utilisateur. Dans le cas contraire, on pose la question correspondante et, en fonction de la réponse de l'utilisateur, on met à jour l'intervalle $[C_{\max}(r_i), C_{\min}(r_i)]$.
-
-La propriété démontrée ci-dessus fait l'hypothèse cruciale que les valeurs de $\EC$ sont exactes. Or, l'algorithme que l'on utilise, basée sur l'idée de \cite{heckerman1994troubleshooting, Heckerman_1995}, est un algorithme heuristique glouton qui, malgré ses bons résultats pratiques, ne donne pas toujours la séquence de réparation avec le plus petit coût espéré, même si cela est souvent le cas. Ainsi, il se peut que l'on puisse trouver des valeurs négatives dans le calcul des $\EVOI$. En pratique, en testant avec des valeurs aléatoires pour les intervalles des coûts $[C_{\min}(r_i), C_{\max}(r_i)]$, on a observé des valeurs négatives pour $\EVOI$ dans $6\%$ des cas, mais cette valeur négative restait toujours petite, de l'ordre au maximum de $10^{-2}$, ce qui illustre d'ailleurs que l'algorithme de \cite{heckerman1994troubleshooting, Heckerman_1995} donne une bonne approximation.
-
-Il reste encore la question de quel $\alpha$ choisir pour chaque composante. Notre implémentation choisit toujours $\alpha = \overline C(r_i)$ pour la question correspondante à la composante $c_i$, ce qui est un choix raisonnable en absence d'autres informations car $\overline C(r_i)$ est l'espérance de la loi uniforme que l'on considère pour le coût $C(r_i)$. L'amélioration de ce choix naïf est une question intéressante qui pourrait permettre de poser des questions plus pertinentes à l'utilisateur. Pour espérer d'améliorer ce choix, il faut avoir plus d'information, ce que l'on pourrait obtenir, par exemple, en regardant ce que l'utilisateur choisit de faire lorsqu'il ne suit pas les recommandations du logiciel. En effet, dans ce cas, le fait que l'utilisateur n'a pas suivi une recommandation du logiciel indique qu'il a une connaissance en plus sur les valeurs de coût, ce que lui a fait de choisir une autre action. L'idée serait alors d'exploiter cette connaissance afin de modifier la loi de probabilité des coûts $C(r_i)$.
+Une fois la meilleure question trouvée, la méthode \texttt{elicitation} permet de mettre à jour les informations sur les coûts à partir de la réponse de l'utilisateur. On remarque que \texttt{best\_EVOI} retourne toujours une question, même si celle-ci n'est pas intéressante à poser ($\EVOI$ égale à ou très proche de $0$). La gestion du choix de ne pas poser une question dans ce cas est fait directement par l'interface graphique dans notre implémentation.
 
 \subsection{Algorithme exact}
+\label{SecImplExact}
+
+\textcolor{red}{TODO~!}
 
 \subsection{Calcul de l'espérance de coût par une méthode de Monte-Carlo}
+\label{SecImplMC}
+
+Suivant les idées présentées dans la Section~\ref{SecCalculMonteCarlo}, nous avons implémenté plusieurs méthodes permettant d'approcher $\EC(E_0, S)$ pour les stratégies $S$ obtenues avec les algorithmes décrits dans les Sections~\ref{SecImplAlgoSimple} à \ref{SecImplExact}. Ces méthodes permettent aussi d'obtenir des statistiques sur le déroulement de la résolution du problème de \emph{Troubleshooting} avec les stratégies $S$. Elles ont toutes le suffixe \texttt{\_tester} dans leur nom.
+
+Un de leurs arguments est \texttt{true\_prices}, un dictionnaire contenant les prix réels de réparation de chaque composante. En effet, un des intérêts de ces méthodes est de tester les algorithmes dans le cas où les prix réels de réparation des composantes ne sont pas connus et on applique les algorithmes soit avec les espérances de prix de réparation, soit en faisant des questions d'élicitation pour réduire l'incertitude sur ces prix. Ainsi, la séquence $S$ est toujours calculée avec les espérances de prix de réparation de chaque composante ou avec l'élicitation, mais la valeur du prix total de réparation retourné par les algorithmes \texttt{\_tester} est calculée en utilisant \texttt{true\_prices}.
+
+Les autres arguments communs des méthodes \texttt{\_tester} sont la valeur de $\varepsilon$ à être utilisée pour le critère d'arrêt \eqref{EqCritereArret} et le nombres minimal et maximal d'itérations à être réalisées, \texttt{nb\_min} et \texttt{nb\_max}. Remarquons que \texttt{nb\_min} se fait nécessaire car l'algorithme peut trouver au début quelques fois de suite la même valeur de coût de réparation, auquel cas $s_n = 0$ et le critère d'arrêt \eqref{EqCritereArret} est satisfait, alors qu'on n'est pas encore à la convergence.
+
+Les méthodes \texttt{\_tester} retournent toujours un booléen indiquant si l'algorithme s'est terminé après avoir atteint \texttt{nb\_max} itérations (cas \texttt{False}) ou à cause du critère d'arrêt \eqref{EqCritereArret} (cas \texttt{True}). Il retourne aussi les coûts trouvés, le nombre de réparations faites et, le cas échéant, le nombre d'observations globales faites ou de questions d'élicitation posées.
 
 \subsection{Interface graphique}
+\label{SecImplInterface}
+
+L'interface graphique a été implémentée en utilisant le module \texttt{PyQt5}. Elle permet de sélectionner un des algorithmes décrits dans les Sections~\ref{SecImplAlgoSimple} à \ref{SecImplExact} et de l'utiliser pour résoudre le problème de \emph{Troubleshooting} dans le réseau présenté à la Section~\ref{SecImplRepresentation}. Alors que la sélection des algorithmes des Sections~\ref{SecImplAlgoSimple} et \ref{SecImplAlgoSimpleObs} donne juste la séquence d'actions à réaliser, les autres algorithmes utilisent un mode interactif qui, à chaque pas, donne l'action recommandée. Les algorithmes myopes (avec ou sans élicitation) permettent à l'utilisateur de choisir une autre action, alors que l'algorithme exact oblige le choix de l'action optimale donnée, mais ils attendent tous de l'utilisateur qu'il fournisse le résultat des actions. Un manuel d'utilisateur donne des explications détaillées de son utilisation et est fourni avec le code.
 
 \section{Résultats}
 \label{SecResultats}
 
+% La propriété démontrée ci-dessus fait l'hypothèse cruciale que les valeurs de $\EC$ sont exactes. Or, l'algorithme que l'on utilise, basée sur l'idée de \cite{heckerman1994troubleshooting, Heckerman_1995}, est un algorithme heuristique glouton qui, malgré ses bons résultats pratiques, ne donne pas toujours la séquence de réparation avec le plus petit coût espéré, même si cela est souvent le cas. Ainsi, il se peut que l'on puisse trouver des valeurs négatives dans le calcul des $\EVOI$. En pratique, en testant avec des valeurs aléatoires pour les intervalles des coûts $[C_{\min}(r_i), C_{\max}(r_i)]$, on a observé des valeurs négatives pour $\EVOI$ dans $6\%$ des cas, mais cette valeur négative restait toujours petite, de l'ordre au maximum de $10^{-2}$, ce qui illustre d'ailleurs que l'algorithme de \cite{heckerman1994troubleshooting, Heckerman_1995} donne une bonne approximation.
+
+% Il reste encore la question de quel $\alpha$ choisir pour chaque composante. Notre implémentation choisit toujours $\alpha = \overline C(r_i)$ pour la question correspondante à la composante $c_i$, ce qui est un choix raisonnable en absence d'autres informations car $\overline C(r_i)$ est l'espérance de la loi uniforme que l'on considère pour le coût $C(r_i)$. L'amélioration de ce choix naïf est une question intéressante qui pourrait permettre de poser des questions plus pertinentes à l'utilisateur. Pour espérer d'améliorer ce choix, il faut avoir plus d'information, ce que l'on pourrait obtenir, par exemple, en regardant ce que l'utilisateur choisit de faire lorsqu'il ne suit pas les recommandations du logiciel. En effet, dans ce cas, le fait que l'utilisateur n'a pas suivi une recommandation du logiciel indique qu'il a une connaissance en plus sur les valeurs de coût, ce que lui a fait de choisir une autre action. L'idée serait alors d'exploiter cette connaissance afin de modifier la loi de probabilité des coûts $C(r_i)$.
 
 \bibliographystyle{abbrv}
 \bibliography{bibliographie}
