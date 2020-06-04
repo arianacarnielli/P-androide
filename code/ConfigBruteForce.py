@@ -13,11 +13,11 @@ class ConfigBruteForce(QWidget):
         self.title.setAlignment(Qt.AlignCenter)
         self.title.setWordWrap(True)
         self.title.setFont(QFont('Arial', 20))
-        self.title.setText("Veuillez remplir une configuration de l'algorithme")
+        self.title.setText("Veuillez choisir les configurations de l'algorithme")
 
-        self.checkObsRepCouples = QCheckBox("Considérer des couples observations-réparations")
+        self.checkObsRepCouples = QCheckBox("Considérer que des couples observations-réparations")
 
-        self.checkObsObsObsolete = QCheckBox("Considérer des observations obsolètes")
+        self.checkObsObsObsolete = QCheckBox("Considérer que les observations globales peuvent être obsolètes")
 
         self.radioCalcAll = QRadioButton("Dénombrement complet")
 

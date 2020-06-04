@@ -61,29 +61,31 @@ class MainWindow(QMainWindow):
             "oil.dipstickLevelOk": 7
         }
 
-        # On initialise les types des noeuds du réseau
-        self.nodesAssociations = {
-            "car.batteryFlat": {"repairable", "observable"},
-            "oil.noOil": {"repairable", "observable"},
-            "tank.Empty": {"repairable"},
-            "tank.fuelLineBlocked": {"repairable", "observable"},
-            "starter.starterBroken": {"repairable", "observable"},
-            "car.lightsOk": {"unrepairable", "observable"},
-            "car.noOilLightOn": {"unrepairable", "observable"},
-            "oil.dipstickLevelOk": {"unrepairable", "observable"},
-            "car.carWontStart": {"problem-defining"},
-            "callService": {"service"}
-        }
+# =============================================================================
+#         # On initialise les types des noeuds du réseau
+#         self.nodesAssociations = {
+#             "car.batteryFlat": {"repairable", "observable"},
+#             "oil.noOil": {"repairable", "observable"},
+#             "tank.Empty": {"repairable"},
+#             "tank.fuelLineBlocked": {"repairable", "observable"},
+#             "starter.starterBroken": {"repairable", "observable"},
+#             "car.lightsOk": {"unrepairable", "observable"},
+#             "car.noOilLightOn": {"unrepairable", "observable"},
+#             "oil.dipstickLevelOk": {"unrepairable", "observable"},
+#             "car.carWontStart": {"problem-defining"},
+#             "callService": {"service"}
+#         }
+# =============================================================================
 
         # Une initialisation raccourcie pour ne pas surcharger des algorithmes exactes
-        # self.nodesAssociations = {
-        #     "car.batteryFlat": {"repairable", "observable"},
-        #     "tank.Empty": {"repairable"},
-        #     "oil.noOil": {"repairable", "observable"},
-        #     "oil.dipstickLevelOk": {"unrepairable", "observable"},
-        #     "car.carWontStart": {"problem-defining"},
-        #     "callService": {"service"}
-        # }
+        self.nodesAssociations = {
+             "car.batteryFlat": {"repairable", "observable"},
+             "tank.Empty": {"repairable"},
+             "oil.noOil": {"repairable", "observable"},
+            "oil.dipstickLevelOk": {"unrepairable", "observable"},
+             "car.carWontStart": {"problem-defining"},
+             "callService": {"service"}
+        }
 
         #On peut choisir quel algorithme utiliser entre les 5 algorithmes codés
 
@@ -113,7 +115,7 @@ class MainWindow(QMainWindow):
         self.introduction.startButton.clicked.connect(self.startAlgorithme)
 
         self.static = Static()
-        self.static.finButton.clicked.connect(self.finish)
+        self.static.finButton.clicked.connect(self.fin)
 
         self.trouble = Troubleshoot()
         self.trouble.obsButton.clicked.connect(self.callObs)
@@ -321,6 +323,9 @@ class MainWindow(QMainWindow):
         if self.bruteForce and self.modeExec == "step-by-step":
             print(self.bruteForceStats)
         QApplication.exit()
+    
+    def fin(self):
+        self.stack.setCurrentWidget(self.fin)
 
     def calculateBF(self):
         self.config.calcButton.setEnabled(False)

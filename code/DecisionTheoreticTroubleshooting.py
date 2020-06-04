@@ -1185,14 +1185,20 @@ class TroubleShootingProblem:
         -------
         sortie_anti : bool
             True en cas de sortie anticipée, False sinon.
-        cost : float
-            Moyenne des couts observés.
+        costs : numpy.ndarray
+            Tableau avec les cout associés.
+        mean : float
+            Moyenne des couts.
+        std : float
+            Variance des couts.    
         cpt_repair : numpy.ndarray
             Tableau avec le nombre de composantes réparées à chaque répétition.
         """
         
         costs = np.zeros(nb_max)
         cpt_repair = np.zeros(nb_max)
+        mean = 0
+        sum_square = 0
         sortie_anti = False
         # Comme la sequence ne change pas, on peut la calculer en dehors de 
         # la boucle
@@ -1219,14 +1225,17 @@ class TroubleShootingProblem:
                         break
                     # Le noeud node marche surement
                     self.add_evidence(node, "no")
-                    
+           
+            mean = (i * mean + costs[i])/ (i + 1)        
+            sum_square += costs[i]**2 
+            std = np.sqrt(sum_square/ (i + 1) - mean**2)
             if i >= nb_min\
-                and 1.96 * costs[:i + 1].std()/np.sqrt(i + 1) < epsilon:
+                and 1.96 * std/(mean * np.sqrt(i + 1)) < epsilon:
                 sortie_anti = True
                 break
             
         self.reset_bay_lp()
-        return sortie_anti, costs[:i + 1].mean(), cpt_repair[:i + 1]
+        return sortie_anti, costs[:i + 1], mean, std, cpt_repair[:i + 1]
 
     def simple_solver_obs_tester(self, true_prices, epsilon, nb_min = 100, \
                              nb_max = 200):
@@ -1259,13 +1268,19 @@ class TroubleShootingProblem:
         -------
         sortie_anti : bool
             True en cas de sortie anticipée, False sinon.
-        cost : float
-            Moyenne des couts observés.
+        costs : numpy.ndarray
+            Tableau avec les cout associés.
+        mean : float
+            Moyenne des couts.
+        std : float
+            Variance des couts. 
         cpt_repair : numpy.ndarray
-            Tableau avec le nombre de composantes réparées à chaque répétition.
+            Tableau avec le nombre de composantes réparées à chaque répétition.        
         """
         costs = np.zeros(nb_max)
         cpt_repair = np.zeros(nb_max)
+        mean = 0
+        sum_square = 0
         sortie_anti = False
         # Comme la sequence ne change pas, on peut la calculer en dehors de 
         # la boucle
@@ -1303,12 +1318,17 @@ class TroubleShootingProblem:
 
                     # Le noeud node marche surement
                     self.add_evidence(node, "no")
+                    
+            mean = (i * mean + costs[i])/ (i + 1)        
+            sum_square += costs[i]**2 
+            std = np.sqrt(sum_square/ (i + 1) - mean**2)
             if i >= nb_min\
-                and 1.96 * costs[:i + 1].std()/np.sqrt(i + 1) < epsilon:
+                and 1.96 * std/(mean * np.sqrt(i + 1)) < epsilon:
                 sortie_anti = True
                 break
+
         self.reset_bay_lp()
-        return sortie_anti, costs[:i + 1].mean(), cpt_repair[:i + 1]
+        return sortie_anti, costs[:i + 1], mean, std,  cpt_repair[:i + 1]
 
 
     def myopic_solver_tester(self, true_prices, epsilon, nb_min = 100, \
@@ -1346,8 +1366,12 @@ class TroubleShootingProblem:
         -------
         sortie_anti : bool
             True en cas de sortie anticipée, False sinon.
-        cost : float
-            Moyenne des couts observés.
+        costs : numpy.ndarray
+            Tableau avec les cout associés.
+        mean : float
+            Moyenne des couts.
+        std : float
+            Variance des couts. 
         cpt_repair : numpy.ndarray
             Tableau avec le nombre de composantes réparées à chaque répétition.
         cpt_obs : numpy.ndarray
@@ -1357,7 +1381,8 @@ class TroubleShootingProblem:
         costs = np.zeros(nb_max)
         cpt_obs = np.zeros(nb_max)
         cpt_repair = np.zeros(nb_max)
-        
+        mean = 0
+        sum_square = 0
         sortie_anti = False
  
         # On fait au plus nb_max tests
@@ -1413,13 +1438,18 @@ class TroubleShootingProblem:
                         for obs in obsoletes:
                             self.evidences.pop(obs)
                         self.reset_bay_lp(self.evidences)
+                        
+                        
+            mean = (i * mean + costs[i])/ (i + 1)        
+            sum_square += costs[i]**2 
+            std = np.sqrt(sum_square/ (i + 1) - mean**2)
             if i >= nb_min\
-                and 1.96 * costs[:i + 1].std()/np.sqrt(i + 1) < epsilon:
+                and 1.96 * std/(mean * np.sqrt(i + 1)) < epsilon:
                 sortie_anti = True
                 break
         self.reset_bay_lp()
         
-        return sortie_anti, costs[:i + 1].mean(), cpt_repair[:i + 1],\
+        return sortie_anti, costs[:i + 1], mean, std, cpt_repair[:i + 1],\
             cpt_obs[:i + 1]
     
     def elicitation_solver_tester(self, true_prices, epsilon, nb_min = 100, \
@@ -1454,8 +1484,12 @@ class TroubleShootingProblem:
         -------
         sortie_anti : bool
             True en cas de sortie anticipée, False sinon.
-        cost : float
-            Moyenne des couts observés.
+        costs : numpy.ndarray
+            Tableau avec les cout associés.
+        mean : float
+            Moyenne des couts.
+        std : float
+            Variance des couts. 
         cpt_repair : numpy.ndarray
             Tableau avec le nombre de composantes réparées à chaque répétition.
         cpt_obs : numpy.ndarray
@@ -1468,6 +1502,8 @@ class TroubleShootingProblem:
         cpt_obs = np.zeros(nb_max)
         cpt_repair = np.zeros(nb_max)
         cpt_questions = np.zeros(nb_max)
+        mean = 0
+        sum_square = 0
         
         sortie_anti = False
         
@@ -1544,15 +1580,19 @@ class TroubleShootingProblem:
                             self.evidences.pop(obs)
                         self.reset_bay_lp(self.evidences)
             self.costs_rep = costs_rep_save.copy()
-            self.costs_rep_interval = copy.deepcopy(costs_rep_interval_save)
+            self.costs_rep_interval = copy.deepcopy(costs_rep_interval_save) 
+            
+            mean = (i * mean + costs[i])/ (i + 1)        
+            sum_square += costs[i]**2 
+            std = np.sqrt(sum_square/ (i + 1) - mean**2)
             if i >= nb_min\
-                and 1.96 * costs[:i + 1].std()/np.sqrt(i + 1) < epsilon:
+                and 1.96 * std/(mean * np.sqrt(i + 1)) < epsilon:
                 sortie_anti = True
                 break
 
         self.reset_bay_lp()
         
-        return sortie_anti, costs[:i + 1].mean(), cpt_repair[:i + 1],\
+        return sortie_anti, costs[:i + 1], mean, std, cpt_repair[:i + 1],\
             cpt_obs[:i + 1], cpt_questions[:i + 1]
 
 # =============================================================================
@@ -1700,7 +1740,8 @@ class TroubleShootingProblem:
             Coût espéré de réparation d'un arbre de stratégie fourni.
         """
         if not isinstance(strategy_tree, st.StrategyTree):
-            raise TypeError('strategy_tree must have type StrategyTree.StrategyTree')
+            raise TypeError\
+                ('strategy_tree must have type StrategyTree.StrategyTree')
 
         # On ajoute dans ECR un terme lié à la racine d'un arbre donné
         ecr = 0.0
@@ -1734,7 +1775,8 @@ class TroubleShootingProblem:
                 strategy_tree.get_sub_tree(node.get_child()),
                 diff_dicts(merge_dicts(
                     evidence,
-                    {node_name: 'yes' if node_name == self.service_node else 'no'}
+                    {node_name: 'yes' if node_name == self.service_node else \
+                     'no'}
                 ), obsolete),
                 prob_next, obs_obsolete
             )
@@ -1793,8 +1835,8 @@ class TroubleShootingProblem:
         """
         nodes = []
         for name, i in zip(names, range(len(names))):
-            if obs_rep_couples and \
-                    name in self.observation_nodes.intersection(self.repairable_nodes):
+            if obs_rep_couples and name in \
+                self.observation_nodes.intersection(self.repairable_nodes):
                 node = st.Observation(
                     str(i), self.costs_obs[name], name,
                     obs_rep_couples=obs_rep_couples)
@@ -1812,14 +1854,15 @@ class TroubleShootingProblem:
 
     def _next_node_id(self):
         """
-        Une méthode auxiliaire qui permet d'obtenir une prochaine valeur de id pour un noeud de StrategyTree à partir
-        des ids qu'on utilisé déjà stockés dans *self._nodes_ids_db_brute_force*.
+        Permet d'obtenir la prochaine valeur de *id* pour un noeud de 
+        StrategyTree à partir des ids qu'on utilise déjà stockés dans 
+        *self._nodes_ids_db_brute_force*.
 
         Returns
         -------
         next_id : str
-            Id suivant qu'on peut utiliser avec une garantie qu'il n'existe pas de noeuds avec le même id
-            dans un arbre de stratégie courant.
+            Prochain id qu'on peut utiliser avec garantie qu'il n'existe pas de
+            noeuds déjà avec le même id dans l'arbre de stratégie courant.
         """
         next_id = str(int(self._nodes_ids_db_brute_force[-1]) + 1)
         self._nodes_ids_db_brute_force.append(next_id)
@@ -1829,35 +1872,40 @@ class TroubleShootingProblem:
             self, debug=False, mode='all', obs_rep_couples=False,
             obs_obsolete=False, sock=None):
         """
-        Un wrapper des algorithmes différents de recherche exhaustive qui calcule une solution exactement optimale
-        étand donné un problème de Troubleshooting.
+        Wrapper des différents algorithmes de recherche exhaustive qui calcule 
+        la solution exacte optimale étand donné un problème de Troubleshooting.
 
         Parameters
         ----------
         debug : bool / tuple, facultatif
-            Un paramètre qui indique s'il faut afficher des résultats intermédiaire du calcul, objet du type tuple avec
-            len(tuple) == 2 ou du type bool (c'est équivalent pour le cas où on passe un tuple avec les deux mêmes
-            valeurs) ; premier composant indique s'il faut afficher un index de l'itération dans un appel le moins
-            profond tandis que le deuxième précise s'il faut afficher tous les arbres intermédiaires.
+            Indique s'il faut afficher les résultats intermédiaires du calcul.
+            Un tuple avec len(tuple) == 2 ou un booléean (équivalent au cas où 
+            on passe un tuple avec deux valeurs identiques). Le premier 
+            composant indique s'il faut afficher l'index de l'itération tandis 
+            que le deuxième précise s'il faut afficher tous les arbres 
+            intermédiaires.
         mode : str, facultatif
-            Une mode de calcul, objet du type str : soit 'dp' pour une programmation dynamique, soit 'all' pour le
-            dénombrement complet.
+            Mode de calcul : soit 'dp' pour la programmation dynamique, soit 
+            'all' pour le dénombrement complet.
         obs_rep_couples : bool, facultatif
-            Une variable boléenne qui indique si on suppose l'existance de couples " observation-réparation " dans un
-            arbre de stratégie soumis.
+            Indique si on suppose des couples "observation-réparation " dans 
+            l'arbre de stratégie.
         obs_obsolete : bool, facultatif
-            Une variable boléenne qui indique si on suppose des " observations obsolètes ", i.e. si c'est possible de
-            faire une observation obsolète réparant une composante.
+            Indique si on suppose la possibilité des "observations obsolètes", 
+            i.e. si c'est possible qu'une observation devient obsolète en 
+            réparant une composante.
         sock : socket.socket, facultatif
-            Un socket de communication entre le processus qui effectue le calcule et celui qui met à jour l'interface ;
-            paramètre nécessaire pour que le ProgressBar de l'interface marche proprement.
+            Socket de communication entre le processus qui effectue le calcul 
+            et celui qui met à jour l'interface. Paramètre nécessaire pour que 
+            le ProgressBar de l'interface marche proprement.
 
         Returns
         -------
         best_st : StrategyTree.StrategyTree
             Le meilleur arbre de stratégie trouvé.
         best_ecr : float
-            Le coût espéré de réparation du meilleur arbre trouvé i.e. ECR(*best_st*).
+            Le coût espéré de réparation du meilleur arbre trouvé i.e. 
+            ECR(*best_st*).
         """
         if debug is False:
             debug = (False, False)
@@ -1905,36 +1953,41 @@ class TroubleShootingProblem:
             debug_st=False, obs_rep_couples=False, obs_obsolete=False,
             sock=None):
         """
-        Une méthode récursive qui trouve le meilleur arbre de stratégie étant donné une configuration du problème en
-        dénombrant tous les arbres admissibles.
+        Méthode récursive qui trouve le meilleur arbre de stratégie étant donné
+        une configuration du problème en dénombrant tous les arbres 
+        admissibles.
 
         Parameters
         ----------
         feasible_nodes : list(StrategyTree.NodeST)
-            Une liste des noeuds admissibles qu'on a le droit d'utiliser pour construire un arbre.
+            Lisste des noeuds admissibles qu'on a le droit d'utiliser pour 
+            construire l'arbre.
         obs_next_nodes : list(list(str)), facultatif
-            Un paramètre auxiliaire qui est une pile des attributs des arcs qui partent des noeuds déjà utilisés.
-        parent : list(tuple(StrategyTree.NodeST, StrategyTree.NodeST, StrategyTree.StrategyTree)), facultatif
-            Un paramètre auxiliaire qui est une pile des " parents " vers lesqules il faudra se retourner quand on
-            remplira entièrement une branche courante.
+            Pile des attributs des arcs qui partent des noeuds déjà utilisés.
+        parent : list(tuple(StrategyTree.NodeST, StrategyTree.NodeST, 
+                            StrategyTree.StrategyTree)), facultatif
+            Pile des *parents* vers lesquels il faudra se retourner quand on
+            remplit entièrement la branche courante.
         fn_immutable : list(list(StrategyTree.NodeST)), facultatif
-            Un paramètre auxiliaire qui est une pile des noeuds admissibles qu'on peut utiliser pour les branches
+            Pile des noeuds admissibles qu'on peut utiliser pour les branches
             différentes qui suivent un noeud d'observation.
         debug_nb_call : int, facultatif
-            Un paramètre auxiliaire qui est la profondeur de la récursivité.
+            Profondeur de la récursivité.
         debug_iter : bool, facultatif
-            Une variable boléenne qui indique s'il faut afficher un index de l'itération dans un appel le moins profond.
+            Indique s'il faut afficher l'index de l'itération de l'appel.
         debug_st : bool, facultatif
-            Une variable boléenne qui précise s'il faut afficher tous les arbres intermédiaires.
+            Précise s'il faut afficher tous les arbres intermédiaires.
         obs_rep_couples : bool, facultatif
-            Une variable boléenne qui indique si on suppose l'existance de couples " observation-réparation " dans un
-            arbre de stratégie soumis.
+            Indique si on suppose l'existance de couples 
+            "observation-réparation" dans l'arbre de stratégie soumis.
         obs_obsolete : bool, facultatif
-            Une variable boléenne qui indique si on suppose des " observations obsolètes ", i.e. si c'est possible de
-            faire une observation obsolète réparant une composante.
+            Indique si on suppose la possibilité des "observations obsolètes", 
+            i.e. qu'une observation devient obsolète en réparant une 
+            composante.
         sock : socket.socket, facultatif
-            Un socket de communication entre le processus qui effectue le calcule et celui qui met à jour l'interface ;
-            paramètre nécessaire pour que le ProgressBar de l'interface marche proprement.
+            Socket de communication entre le processus qui effectue le calcul 
+            et celui qui met à jour l'interface. Paramètre nécessaire pour que 
+            le ProgressBar de l'interface marche proprement.
         """
         par_tmp = None
         parent_c = shallow_copy_parent(parent)
@@ -1942,25 +1995,31 @@ class TroubleShootingProblem:
         # On récupère un parent qui a appelé cette fonction s'il y existe
         if parent is not None:
             par_tmp = parent[-1][0]
-        # Si on suppose des couples observations-réparations on ne reboucle que dans le cas où une observation donne
-        # une réponse qu'une composante marche. Sinon, on ajoute une action de réparation de cette composante et on
-        # s'arrête pour cette branche-là
-        if (obs_rep_couples and par_tmp is not None and isinstance(par_tmp, st.Observation)
-                and par_tmp.get_name() in self.repairable_nodes.intersection(self.observation_nodes)):
-            node_rep = st.Repair(self._next_node_id(), self.costs_rep[par_tmp.get_name()], par_tmp.get_name())
-            node_service = st.Repair(self._next_node_id(), self.costs_rep[self.service_node], self.service_node)
+        # Si on suppose des couples observations-réparations on ne reboucle que
+        # dans le cas où une observation donne une réponse qu'une composante 
+        # marche. Sinon, on ajoute une action de réparation de cette composante 
+        # et on s'arrête pour cette branche-là
+        if (obs_rep_couples and par_tmp is not None and \
+            isinstance(par_tmp, st.Observation) and par_tmp.get_name() in \
+                self.repairable_nodes.intersection(self.observation_nodes)):
+            node_rep = st.Repair(self._next_node_id(), \
+                       self.costs_rep[par_tmp.get_name()], par_tmp.get_name())
+            node_service = st.Repair(self._next_node_id(), \
+                          self.costs_rep[self.service_node], self.service_node)
             parent_c[-1][2].add_node(node_rep)
             parent_c[-1][2].add_node(node_service)
             parent_c[-1][2].add_edge(node_rep, node_service)
             branch_attr_obs_rep_couples = 'yes'
             par_tmp = parent_c[-1][2].get_node(par_tmp)
-            par_tmp_ch = par_tmp.get_child_by_attribute(branch_attr_obs_rep_couples)
-            parent_c[-1][2].remove_sub_tree(
-                parent_c[-1][2].get_node(par_tmp_ch.get_id() if par_tmp_ch is not None else None)
-            )
-            parent_c[-1][2].add_edge(par_tmp, node_rep, branch_attr_obs_rep_couples)
+            par_tmp_ch = \
+                par_tmp.get_child_by_attribute(branch_attr_obs_rep_couples)
+            parent_c[-1][2].remove_sub_tree(parent_c[-1][2].get_node(par_tmp_ch.get_id() \
+                                        if par_tmp_ch is not None else None))
+            parent_c[-1][2].add_edge(par_tmp, node_rep, \
+                                     branch_attr_obs_rep_couples)
         fn_immutable_c = shallow_copy_list_of_copyable(fn_immutable)
-        # À partir de chaque noeud admissible on dénombre chaque arbre qu'on peut construire
+        # À partir de chaque noeud admissible on dénombre chaque arbre qu'on 
+        # peut construire
         if len(feasible_nodes) > 0:
             for i in range(len(feasible_nodes)):
                 if sock is not None and debug_nb_call == 1:
@@ -1969,155 +2028,205 @@ class TroubleShootingProblem:
                 node = feasible_nodes[i]
                 obs_next_nodes_tmp = shallow_copy_list_of_copyable(obs_next_nodes) \
                     if obs_next_nodes is not None else None
-                if (branch_attr_obs_rep_couples is not None and obs_next_nodes_tmp is not None and
+                if (branch_attr_obs_rep_couples is not None and \
+                    obs_next_nodes_tmp is not None and \
                         branch_attr_obs_rep_couples in obs_next_nodes_tmp[-1]):
                     obs_next_nodes_tmp[-1].remove(branch_attr_obs_rep_couples)
-                # S'il n'y a pas de parents alors on est dans toute racine ; on crée alors un noeuveau parent
+                # S'il n'y a pas de parents alors on est dans toute racine; 
+                # on crée alors un noeuveau parent
                 if parent_c is None or debug_nb_call == 0:
                     if debug_iter:
                         print(
                             f'{bcolors.OKGREEN}\n########################\nIter %d\n########################\n{bcolors.ENDC}' % i)
                     par_mutable = node.copy()
-                    par_immutable = node.copy() if isinstance(node, st.Observation) else None
+                    par_immutable = node.copy() if \
+                        isinstance(node, st.Observation) else None
 
                     par_tree_mutable = st.StrategyTree(node)
-                    onn = ([[l for l in self.bayesian_network.variable(node.get_name()).labels()]]
+                    onn = ([[l for l in \
+                        self.bayesian_network.variable(node.get_name()).labels()]] \
                            if isinstance(node, st.Observation) else None)
-                    par = [(par_mutable, par_immutable, par_tree_mutable.copy())]
+                    par = [(par_mutable, par_immutable, \
+                            par_tree_mutable.copy())]
                     fn_im = []
-                    fn_im.append([n.copy() for n in (feasible_nodes[:i] + feasible_nodes[i + 1:])])
+                    fn_im.append([n.copy() for n in (feasible_nodes[:i] + \
+                                                     feasible_nodes[i + 1:])])
                     self._evaluate_all_st(
                         feasible_nodes[:i] + feasible_nodes[i + 1:],
-                        shallow_copy_list_of_copyable(onn) if onn is not None else None, par, fn_im, debug_nb_call + 1,
-                        debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
-                # Sinon on reboucle utilisant les noeuds qu'on n'a pas encore utilisés
+                        shallow_copy_list_of_copyable(onn) if onn is not None \
+                            else None, par, fn_im, debug_nb_call + 1,
+                        debug_iter, debug_st, obs_rep_couples, obs_obsolete, \
+                            sock)
+                # Sinon on reboucle utilisant les noeuds qu'on n'a pas encore 
+                # utilisés
                 else:
                     par_mutable, par_immutable, par_tree_mutable = parent_c[-1]
-                    branch_attr = obs_next_nodes_tmp[-1][0] if obs_next_nodes_tmp is not None else None
+                    branch_attr = obs_next_nodes_tmp[-1][0] if \
+                        obs_next_nodes_tmp is not None else None
                     par_tmp = par_tree_mutable.get_node(par_tmp)
                     par_tmp_ch = par_tmp.get_child_by_attribute(branch_attr)
                     sth_removed = par_tree_mutable.remove_sub_tree(
-                        par_tree_mutable.get_node(par_tmp_ch.get_id() if par_tmp_ch is not None else None))
+                        par_tree_mutable.get_node(par_tmp_ch.get_id() if \
+                                            par_tmp_ch is not None else None))
                     if sth_removed:
                         par_mutable = par_tmp
                     try:
                         par_tree_mutable.add_node(node)
-                        par_tree_mutable.add_edge(par_mutable, node, branch_attr)
+                        par_tree_mutable.add_edge(par_mutable, node, \
+                                                  branch_attr)
                     except ValueError:
                         node = node.copy()
                         node.set_id(self._next_node_id())
                         par_tree_mutable.add_node(node)
-                        par_tree_mutable.add_edge(par_mutable, node, branch_attr)
+                        par_tree_mutable.add_edge(par_mutable, node, \
+                                                  branch_attr)
                     par_mutable = node.copy()
-                    # Une seule branche à remplir pour un noeud de réparation ...
+                    # Une seule branche à remplir pour un noeud de réparation
                     if isinstance(node, st.Repair):
-                        parent_c[-1] = (par_mutable, par_immutable, par_tree_mutable.copy())
+                        parent_c[-1] = (par_mutable, par_immutable, \
+                                        par_tree_mutable.copy())
                         if obs_obsolete:
-                            obsolete = self.observation_obsolete(node.get_name())
+                            obsolete = \
+                                self.observation_obsolete(node.get_name())
                             for obs in obsolete:
-                                nodes_obs_obsolete.append(
-                                    st.Observation(self._next_node_id(), self.costs_obs[obs], obs)
+                                nodes_obs_obsolete.append( \
+                                st.Observation(self._next_node_id(), 
+                                               self.costs_obs[obs], obs)
                                 )
                         self._evaluate_all_st(
-                            feasible_nodes[:i] + feasible_nodes[i + 1:] + nodes_obs_obsolete,
-                            shallow_copy_list_of_copyable(obs_next_nodes_tmp)
-                            if obs_next_nodes_tmp is not None else None, parent_c, fn_immutable_c, debug_nb_call + 1,
-                            debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
+                            feasible_nodes[:i] + feasible_nodes[i + 1:] + \
+                            nodes_obs_obsolete, \
+                            shallow_copy_list_of_copyable(obs_next_nodes_tmp) \
+                            if obs_next_nodes_tmp is not None else None, \
+                            parent_c, fn_immutable_c, debug_nb_call + 1, \
+                            debug_iter, debug_st, obs_rep_couples, \
+                            obs_obsolete, sock)
                     # ... et bien plusieurs pour un noeud d'observation
                     elif isinstance(node, st.Observation):
                         fn_im = fn_immutable_c.copy()
                         appended_parent, appended_obs = False, False
-                        if (obs_obsolete and obs_rep_couples and
-                                node.get_name() in self.repairable_nodes.intersection(self.observation_nodes)):
-                            obsolete = self.observation_obsolete(node.get_name())
+                        if(obs_obsolete and obs_rep_couples and node.get_name() \
+                           in self.repairable_nodes.intersection(self.observation_nodes)):
+                            obsolete = \
+                                self.observation_obsolete(node.get_name())
                             for obs in obsolete:
                                 nodes_obs_obsolete.append(
-                                    st.Observation(self._next_node_id(), self.costs_obs[obs], obs)
+                                    st.Observation(self._next_node_id(), \
+                                                   self.costs_obs[obs], obs)
                                 )
                         if len(feasible_nodes) != 1:
                             appended_obs = True
                             par_immutable = node.copy()
                             if len(parent_c) == 1 and parent_c[0][1] is None:
-                                parent_c[0] = (par_mutable, par_immutable, par_tree_mutable.copy())
+                                parent_c[0] = \
+                                    (par_mutable, par_immutable, \
+                                     par_tree_mutable.copy())
                             else:
-                                parent_c.append((par_mutable, par_immutable, par_tree_mutable.copy()))
+                                parent_c.append((par_mutable, par_immutable, \
+                                                 par_tree_mutable.copy()))
                                 appended_parent = True
-                            branch_attrs = [l for l in self.bayesian_network.variable(node.get_name()).labels()]
+                            branch_attrs = [l for l in \
+                                self.bayesian_network.variable(node.get_name()).labels()]
                             obs_next_nodes_tmp = [branch_attrs] \
-                                if obs_next_nodes_tmp is None else obs_next_nodes_tmp + [branch_attrs]
-                            fn_im.append([n.copy() for n in (feasible_nodes[:i] + feasible_nodes[i + 1:])])
+                                if obs_next_nodes_tmp is None else \
+                                    obs_next_nodes_tmp + [branch_attrs]
+                            fn_im.append([n.copy() for n in \
+                                (feasible_nodes[:i] + feasible_nodes[i + 1:])])
                             if (obs_obsolete and obs_rep_couples and
-                                    node.get_name() in self.repairable_nodes.intersection(self.observation_nodes)):
+                                    node.get_name() in \
+                                    self.repairable_nodes.intersection(self.observation_nodes)):
                                 fn_im[-1].extend(nodes_obs_obsolete)
                         self._evaluate_all_st(
-                            feasible_nodes[:i] + feasible_nodes[i + 1:] + nodes_obs_obsolete,
+                            feasible_nodes[:i] + feasible_nodes[i + 1:] + \
+                                nodes_obs_obsolete, \
                             shallow_copy_list_of_copyable(obs_next_nodes_tmp)
-                            if obs_next_nodes_tmp is not None else None, parent_c, fn_im, debug_nb_call + 1, debug_iter,
+                            if obs_next_nodes_tmp is not None else None, \
+                                parent_c, fn_im, debug_nb_call + 1, debug_iter,
                             debug_st, obs_rep_couples, obs_obsolete, sock)
                         if appended_parent:
                             parent_c.pop()
                         if appended_obs:
                             obs_next_nodes_tmp.pop()
-                            obs_next_nodes_tmp = obs_next_nodes_tmp if len(obs_next_nodes_tmp) > 0 else None
-        # S'il ne reste qu'un seul noeud admissible alors on a déjà bien rempli une branche courante ; alors il faut
-        # soit choisir l'une d'autre, soit s'arrêter
+                            obs_next_nodes_tmp = obs_next_nodes_tmp if \
+                                len(obs_next_nodes_tmp) > 0 else None
+        # S'il ne reste qu'un seul noeud admissible alors on a déjà bien rempli
+        # la branche courante ; alors il faut soit choisir l'une des autres, 
+        # soit s'arrêter
         if len(feasible_nodes) == 1:
             complete_tree = False
             ecr = inf
             strat_tree = None
-            # S'il n'y avait pas de parents alors il n'y pas des observations dans les noeuds admissibles par défaut
-            # c'est pour cette raison qu'on a déjà construit un arbre complet et il faut alors le tester en termes des
-            # coûts espérés
+            # S'il n'y avait pas de parents alors il n'y pas des observations 
+            # dans les noeuds admissibles par défaut c'est pour cette raison 
+            # qu'on a déjà construit un arbre complet et il faut alors le 
+            # tester en termes des coûts espérés
             if parent_c is None:
                 complete_tree = True
                 strat_tree = st.StrategyTree(root=feasible_nodes[0].copy())
                 if debug_st:
                     print(strat_tree)
-                ecr = self.expected_cost_of_repair(strat_tree, obs_obsolete=obs_obsolete)
+                ecr = self.expected_cost_of_repair(strat_tree, \
+                                                   obs_obsolete=obs_obsolete)
             else:
                 par_mutable, par_immutable, par_tree_mutable = parent_c[-1]
-                # S'il n'y avait pas des labels des conséquences des observations alors il n'y a pas des observations
-                # dans les noeuds admissibles par défaut c'est pour cette raison qu'on a déjà construit un arbre
-                # complet et il faut alors le tester en termes des coûts espérés
+                # S'il n'y avait pas des labels des conséquences des 
+                # observations alors il n'y a pas des observations dans les 
+                # noeuds admissibles par défaut c'est pour cette raison qu'on a
+                # déjà construit un arbre complet et il faut alors le tester en
+                # termes des coûts espérés
                 if obs_next_nodes_tmp is None:
                     complete_tree = True
                     strat_tree = par_tree_mutable.copy()
                     if debug_st:
                         print(strat_tree)
-                    ecr = self.expected_cost_of_repair(strat_tree, obs_obsolete=obs_obsolete)
+                    ecr = self.expected_cost_of_repair(strat_tree, \
+                                                     obs_obsolete=obs_obsolete)
                 else:
-                    # Si on n'a pas encore rempli toutes les conséquences possibles d'observation dernière alors
-                    # il faut continuer par une observation suivante
+                    # Si on n'a pas encore rempli toutes les conséquences 
+                    # possibles d'observation dernière alors il faut continuer 
+                    # par une observation suivante
                     if len(obs_next_nodes_tmp[-1]) != 1:
                         par_mutable = par_immutable.copy()
-                        parent_c[-1] = (par_mutable, par_immutable, par_tree_mutable.copy())
+                        parent_c[-1] = (par_mutable, par_immutable, \
+                                        par_tree_mutable.copy())
                         obs_next_nodes_tmp[-1].pop(0)
-                        self._evaluate_all_st(
-                            fn_immutable_c[-1], shallow_copy_list_of_copyable(obs_next_nodes_tmp)
-                            if obs_next_nodes_tmp is not None else None, parent_c, fn_immutable_c, debug_nb_call + 1,
-                            debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
+                        self._evaluate_all_st( \
+                            fn_immutable_c[-1], \
+                                shallow_copy_list_of_copyable(obs_next_nodes_tmp)
+                            if obs_next_nodes_tmp is not None else None, \
+                                parent_c, fn_immutable_c, debug_nb_call + 1, \
+                                debug_iter, debug_st, obs_rep_couples, \
+                                obs_obsolete, sock)
                     else:
-                        # S'il existe une observation pour laquelle il existe une conséquence dont la branche on n'a pas
-                        # encore rempli donc il faut continuer par cette branche
-                        if len(parent_c) != 1 and any([len(lbls) > 1 for lbls in obs_next_nodes_tmp]):
+                        # S'il existe une observation pour laquelle il existe 
+                        # une conséquence dont la branche on n'a pas encore 
+                        # ,rempli donc il faut continuer par cette branche
+                        if len(parent_c) != 1 and any([len(lbls) > 1 for lbls \
+                                                       in obs_next_nodes_tmp]):
                             while len(obs_next_nodes_tmp[-1]) == 1:
                                 lp = parent_c.pop()
                                 obs_next_nodes_tmp.pop()
                                 fn_immutable_c.pop()
-                                parent_c[-1] = (parent_c[-1][1].copy(), parent_c[-1][1], lp[2].copy())
+                                parent_c[-1] = (parent_c[-1][1].copy(), \
+                                                parent_c[-1][1], lp[2].copy())
                             obs_next_nodes_tmp[-1].pop(0)
                             self._evaluate_all_st(
-                                fn_immutable_c[-1], shallow_copy_list_of_copyable(obs_next_nodes_tmp)
-                                if obs_next_nodes_tmp is not None else None,  parent_c, fn_immutable_c,
-                                debug_nb_call + 1, debug_iter, debug_st, obs_rep_couples, obs_obsolete, sock)
-                        # Sinon, alors toutes les branches de tous les noeuds d'observation ont été remplies, et on
-                        # a donc déjà construit un arbre complet
+                                fn_immutable_c[-1], \
+                                shallow_copy_list_of_copyable(obs_next_nodes_tmp)
+                                if obs_next_nodes_tmp is not None else None, \
+                                parent_c, fn_immutable_c, debug_nb_call + 1, \
+                                debug_iter, debug_st, obs_rep_couples, \
+                                obs_obsolete, sock)
+                        # Sinon, alors toutes les branches de tous les noeuds 
+                        # d'observation ont été remplies, et on a donc déjà 
+                        # construit l'arbre complet
                         else:
                             complete_tree = True
                             strat_tree = par_tree_mutable.copy()
                             if debug_st:
                                 print(strat_tree)
-                            ecr = self.expected_cost_of_repair(strat_tree, obs_obsolete=obs_obsolete)
+                            ecr = self.expected_cost_of_repair(strat_tree, \
+                                                    obs_obsolete=obs_obsolete)
             # On teste ECR d'un arbre trouvé pour le sauvegarder si nécessaire
             if complete_tree and ecr < self._best_ecr:
                 self._best_st = strat_tree
@@ -2131,33 +2240,38 @@ class TroubleShootingProblem:
             debug_st=False, obs_rep_couples=False, prob=1.0,
             obs_obsolete=False, sock=None, debug_nb_call=0):
         """
-        Une méthode récursive qui trouve le meilleur arbre de stratégie étant donné une configuration du problème en
-        utilisant l'approche de programmation dynamique supposant qu'un sous-arbre de l'arbre optimal est lui-même
-        également optimal.
+        Méthode récursive qui trouve le meilleur arbre de stratégie étant donné
+        une configuration du problème en utilisant comme approche la 
+        programmation dynamique, supposant qu'un sous-arbre de l'arbre optimal 
+        est lui-même également optimal.
 
         Parameters
         ----------
         feasible_nodes : list(StrategyTree.NodeST), facultatif
-            Une liste des noeuds admissibles qu'on a le droit d'utiliser pour construire un arbre.
+            Liste des noeuds admissibles qu'on a le droit d'utiliser pour 
+            construire l'arbre.
         evidence : dict, facultatif
-            Un dictionnaire des évidences initiales pour un appel particulier de cette fonction.
+            Dictionnaire des évidences initiales pour un appel de cette 
+            fonction.
         debug_iter : bool, facultatif
-            Une variable boléenne qui indique s'il faut afficher un index de l'itération dans un appel le moins profond.
+            Indique s'il faut afficher l''index de l'itération dans l'appel.
         debug_st : bool, facultatif
-            Une variable boléenne qui précise s'il faut afficher tous les arbres intermédiaires.
+            Précise s'il faut afficher tous les arbres intermédiaires.
         obs_rep_couples : bool, facultatif
-            Une variable boléenne qui indique si on suppose l'existance de couples " observation-réparation " dans un
-            arbre de stratégie soumis.
+            Indique si on suppose l'existance de couples 
+            "observation-réparation" dans l'arbre de stratégie soumis.
         prob : float, facultatif
-            Une probabilité que le système ne marche toujours pas.
+            Probabilité que le système ne marche toujours pas.  
         obs_obsolete : bool, facultatif
-            Une variable boléenne qui indique si on suppose des " observations obsolètes ", i.e. si c'est possible de
-            faire une observation obsolète réparant une composante.
+            Indique si on suppose la possibilité des "observations obsolètes", 
+            i.e. qu'une observation devient obsolète en réparant une 
+            composante.
         sock : socket.socket, facultatif
-            Un socket de communication entre le processus qui effectue le calcule et celui qui met à jour l'interface ;
-            paramètre nécessaire pour que le ProgressBar de l'interface marche proprement.
+            Socket de communication entre le processus qui effectue le calcul 
+            et celui qui met à jour l'interface. Paramètre nécessaire pour que 
+            le ProgressBar de l'interface marche proprement.
         debug_nb_call : int, facultatif
-            Un paramètre auxiliaire qui est la profondeur de la récursivité.
+            Profondeur de la récursivité.
         """
         # Si on n'a pas passé des noeuds admissibles alors on les crée
         nodes_created = False
@@ -2276,8 +2390,9 @@ class TroubleShootingProblem:
             nb_max=200, strategy_tree=None, mode='dp',
             obs_rep_couples=False, true_prices_obs=None):
         """
-        Test empirique de la méthode brute_force_solver, ou bien de l'arbre de stratégie obtenu par l'algorithme
-        différent. Le mécanisme selon lequel on teste une stratégie est exactement le même que celui utilisé au-dessus
+        Test empirique de la méthode brute_force_solver, ou bien de l'arbre de 
+        stratégie obtenu par l'algorithme. Le mécanisme selon lequel on teste 
+        la stratégie est exactement le même que celui utilisé au-dessus
         dans les autres testers.
 
         Parameters
@@ -2308,8 +2423,12 @@ class TroubleShootingProblem:
         -------
         sortie_anti : bool
             True en cas de sortie anticipée, False sinon.
-        cost : float
-            Moyenne des couts observés.
+        costs : numpy.ndarray
+            Tableau avec les cout associés.
+        mean : float
+            Moyenne des couts.
+        std : float
+            Variance des couts. 
         cpt_repair : numpy.ndarray
             Tableau avec le nombre de composantes réparées à chaque répétition.
         cpt_obs : numpy.ndarray
@@ -2320,13 +2439,17 @@ class TroubleShootingProblem:
         costs = np.zeros(nb_max)
         cpt_repair = np.zeros(nb_max)
         cpt_obs = np.zeros(nb_max)
+        
+        mean = 0
+        sum_square = 0
+        
         sortie_anti = False
+        
         if strategy_tree is None:
             strategy_tree, _ = self.brute_force_solver(mode=mode, obs_rep_couples=obs_rep_couples)
         self._nodes_ids_db_brute_force = [node.get_id() for node in strategy_tree.get_nodes()]
         if true_prices_obs is None:
             true_prices_obs = self.costs_obs.copy()
-        last_index = nb_max-1
         for i in tqdm(range(nb_max)):
             evidence = {}
             self.bay_lp.setEvidence(evidence)
@@ -2361,10 +2484,13 @@ class TroubleShootingProblem:
                     evidence = merge_dicts(evidence, {node.get_name(): 'no'})
                     self.bay_lp.setEvidence(evidence)
                     node = strategy_tree.get_node(node).get_child().copy()
-            if i >= nb_min \
-                    and 1.96 * costs[:i + 1].std() / np.sqrt(i + 1) < epsilon:
+           
+            mean = (i * mean + costs[i])/ (i + 1)        
+            sum_square += costs[i]**2 
+            std = np.sqrt(sum_square/ (i + 1) - mean**2)
+            if i >= nb_min\
+                and 1.96 * std/(mean * np.sqrt(i + 1)) < epsilon:
                 sortie_anti = True
-                last_index = i
                 break
 
         self._nodes_ids_db_brute_force = []
@@ -2372,5 +2498,6 @@ class TroubleShootingProblem:
         self._start_bay_lp()
         self.reset_bay_lp()
 
-        return sortie_anti, costs[:last_index+1].mean(), np.array(cpt_repair[:last_index+1], dtype=int),\
-               np.array(cpt_obs[:last_index+1], dtype=int)
+        return sortie_anti, costs[:i + 1], mean, std, \
+            np.array(cpt_repair[:i + 1], dtype=int),\
+               np.array(cpt_obs[:i + 1], dtype=int)

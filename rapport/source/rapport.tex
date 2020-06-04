@@ -30,6 +30,7 @@
 \usepackage{array} % Facilita a formatação de tabelas
 %\usepackage{multirow} % Permite criar células que ocupam várias linhas em uma tabela
 \usepackage{longtable} % Permite criar tabelas que quebram de página
+\usepackage{booktabs}
 
 %-----------------------------------------------------------------------------------%
 % PACOTES MATEMÁTICOS DE BASE                                                       %
@@ -820,6 +821,8 @@ Les autres arguments communs des méthodes \texttt{\_tester} sont la valeur de $
 
 Les méthodes \texttt{\_tester} retournent toujours un booléen indiquant si l'algorithme s'est terminé après avoir atteint \texttt{nb\_max} itérations (cas \texttt{False}) ou à cause du critère d'arrêt \eqref{EqCritereArret} (cas \texttt{True}). Il retourne aussi les coûts trouvés, le nombre de réparations faites et, le cas échéant, le nombre d'observations globales faites ou de questions d'élicitation posées.
 
+Pour le testeur de la méthode d'élicitation, nous avons décidé de, avant chaque prise d'action, faire le calcul de tous les $\EVOI$ et répondre à toutes les questions disponibles (en ayant connaissance des coûts réels) avant de déterminer quelle est la meilleure action à prendre.
+
 \subsection{Interface graphique}
 \label{SecImplInterface}
 
@@ -827,6 +830,92 @@ L'interface graphique a été implémentée en utilisant le module \texttt{PyQt5
 
 \section{Résultats}
 \label{SecResultats}
+
+Les résultats présentés ci-dessous concernent le réseau Bayésien de la Figure~\ref{FigReseauBayes}. Le \emph{problem defining node} de ce réseau est le nœud \texttt{car.carWontStart}, le nœud d'appel au service est \texttt{callService}. L'ensemble des composantes choisi est
+\begin{align*}
+\mathcal C & = \{\text{\texttt{car.batteryFlat}}, \text{\texttt{oil.noOil}}, \text{\texttt{tank.Empty}}, \\
+ & \hphantom{{} = \{} \text{\texttt{tank.fuelLineBlocked}}, \text{\texttt{starter.starterBroken}}\},
+\end{align*}
+le sous-ensemble de composantes observables contient toutes sauf \texttt{tank.tankEmpty}. L'ensemble des observations globales est
+\[\mathcal O = \{\text{\texttt{car.lightsOk}}, \text{\texttt{car.noOilLightOn}}, \text{\texttt{oil.dipstickLevelOk}}\}.\]
+Les coûts utilisés sont donnés dans la Table~\ref{TabCosts}, dans laquelle la donnée d'un intervalle indique que nous considérons un coût aléatoire de loi uniforme sur cet intervalle, et les algorithmes qui ne prennent pas en compte cette information utilisent comme coût correspondant la moyenne de cet intervalle.
+
+\begin{table}[ht]
+\centering
+\caption{Coûts d'observation et de réparation utilisés dans les simulations.}
+\label{TabCosts}
+\begin{tabular}{lc}
+\toprule
+ & Coût \tabularnewline
+\midrule
+\texttt{car.batteryFlat} (observation) & $20$ \tabularnewline
+\texttt{oil.noOil} (observation) & $50$ \tabularnewline
+\texttt{tank.fuelLineBlocked} (observation) & $60$ \tabularnewline
+\texttt{starter.starterBroken} (observation) & $10$ \tabularnewline
+\texttt{car.lightsOk} & $2$ \tabularnewline
+\texttt{car.noOilLightOn} & $1$ \tabularnewline
+\texttt{oil.dipstickLevelOk} & $7$ \tabularnewline
+\texttt{car.batteryFlat} (réparation) & $[100, 300]$ \tabularnewline
+\texttt{oil.noOil} (réparation) & $[50, 100]$ \tabularnewline
+\texttt{tank.Empty} & $[40, 60]$ \tabularnewline
+\texttt{tank.fuelLineBlocked} (réparation) & $150$ \tabularnewline
+\texttt{starter.starterBroken} (réparation) & $[20, 60]$ \tabularnewline
+\texttt{callService} & $500$ \tabularnewline
+\bottomrule
+\end{tabular}
+\end{table}
+
+Nous avons appliqué les algorithmes \texttt{simple\_solver\_tester}, \texttt{simple\_solver\_obs\_tester}, \texttt{myopic\_solver\_tester} et \texttt{elicitation\_solver\_tester} à ce problème en utilisant $\varepsilon = 0,025$ pour le critère d'arrêt \eqref{EqCritereArret}, avec les coûts réels donnés dans la Table~\ref{TabCoutsReels}. L'algorithme exacte n'a pas été testé sur cette instance car son temps d'exécution est trop long, ses résultats seront donnés dans la suite sur une instance plus petite. Les histogrammes de coûts de réparation obtenus sont représentés sur la Figure~\ref{FigHistogrammes} et les coûts moyens obtenus sont donnés dans la Table~\ref{TabECs}
+
+\begin{table}[ht]
+\centering
+\caption{Coûts réels utilisés pour les réparations avec coût aléatoire.}
+\label{TabCoutsReels}
+\begin{tabular}{lcr}
+\toprule
+ & Coût \tabularnewline
+\midrule
+\texttt{car.batteryFlat} & $120$ \tabularnewline
+\texttt{oil.noOil} & $90$ \tabularnewline
+\texttt{tank.Empty} & $55$ \tabularnewline
+\texttt{starter.starterBroken} & $50$ \tabularnewline
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\resizebox{\textwidth}{!}{\input{Figures/histogrammes.pgf}}
+\caption{Histogrammes de coûts de réparation obtenus avec les algorithmes approchés}
+\label{FigHistogrammes}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\caption{Coûts de réparation moyens obtenus avec les algorithmes approchés}
+\label{TabECs}
+\begin{tabular}{cc}
+\toprule
+Algorithme & Coût moyen \tabularnewline
+\midrule
+\texttt{simple\_solver} & $227,62$ \tabularnewline
+\texttt{simple\_solver\_obs} & $170,66$ \tabularnewline
+\texttt{myopic\_solver} & $150,72$ \tabularnewline
+\texttt{elicitation\_solver} & $149,03$ \tabularnewline
+\bottomrule
+\end{tabular}
+\end{table}
+
+On remarque sur la Figure~\ref{FigHistogrammes} que, comme attendu, les résultats s'améliorent lorsque l'on utilise des algorithmes plus avancés. L'algorithme simple conduit à des situations où, dans plus de $10\%$ des cas, on trouve des coûts supérieurs à $700$, et ne donne jamais des coûts inférieurs à $100$, alors que les autres algorithmes donnent toujours des coûts inférieurs à $700$ et conduisent dans plusieurs situations à des coûts inférieurs à $100$. En effet, en tournant \texttt{simple\_solver} sur cette instance, la séquence d'actions retournée consiste dans les réparations, dans l'ordre, de \texttt{car.batteryFlat}, \texttt{oil.noOil} et \texttt{tank.Empty} suivies d'un appel au service. Ainsi, les seuls coûts possibles sont $120$, $120+90 = 210$, $120+90+55 = 266$ et $120+90+55+500 = 766$.
+
+L'algorithme \texttt{simple\_solver\_obs} constitue ainsi une bonne amélioration déjà par rapport à \texttt{simple\_solver}. Sa séquence d'actions est les réparations ou observations-réparations de \texttt{car.\allowbreak{}batteryFlat}, \texttt{starter.starterBroken}, \texttt{tank.Empty}, \texttt{oil.noOil} et \texttt{tank.fuelLineBlocked} suivies d'un appel au service. Il se peut ainsi que, après avoir réalisé l'observation de \texttt{car.battery\allowbreak{}Flat} pour un coût de $20$, on observe que cette composante est déjà en marche et qu'on passe ensuite à \texttt{starter.starterBroken}, dont l'observation a un coût de $10$. Si cette composante est défectueuse, sa réparation coûte $50$, et il est alors possible que le dispositif marche après cette réparation, auquel cas le coût total de réparation sera $80$, qui a effectivement été le plus petit coût de réparation observé pour cet algorithme.
+
+Les algorithmes \texttt{myopic\_solver} et \texttt{elicitation\_solver} sont beaucoup mieux que les autres, avec des coûts de réparation inférieurs à $160$ dans la quasi-totalité des cas (plus de $90\%$), notamment à cause des observations globales de faible coût, dont les résultats permettent de meilleur choisir les prochaines actions. Les deux sont très proches, avec un coût légèrement inférieur pour \texttt{elicitation\_solver}. En effet, \texttt{myopic\_solver} résout le problème en supposant que les coûts dont les valeurs exactes sont inconnues sont égales aux espérances des variables aléatoires correspondantes, ce qui peut conduire à des choix non-optimaux. De son côté, \texttt{elicitation\_solver} pose des questions pour améliorer les connaissances des vrais coûts, ce qui tend à donner une stratégie plus proche de l'optimale pour les vrais coûts, expliquant ainsi l'amélioration observée des résultats.
+
+Pour l'algorithme avec élicitation, il est intéressant à noter que, comme rappelé dans la Section~\ref{SecElicitation}, l'élicitation a très souvent un coût pour l'utilisateur. Nous avons choisi de ne pas représenter ce coût ici, mais plutôt de suivre la quantité de questions répondues. Nous avons alors constaté que, dans la simulation réalisée, l'algorithme a répondu toujours à une seule question. Cela suggère ainsi que ce coût de l'élicitation pourrait être assez faible, car le nombre de questions répondues est assez limitée. Finalement, nous croyons que les bénéfices de l'élicitation peuvent être plus évidents lorsque les réseaux sont plus grands et avec plus d'incertitudes sur les coûts, auquel cas on pourrait s'attendre à des différences statistiquement significatives.
+
+Nous avons aussi testé ces algorithmes en remplaçant les valeurs réelles de coût de réparation de la Table~\ref{TabCoutsReels} par des valeurs tirées aléatoirement selon les intervalles de la Table~\ref{TabCosts}. Bien que les valeurs précises changent, l'allure générale et les conclusions présentées dans l'analyse ci-dessus restent valables pour ces autres coûts aléatoires.
+
 
 % La propriété démontrée ci-dessus fait l'hypothèse cruciale que les valeurs de $\EC$ sont exactes. Or, l'algorithme que l'on utilise, basée sur l'idée de \cite{heckerman1994troubleshooting, Heckerman_1995}, est un algorithme heuristique glouton qui, malgré ses bons résultats pratiques, ne donne pas toujours la séquence de réparation avec le plus petit coût espéré, même si cela est souvent le cas. Ainsi, il se peut que l'on puisse trouver des valeurs négatives dans le calcul des $\EVOI$. En pratique, en testant avec des valeurs aléatoires pour les intervalles des coûts $[C_{\min}(r_i), C_{\max}(r_i)]$, on a observé des valeurs négatives pour $\EVOI$ dans $6\%$ des cas, mais cette valeur négative restait toujours petite, de l'ordre au maximum de $10^{-2}$, ce qui illustre d'ailleurs que l'algorithme de \cite{heckerman1994troubleshooting, Heckerman_1995} donne une bonne approximation.
 

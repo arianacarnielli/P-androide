@@ -23,4 +23,4 @@ class ShowECR(QWidget):
 
     def updateTitle(self, ecr):
         self.title.setText(
-            "On a effectué le calcul de stratégie optimale et on l'a trouvée avec le coût espéré : %.3f" % ecr)
+            "On a calculé la stratégie optimale et on a trouvé le coût espéré : %.3f" % ecr)
