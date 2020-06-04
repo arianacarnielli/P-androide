@@ -831,6 +831,9 @@ L'interface graphique a été implémentée en utilisant le module \texttt{PyQt5
 \section{Résultats}
 \label{SecResultats}
 
+\subsection{Tests avec les algorithmes approchés}
+\label{SecResultatsApprox}
+
 Les résultats présentés ci-dessous concernent le réseau Bayésien de la Figure~\ref{FigReseauBayes}. Le \emph{problem defining node} de ce réseau est le nœud \texttt{car.carWontStart}, le nœud d'appel au service est \texttt{callService}. L'ensemble des composantes choisi est
 \begin{align*}
 \mathcal C & = \{\text{\texttt{car.batteryFlat}}, \text{\texttt{oil.noOil}}, \text{\texttt{tank.Empty}}, \\
@@ -916,10 +919,82 @@ Pour l'algorithme avec élicitation, il est intéressant à noter que, comme rap
 
 Nous avons aussi testé ces algorithmes en remplaçant les valeurs réelles de coût de réparation de la Table~\ref{TabCoutsReels} par des valeurs tirées aléatoirement selon les intervalles de la Table~\ref{TabCosts}. Bien que les valeurs précises changent, l'allure générale et les conclusions présentées dans l'analyse ci-dessus restent valables pour ces autres coûts aléatoires.
 
+\subsection{Tests avec l'algorithme exact}
 
-% La propriété démontrée ci-dessus fait l'hypothèse cruciale que les valeurs de $\EC$ sont exactes. Or, l'algorithme que l'on utilise, basée sur l'idée de \cite{heckerman1994troubleshooting, Heckerman_1995}, est un algorithme heuristique glouton qui, malgré ses bons résultats pratiques, ne donne pas toujours la séquence de réparation avec le plus petit coût espéré, même si cela est souvent le cas. Ainsi, il se peut que l'on puisse trouver des valeurs négatives dans le calcul des $\EVOI$. En pratique, en testant avec des valeurs aléatoires pour les intervalles des coûts $[C_{\min}(r_i), C_{\max}(r_i)]$, on a observé des valeurs négatives pour $\EVOI$ dans $6\%$ des cas, mais cette valeur négative restait toujours petite, de l'ordre au maximum de $10^{-2}$, ce qui illustre d'ailleurs que l'algorithme de \cite{heckerman1994troubleshooting, Heckerman_1995} donne une bonne approximation.
+Puisque l'algorithme exact prend trop de temps à s'exécuter sur l'instance considérée dans la Section~\ref{SecResultatsApprox}, nous l'avons testé sur une instance plus petite, avec le même réseau Bayésien, le même \emph{problem defining node}, le même nœud d'appel au service, mais avec
+\begin{align*}
+\mathcal C & = \{\text{\texttt{car.batteryFlat}}, \text{\texttt{tank.Empty}}, \text{\texttt{oil.noOil}}\}, \\
+\mathcal C_o & = \{\text{\texttt{car.batteryFlat}}, \text{\texttt{oil.noOil}}\}, \\
+\mathcal O & = \{\text{\texttt{oil.dipstickLevelOk}}\}.
+\end{align*}
+Les coûts utilisés sont les mêmes que ceux de la Table~\ref{TabCosts} mais, puisque l'on ne fait pas de comparaison avec l'algorithme avec l'élicitation dans cette section, on a choisit comme coût réel la moyenne de l'intervalle de coût pour le cas des coûts incertains. Les histogrammes de coûts sont représentés sur la Figure~\ref{FigHistoExact} et les valeurs des coûts moyens sont données dans la Table~\ref{TabECsExact}. Les Figures~\ref{FigArbreMyope} et \ref{FigArbreExact} montrent, sous la forme d'un arbre, les stratégies obtenues avec les algorithmes myope et exact, respectivement.
 
-% Il reste encore la question de quel $\alpha$ choisir pour chaque composante. Notre implémentation choisit toujours $\alpha = \overline C(r_i)$ pour la question correspondante à la composante $c_i$, ce qui est un choix raisonnable en absence d'autres informations car $\overline C(r_i)$ est l'espérance de la loi uniforme que l'on considère pour le coût $C(r_i)$. L'amélioration de ce choix naïf est une question intéressante qui pourrait permettre de poser des questions plus pertinentes à l'utilisateur. Pour espérer d'améliorer ce choix, il faut avoir plus d'information, ce que l'on pourrait obtenir, par exemple, en regardant ce que l'utilisateur choisit de faire lorsqu'il ne suit pas les recommandations du logiciel. En effet, dans ce cas, le fait que l'utilisateur n'a pas suivi une recommandation du logiciel indique qu'il a une connaissance en plus sur les valeurs de coût, ce que lui a fait de choisir une autre action. L'idée serait alors d'exploiter cette connaissance afin de modifier la loi de probabilité des coûts $C(r_i)$.
+\begin{figure}[ht]
+\centering
+\resizebox{\textwidth}{!}{\input{Figures/histogrammes_exact.pgf}}
+\caption{Histogrammes de coûts de réparation obtenus avec les algorithmes et exact}
+\label{FigHistoExact}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\caption{Coûts de réparation moyens obtenus avec les algorithmes approchés}
+\label{TabECsExact}
+\begin{tabular}{cc}
+\toprule
+Algorithme & Coût moyen \tabularnewline
+\midrule
+Myope & $235,10$ \tabularnewline
+Exact & $229,31$ \tabularnewline
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{Figures/myopic.pdf}
+\caption{Stratégie obtenue avec l'algorithme myope.}
+\label{FigArbreMyope}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{Figures/exact.pdf}
+\caption{Stratégie obtenue avec l'algorithme exact.}
+\label{FigArbreExact}
+\end{figure}
+
+On observe que, comme attendu, malgré son temps d'exécution plus long, l'algorithme exact trouve bien une espérance de coût de réparation plus petite que celle trouvée par l'algorithme myope. Les stratégies optimales montrées dans les Figures~\ref{FigArbreMyope} et \ref{FigArbreExact} sont très similaires, avec une seule différence~: lorsque l'observation \texttt{oil.dipstickLevelOk} indique qu'il y a un problème, l'algorithme myope, suivant son principe, fait d'abord l'observation de \texttt{oil.noOil} avant de le réparer si nécessaire, alors que l'algorithme exact, probablement à cause du fait que la probabilité que \text{oil.noOil} soit la composante présentant un problème est grande dans ce cas, fait directement sa réparation sans l'observer au préalable. Dans le cas où c'est effectivement ce nœud qui présente un problème (ce qui est le cas avec une probabilité d'environ $18\%$ dans le réseau Bayésien utilisé), cela diminue le coût de réparation de $50$ (soit le coût de l'observation de \texttt{oil.noOil})~: il est de $132$ pour la stratégie de l'algorithme myope mais de $82$ pour la stratégie optimale, ce qui explique les différences dans l'histogramme et dans les espérances de coût. Cela montre aussi que, sur cette instance, l'algorithme myope donne un coût espéré de réparation très proche de celui de l'algorithme exacte.
+
+\section{Ouverture sur l'élicitation des coûts}
+
+Comme présenté dans la Section~\ref{SecResultatsApprox}, la technique d'élicitation des coûts proposée dans la Section~\ref{SecContribElicitation} donne souvent des meilleurs résultats que l'algorithme myope sans élicitation de coûts, mais très proches de celui-ci. En général, en tirant les coûts incertains de façon aléatoire et en tournant l'algorithme, on observe que peu de questions sont répondues~: il y a presque toujours une question répondue, et très rarement ce nombre dépasse 2 questions.
+
+Un des paramètres de l'algorithme avec élicitation est le choix des $\alpha$ utilisés pour poser les questions, que nous avons fixés de façon heuristique à l'espérance de la loi uniforme du coût de réparation correspondant. Ainsi, une piste d'amélioration possible pour l'algorithme avec élicitation serait d'utiliser des stratégies plus avancées pour le choix de $\alpha$.
+
+Cependant, la méthode proposée dans la Section~\ref{SecContribElicitation} avec une question d'élicitation à réponse binaire se heure à un obstacle~: dans ce cadre, il est possible que, suite à une question d'élicitation, la valeur de coût de réparation utilisée dans l'algorithme après l'élicitation soit plus loin de la valeur réelle qu'avant l'élicitation.
+
+\begin{figure}[ht]
+\centering
+\resizebox{0.5\textwidth}{!}{\input{Figures/erreur_elicitation_binaire.pgf}}
+\caption{Distance entre le coût utilisé par l'algorithme et le coût réel avant et après une question d'élicitation à réponse binaire.}
+\label{FigElicitationBinaire}
+\end{figure}
+
+Pour l'illustrer, considérons, pour simplifier, un dispositif dont le coût réel est dans l'intervalle $[0, 1]$. Sans questions d'élicitation, l'algorithme considérera que son coût est $\frac{1}{2}$, et l'erreur commise en fonction du coût réel $c$ est $\abs*{c - \frac{1}{2}}$, représentée en bleu sur la Figure~\ref{FigElicitationBinaire}. Après la question d'élicitation «~est-ce que le coût réel est plus petit que $\frac{1}{2}$~?~» et en supposant une réponse correcte à cette question, l'erreur commise en fonction du coût réel est la courbe représentée en orange sur la Figure~\ref{FigElicitationBinaire}. On observe ainsi que, pour $c \in \left[\frac{3}{8}, \frac{5}{8}\right]$, l'erreur commise augmente après une réponse correcte à la question d'élicitation. Ce problème est intrinsèque aux questions d'élicitation binaires~: indépendamment de la valeur de $\alpha \in (0, 1)$ choisie pour la question d'élicitation, il y aura toujours un sous-intervalle de $[0, 1]$ pour lequel l'erreur entre coût réel et coût considéré par l'algorithme aura augmenté.
+
+Cette augmentation sur l'erreur commise sur le coût de réparation d'une composante a un impact indirect sur l'espérance de coût de réparation du dispositif. Cela peut ainsi expliquer pourquoi, dans les résultats présentés dans la Section~\ref{SecResultatsApprox}, l'amélioration observée sur l'espérance de coût avec l'élicitation est petite.
+
+\begin{figure}[ht]
+\centering
+\resizebox{0.5\textwidth}{!}{\input{Figures/erreur_elicitation_ternaire.pgf}}
+\caption{Distance entre le coût utilisé par l'algorithme et le coût réel avant et après une question d'élicitation à réponse ternaire.}
+\label{FigElicitationTernaire}
+\end{figure}
+
+Une possible solution à ce problème est de passer à des questions d'élicitation avec plus de deux réponses possibles. Considérons, par exemple, toujours dans le cas de coûts réels dans $[0, 1]$, une question de la forme «~le coût réel est dans lequel des intervalles $[0, \beta)$, $[\beta, \gamma)$, ou $[\gamma, 1]$~?~» pour des valeurs $0 < \beta < \gamma < 1$. Afin de ne pas avoir une augmentation d'erreur en aucun point après la réponse à la question, il faut que $\beta$ et $\gamma$ soient symétriques, c'est-à-dire $\gamma = 1 - \beta$, car dans le cas contraire l'erreur commise pour le coût réel $\frac{1}{2}$ est forcément strictement positive après l'élicitation, alors qu'elle est nulle avant. Dans ce cas, le choix de $\beta$ qui minimise l'erreur maximale après l'élicitation est $\beta = \frac{1}{3}$, auquel cas on obtient les courbes d'erreur de la Figure~\ref{FigElicitationTernaire}. Bien évidemment, les techniques décrites pour l'élicitation dans la Section~\ref{SecContribElicitation} peuvent être adaptées au cas de cette question, et il serait intéressant, dans des travaux futurs, de tester expérimentalement l'apport de cette modification de la question. Dans des situations pratiques, il faut en plus prendre en compte le fait qu'une question sur les coûts avec trois réponses possibles peut être plus difficile à répondre pour l'utilisateur.
+
+
 
 \bibliographystyle{abbrv}
 \bibliography{bibliographie}
