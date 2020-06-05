@@ -10,3 +10,4 @@ code/__pycache__/
 *.toc
 *.tps
 *.npz
+*.gv
