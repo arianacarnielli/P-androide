@@ -27,65 +27,23 @@ from ConfigBruteForce import *
 from ShowECR import *
 from StepBruteForce import *
 
+from ProblemDefinition import *
+
 class MainWindow(QMainWindow):
 
     def __init__(self, parent = None):
         QMainWindow.__init__(self, parent)
 
-###################################################
-# Bayesian Network                                #
-###################################################
-
         # Le problème est modélisé par un réseau bayésien de PyAgrum
-        self.bnCarFilename = "simpleCar2.bif"
+        self.bnCarFilename = bnFilename
         bnCar = gum.loadBN(self.bnCarFilename)
 
         # On initialise les coûts des réparations et observations
-        self.costsRep = {
-            "car.batteryFlat": [100, 300],
-            "oil.noOil": [50, 100],
-            "tank.Empty": [40, 60],
-            "tank.fuelLineBlocked": 150,
-            "starter.starterBroken": [20, 60],
-            "callService": 500
-        }
-
-        self.costsObs = {
-            "car.batteryFlat": 20,
-            "oil.noOil": 50,
-            "tank.Empty": 5,
-            "tank.fuelLineBlocked": 60,
-            "starter.starterBroken": 10,
-            "car.lightsOk": 2,
-            "car.noOilLightOn": 1,
-            "oil.dipstickLevelOk": 7
-        }
-
-# =============================================================================
-#         # On initialise les types des noeuds du réseau
-#         self.nodesAssociations = {
-#             "car.batteryFlat": {"repairable", "observable"},
-#             "oil.noOil": {"repairable", "observable"},
-#             "tank.Empty": {"repairable"},
-#             "tank.fuelLineBlocked": {"repairable", "observable"},
-#             "starter.starterBroken": {"repairable", "observable"},
-#             "car.lightsOk": {"unrepairable", "observable"},
-#             "car.noOilLightOn": {"unrepairable", "observable"},
-#             "oil.dipstickLevelOk": {"unrepairable", "observable"},
-#             "car.carWontStart": {"problem-defining"},
-#             "callService": {"service"}
-#         }
-# =============================================================================
+        self.costsRep = costsRep
+        self.costsObs = costsObs
 
         # Une initialisation raccourcie pour ne pas surcharger des algorithmes exactes
-        self.nodesAssociations = {
-             "car.batteryFlat": {"repairable", "observable"},
-             "tank.Empty": {"repairable"},
-             "oil.noOil": {"repairable", "observable"},
-            "oil.dipstickLevelOk": {"unrepairable", "observable"},
-             "car.carWontStart": {"problem-defining"},
-             "callService": {"service"}
-        }
+        self.nodesAssociations = nodesAssociations
 
         #On peut choisir quel algorithme utiliser entre les 5 algorithmes codés
 
@@ -233,6 +191,14 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentWidget(self.trouble)
 
     def startBruteForce(self):
+        answer = QMessageBox.question(self, "Attention !", "Les calculs avec" \
+                                        " la recherche exhaustive sont trop" \
+                                        " lourds. Voulez-vous utiliser une" \
+                                        " version simplifiée du problème ?", \
+                                        QMessageBox.Yes | QMessageBox.No)            
+        if answer == QMessageBox.Yes:
+            self.nodesAssociations = nodesAssociationsSimple
+
         self.resize(self.configSize[0], self.configSize[1])
         self.bruteForceStats["rep_num"] = 0
         self.bruteForceStats["obs_num"] = 0

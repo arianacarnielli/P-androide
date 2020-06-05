@@ -1,0 +1,2192 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Documentation du module Decision Theoretic Troubleshooting &#8212; Documentation Decision Theoretic Troubleshooting </title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/translations.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Recherche" href="search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Index général"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Index des modules Python"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Documentation Decision Theoretic Troubleshooting </a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-DecisionTheoreticTroubleshooting">
+<span id="documentation-du-module-decision-theoretic-troubleshooting"></span><h1>Documentation du module Decision Theoretic Troubleshooting<a class="headerlink" href="#module-DecisionTheoreticTroubleshooting" title="Lien permanent vers ce titre">¶</a></h1>
+<dl class="class">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem">
+<em class="property">class </em><code class="sig-prename descclassname">DecisionTheoreticTroubleshooting.</code><code class="sig-name descname">TroubleShootingProblem</code><span class="sig-paren">(</span><em class="sig-param">bayesian_network</em>, <em class="sig-param">costs</em>, <em class="sig-param">nodes_types</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Classe créée pour représenter un problème de Troubleshooting.
+Contient des méthodes divers pour résoudre le problème.
+Utilise le module pyAgrum pour manipuler le réseau bayesien utilisé pour
+répresenter le problème.
+Les noeuds du réseau bayésien sont réferencés par des strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bayesian_network</strong> (<em>pyAgrum.BayesNet</em>) – Représente le réseau bayésien (BN) modélisant un problème donné.</p></li>
+<li><p><strong>costs</strong> (<em>list</em><em>(</em><em>dict</em><em>)</em>) – Liste avec deux dictionnaires, le premier avec les coûts de
+réparation (exactes ou avec des minimun/maximun) et le deuxième
+avec les coûts d’observation des noeuds.</p></li>
+<li><p><strong>nodes_types</strong> (<em>dict</em>) – Dictionnaire où les clés représent les noeuds du BN
+et les valeurs leurs types associés (set de string).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.bayesian_network">
+<code class="sig-name descname">bayesian_network</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.bayesian_network" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Représente le réseau bayésien (BN) qui modélise un problème donné.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pyAgrum.BayesNet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.bay_lp">
+<code class="sig-name descname">bay_lp</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.bay_lp" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fait l’inference exacte pour le BN passé en argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pyAgrum.LazyPropagation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.costs_rep">
+<code class="sig-name descname">costs_rep</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.costs_rep" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Dictionnaire de coûts où les clés représentent les noeuds
+du BN et les valeurs leurs coûts de reparation (float).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.costs_rep_interval">
+<code class="sig-name descname">costs_rep_interval</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.costs_rep_interval" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Dictionnaire de coûts où les clés représentent les
+noeuds du BN et les valeurs des listes avec les coûts minimum et
+maximum de reparation (floats).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.costs_obs">
+<code class="sig-name descname">costs_obs</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.costs_obs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Dictionnaire de coûts où les clés représentent les noeuds
+du BN et les valeurs leurs coûts d’observation (float).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.repairable_nodes">
+<code class="sig-name descname">repairable_nodes</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.repairable_nodes" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Ensemble de noeuds qui correspondent aux éléments du
+système concerné qui peuvent être réparés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.unrepairable_nodes">
+<code class="sig-name descname">unrepairable_nodes</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.unrepairable_nodes" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Ensemble de noeuds qui correspondent aux éléments
+d’un système qui ne peuvent pas être réparés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.problem_defining_node">
+<code class="sig-name descname">problem_defining_node</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.problem_defining_node" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Noeud qui répresent le problème a être reglé
+(système fonctionnel où pas).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.observation_nodes">
+<code class="sig-name descname">observation_nodes</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.observation_nodes" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Ensemble de noeuds qui correspondent aux éléments
+du système qui peuvent être observés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.service_node">
+<code class="sig-name descname">service_node</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.service_node" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Noeud qui répresent l’appel au service (appel à la
+réparation sûre du système).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.evidences">
+<code class="sig-name descname">evidences</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.evidences" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Dictionnaire ou les clés répresentent les élements du
+système qui ont des evidences modifiés dans bay_lp (donc qui ont
+été réparés/observés) et les valeurs sont les inferences faites.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.ECR_ECO_wrapper">
+<code class="sig-name descname">ECR_ECO_wrapper</code><span class="sig-paren">(</span><em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.ECR_ECO_wrapper" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Calcule l’ECR myope pour chaque prochaine « observation-réparation »
+possible et l’ECO pour chaque prochaine observation globale possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>debug</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Si True, affiche des messages montrant le déroulement de
+l’algorithme.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>chosen_node</strong> (<em>string</em>) – Noeud choisi.</p></li>
+<li><p><strong>type_node</strong> (<em>string</em>) – Type du noeud choisi (« repair » ou « obs »).</p></li>
+<li><p><strong>list_ecr</strong> (<em>list(tuple)</em>) – ECRs des noeuds d“« observation-réparation ».</p></li>
+<li><p><strong>list_eco</strong> (<em>list(tuple)</em>) – ECOs des noeuds d’observation globale.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem._compute_costs">
+<code class="sig-name descname">_compute_costs</code><span class="sig-paren">(</span><em class="sig-param">costs</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem._compute_costs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Prend en argument un dictionnaire de couts qui peut avoir des valeurs
+exactes ou des intervalles de valeurs (de la forme [minimum, maximum])
+et le transforme en 2 dictionnaires, un avec les esperances de cout
+pour chaque clé et l’autre avec des intervalles de valeurs pour chaque
+clé.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>costs</strong> (<em>dict</em>) – Dictionnaire de couts où les clés représentent les noeuds
+du BN et les valeurs sont de nombres ou de listes de deux
+nombres.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>expected_cost</strong> (<em>dict</em>) – Dictionnaire où les clés représentent les noeuds du
+BN et les valeurs l’esperance de cout de ce noeud. Si la valeur
+initiale était déjà un nombre, ce nombre est seulement copié,
+sinon on considère que la valeur est une variable aléatoire
+avec une distribution uniforme dans l’intervalle et donc
+l’esperance est la moyenne des extremités de l’intervalle.</p></li>
+<li><p><strong>interval_cost</strong> (<em>dict</em>) – Dictionnaire où les clés représentent les noeuds du
+BN et les valeurs sont des listes contenant les deux extremités
+des intervalles dans lequels les couts se trouvent. Si la
+valeur initiale était déjà un nombre, ce nombre est copié comme
+les deux extremités. Si la valeur initiale était un iterable,
+on le transforme en liste.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem._create_nodes">
+<code class="sig-name descname">_create_nodes</code><span class="sig-paren">(</span><em class="sig-param">names</em>, <em class="sig-param">rep_string='_repair'</em>, <em class="sig-param">obs_string='_observation'</em>, <em class="sig-param">obs_rep_couples=False</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem._create_nodes" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Crée des noeuds de StrategyTree à partir de leurs noms dans le réseau
+Bayésien.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>names</strong> (<em>list</em><em>(</em><em>str</em><em>)</em>) – Noms des noeuds de réparations/observations/
+observations-réparations dans le réseau Bayésien à partir desquels
+on crée les noeuds.</p></li>
+<li><p><strong>rep_string</strong> (<em>string</em><em>, </em><em>facultatif</em>) – Dans le cas où on ne considère pas des couples, on utilise ce
+paramètre comme un suffixe pour les noeuds de réparation pour les
+séparer de ceux d’observation.</p></li>
+<li><p><strong>obs_string</strong> (<em>string</em><em>, </em><em>facultatif</em>) – Suffixe pour les noeuds d’observation.</p></li>
+<li><p><strong>obs_rep_couples</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Variable boléenne qui indique si on suppose l’existance de couples
+« observation-réparation » dans l’arbre de stratégie.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>nodes</strong> – Liste de noeuds crées.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">StrategyTree.NodeST</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem._evaluate_all_st">
+<code class="sig-name descname">_evaluate_all_st</code><span class="sig-paren">(</span><em class="sig-param">feasible_nodes</em>, <em class="sig-param">obs_next_nodes=None</em>, <em class="sig-param">parent=None</em>, <em class="sig-param">fn_immutable=None</em>, <em class="sig-param">debug_nb_call=0</em>, <em class="sig-param">debug_iter=False</em>, <em class="sig-param">debug_st=False</em>, <em class="sig-param">obs_rep_couples=False</em>, <em class="sig-param">obs_obsolete=False</em>, <em class="sig-param">sock=None</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem._evaluate_all_st" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Méthode récursive qui trouve le meilleur arbre de stratégie étant donné
+une configuration du problème en dénombrant tous les arbres
+admissibles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feasible_nodes</strong> (<em>list</em><em>(</em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>StrategyTree.NodeST</em></a><em>)</em>) – Lisste des noeuds admissibles qu’on a le droit d’utiliser pour
+construire l’arbre.</p></li>
+<li><p><strong>obs_next_nodes</strong> (<em>list</em><em>(</em><em>list</em><em>(</em><em>str</em><em>)</em><em>)</em><em>, </em><em>facultatif</em>) – Pile des attributs des arcs qui partent des noeuds déjà utilisés.</p></li>
+<li><p><strong>parent</strong> (<em>list</em><em>(</em><em>tuple</em><em>(</em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>StrategyTree.NodeST</em></a><em>, </em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>StrategyTree.NodeST</em></a><em>,</em>) – StrategyTree.StrategyTree)), facultatif
+Pile des <em>parents</em> vers lesquels il faudra se retourner quand on
+remplit entièrement la branche courante.</p></li>
+<li><p><strong>fn_immutable</strong> (<em>list</em><em>(</em><em>list</em><em>(</em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>StrategyTree.NodeST</em></a><em>)</em><em>)</em><em>, </em><em>facultatif</em>) – Pile des noeuds admissibles qu’on peut utiliser pour les branches
+différentes qui suivent un noeud d’observation.</p></li>
+<li><p><strong>debug_nb_call</strong> (<em>int</em><em>, </em><em>facultatif</em>) – Profondeur de la récursivité.</p></li>
+<li><p><strong>debug_iter</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Indique s’il faut afficher l’index de l’itération de l’appel.</p></li>
+<li><p><strong>debug_st</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Précise s’il faut afficher tous les arbres intermédiaires.</p></li>
+<li><p><strong>obs_rep_couples</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Indique si on suppose l’existance de couples
+« observation-réparation » dans l’arbre de stratégie soumis.</p></li>
+<li><p><strong>obs_obsolete</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Indique si on suppose la possibilité des « observations obsolètes »,
+i.e. qu’une observation devient obsolète en réparant une
+composante.</p></li>
+<li><p><strong>sock</strong> (<em>socket.socket</em><em>, </em><em>facultatif</em>) – Socket de communication entre le processus qui effectue le calcul
+et celui qui met à jour l’interface. Paramètre nécessaire pour que
+le ProgressBar de l’interface marche proprement.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem._expected_cost_of_repair_internal">
+<code class="sig-name descname">_expected_cost_of_repair_internal</code><span class="sig-paren">(</span><em class="sig-param">strategy_tree</em>, <em class="sig-param">evid_init=None</em>, <em class="sig-param">prob=1.0</em>, <em class="sig-param">obs_obsolete=False</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem._expected_cost_of_repair_internal" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Partie récursive de la fonction expected_cost_of_repair.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>strategy_tree</strong> (<a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree"><em>StrategyTree.StrategyTree</em></a>) – Arbre de stratégie dont le coût il faut calculer.</p></li>
+<li><p><strong>evid_init</strong> (<em>dict</em><em>(</em><em>str: str</em><em>)</em><em>, </em><em>facultatif</em>) – Dictionnaire d’évidences utilisé dans les appels récursifs.</p></li>
+<li><p><strong>prob</strong> (<em>float</em><em>, </em><em>facultatif</em>) – Probabilité initiale.</p></li>
+<li><p><strong>obs_obsolete</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Si True, on remet en cause les noeuds d’observation globale après
+une réparation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>ecr</strong> – Coût espéré de réparation d’un arbre de stratégie fourni.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem._next_node_id">
+<code class="sig-name descname">_next_node_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem._next_node_id" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Permet d’obtenir la prochaine valeur de <em>id</em> pour un noeud de
+StrategyTree à partir des ids qu’on utilise déjà stockés dans
+<em>self._nodes_ids_db_brute_force</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>next_id</strong> – Prochain id qu’on peut utiliser avec garantie qu’il n’existe pas de
+noeuds déjà avec le même id dans l’arbre de stratégie courant.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem._start_bay_lp">
+<code class="sig-name descname">_start_bay_lp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem._start_bay_lp" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Ajoute des inférences vides aux noeuds du BN qui peuvent être modifiés
+(réparés/observés/appelés).Ces évidences ne changent pas les
+probabilités, elles servent pour qu’on puisse utiliser la méthode
+chgEvidence de pyAgrum à la suite.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.add_evidence">
+<code class="sig-name descname">add_evidence</code><span class="sig-paren">(</span><em class="sig-param">node</em>, <em class="sig-param">evidence</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.add_evidence" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction wrapper pour la fonction chgEvidence de l’objet bay_lp du
+type pyAgrum.LazyPropagation qui additionne une inference et mantient
+le dictionnaire evidences actualisé. L’evidence passé en argument ne
+doit pas être une evidence « vide » (des 1, utilisé plutôt la fonction
+remove_evidence).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>string</em>) – Nom du noeud de bay_lp qui va être modifié.</p></li>
+<li><p><strong>evidence</strong> – Nouvelle inference pour le noeud traité (généralement
+une string ici, cf. les types acceptés par chgEvidence)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.best_EVOI">
+<code class="sig-name descname">best_EVOI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.best_EVOI" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Détermine la composante qui a la plus grande valeur espérée
+d’information (EVOI) correspondant à avoir plus d’information sur
+l’intervalle de valeur de son cout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p>Le nom du noeud de réparation avec la plus grande EVOI et la valeur
+d’EVOI correspondante.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>tuple(string, float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.brute_force_solver">
+<code class="sig-name descname">brute_force_solver</code><span class="sig-paren">(</span><em class="sig-param">debug=False</em>, <em class="sig-param">mode='all'</em>, <em class="sig-param">obs_rep_couples=False</em>, <em class="sig-param">obs_obsolete=False</em>, <em class="sig-param">sock=None</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.brute_force_solver" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Wrapper des différents algorithmes de recherche exhaustive qui calcule
+la solution exacte optimale étand donné un problème de Troubleshooting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>debug</strong> (<em>bool / tuple</em><em>, </em><em>facultatif</em>) – Indique s’il faut afficher les résultats intermédiaires du calcul.
+Un tuple avec len(tuple) == 2 ou un booléean (équivalent au cas où
+on passe un tuple avec deux valeurs identiques). Le premier
+composant indique s’il faut afficher l’index de l’itération tandis
+que le deuxième précise s’il faut afficher tous les arbres
+intermédiaires.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Mode de calcul : soit “dp” pour la programmation dynamique, soit
+“all” pour le dénombrement complet.</p></li>
+<li><p><strong>obs_rep_couples</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Indique si on suppose des couples « observation-réparation  » dans
+l’arbre de stratégie.</p></li>
+<li><p><strong>obs_obsolete</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Indique si on suppose la possibilité des « observations obsolètes »,
+i.e. si c’est possible qu’une observation devient obsolète en
+réparant une composante.</p></li>
+<li><p><strong>sock</strong> (<em>socket.socket</em><em>, </em><em>facultatif</em>) – Socket de communication entre le processus qui effectue le calcul
+et celui qui met à jour l’interface. Paramètre nécessaire pour que
+le ProgressBar de l’interface marche proprement.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>best_st</strong> (<em>StrategyTree.StrategyTree</em>) – Le meilleur arbre de stratégie trouvé.</p></li>
+<li><p><strong>best_ecr</strong> (<em>float</em>) – Le coût espéré de réparation du meilleur arbre trouvé i.e.
+ECR(<em>best_st</em>).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.brute_force_solver_actions_only">
+<code class="sig-name descname">brute_force_solver_actions_only</code><span class="sig-paren">(</span><em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.brute_force_solver_actions_only" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Cherche une séquence optimale de réparation par une recherche
+exhaustive en choisissant la séquence de meilleur ECR. Pour le cas où
+on ne considère que les actions de réparation il suffit de dénombrer
+toutes les permutations possibles d’un ensemble des actions
+admissibles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>debug</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Si True, affiche des messages montrant le déroulement de
+l’algorithme.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>min_seq</strong> (<em>list(str)</em>) – Séquence optimale trouvée dont le coût est le plus petit possible.</p></li>
+<li><p><strong>min_ecr</strong> (<em>float</em>) – Coût espéré de réparation correspondant à min_seq.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.brute_force_solver_tester">
+<code class="sig-name descname">brute_force_solver_tester</code><span class="sig-paren">(</span><em class="sig-param">true_prices</em>, <em class="sig-param">epsilon</em>, <em class="sig-param">nb_min=100</em>, <em class="sig-param">nb_max=200</em>, <em class="sig-param">strategy_tree=None</em>, <em class="sig-param">mode='dp'</em>, <em class="sig-param">obs_rep_couples=False</em>, <em class="sig-param">true_prices_obs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.brute_force_solver_tester" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Test empirique de la méthode brute_force_solver, ou bien de l’arbre de
+stratégie obtenu par l’algorithme. Le mécanisme selon lequel on teste
+la stratégie est exactement le même que celui utilisé au-dessus
+dans les autres testers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>true_prices</strong> (<em>dict</em>) – Dictionnaire de prix de réparation des composantes réparables.</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em>) – Tolerance relative de la moyenne.</p></li>
+<li><p><strong>nb_min</strong> (<em>int</em>) – Nombre minimum de répétitions à être realisées.</p></li>
+<li><p><strong>nb_max</strong> (<em>int</em>) – Nombre maximum de répétitions à être realisées.</p></li>
+<li><p><strong>strategy_tree</strong> (<a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree"><em>StrategyTree.StrategyTree</em></a><em>, </em><em>facultatif</em>) – Arbre de stratégie qu’il faut tester ; si rien passé, on calcule
+l’arbre avec la méthode brute_force_solver.</p></li>
+<li><p><strong>mode</strong> (<em>string</em><em>, </em><em>facultatif</em>) – Paramètre à passer à la méthode brute_force_solver si on doit
+l’exécuter. Peut être égal à “all” pour le dénombrement complet ou
+“dp” pour la programmation dynamique.</p></li>
+<li><p><strong>obs_rep_couples</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Paramètre à passer à la méthode brute_force_solver si on doit
+l’exécuter. Indique si on suppose l’existance de couples
+« observation-réparation » dans l’arbre de stratégie.</p></li>
+<li><p><strong>true_prices_obs</strong> (<em>dict</em><em>, </em><em>facultatif</em>) – Dictionnaire de prix d’observations des composantes observables.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>sortie_anti</strong> (<em>bool</em>) – True en cas de sortie anticipée, False sinon.</p></li>
+<li><p><strong>costs</strong> (<em>numpy.ndarray</em>) – Tableau avec les cout associés.</p></li>
+<li><p><strong>mean</strong> (<em>float</em>) – Moyenne des couts.</p></li>
+<li><p><strong>std</strong> (<em>float</em>) – Variance des couts.</p></li>
+<li><p><strong>cpt_repair</strong> (<em>numpy.ndarray</em>) – Tableau avec le nombre de composantes réparées à chaque répétition.</p></li>
+<li><p><strong>cpt_obs</strong> (<em>numpy.ndarray</em>) – Tableau avec le nombre d’observations globales faites à chaque
+répétition.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.compute_EVOIs">
+<code class="sig-name descname">compute_EVOIs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.compute_EVOIs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Calcule les valeurs espérées d’information (EVOIs) correspondant à
+avoir plus d’information sur l’intervalle de valeur des couts de
+réparation pour chaque composante réparable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>evoi</strong> – Dictionnaire indexé par les noeuds réparables contenant la valeur
+d’une information plus précise du cout de réparation de ces noeuds.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.draw_true_prices">
+<code class="sig-name descname">draw_true_prices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.draw_true_prices" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Tire au hasard des prix de réparation selon des lois uniformes sur les
+intervalles stockés dans self.costs_rep_interval.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p>Dictionnaire avec prix de réparation.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.dynamic_programming_solver">
+<code class="sig-name descname">dynamic_programming_solver</code><span class="sig-paren">(</span><em class="sig-param">feasible_nodes=None</em>, <em class="sig-param">evidence=None</em>, <em class="sig-param">debug_iter=False</em>, <em class="sig-param">debug_st=False</em>, <em class="sig-param">obs_rep_couples=False</em>, <em class="sig-param">prob=1.0</em>, <em class="sig-param">obs_obsolete=False</em>, <em class="sig-param">sock=None</em>, <em class="sig-param">debug_nb_call=0</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.dynamic_programming_solver" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Méthode récursive qui trouve le meilleur arbre de stratégie étant donné
+une configuration du problème en utilisant comme approche la
+programmation dynamique, supposant qu’un sous-arbre de l’arbre optimal
+est lui-même également optimal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feasible_nodes</strong> (<em>list</em><em>(</em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>StrategyTree.NodeST</em></a><em>)</em><em>, </em><em>facultatif</em>) – Liste des noeuds admissibles qu’on a le droit d’utiliser pour
+construire l’arbre.</p></li>
+<li><p><strong>evidence</strong> (<em>dict</em><em>, </em><em>facultatif</em>) – Dictionnaire des évidences initiales pour un appel de cette
+fonction.</p></li>
+<li><p><strong>debug_iter</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Indique s’il faut afficher l””index de l’itération dans l’appel.</p></li>
+<li><p><strong>debug_st</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Précise s’il faut afficher tous les arbres intermédiaires.</p></li>
+<li><p><strong>obs_rep_couples</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Indique si on suppose l’existance de couples
+« observation-réparation » dans l’arbre de stratégie soumis.</p></li>
+<li><p><strong>prob</strong> (<em>float</em><em>, </em><em>facultatif</em>) – Probabilité que le système ne marche toujours pas.</p></li>
+<li><p><strong>obs_obsolete</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Indique si on suppose la possibilité des « observations obsolètes »,
+i.e. qu’une observation devient obsolète en réparant une
+composante.</p></li>
+<li><p><strong>sock</strong> (<em>socket.socket</em><em>, </em><em>facultatif</em>) – Socket de communication entre le processus qui effectue le calcul
+et celui qui met à jour l’interface. Paramètre nécessaire pour que
+le ProgressBar de l’interface marche proprement.</p></li>
+<li><p><strong>debug_nb_call</strong> (<em>int</em><em>, </em><em>facultatif</em>) – Profondeur de la récursivité.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.elicitation">
+<code class="sig-name descname">elicitation</code><span class="sig-paren">(</span><em class="sig-param">noeud</em>, <em class="sig-param">islower</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.elicitation" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Met à jour l’intervalle de valeurs de cout pour le noeud et son
+espérance en fonction de la réponse de l’utilisateur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>noeud</strong> (<em>string</em>) – Nom du noeud à mettre à jour.</p></li>
+<li><p><strong>islower</strong> (<em>bool</em>) – Représente la réponse à la question : Est-ce que le cout est plus
+petit que l’espérance courante ?</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.elicitation_solver_tester">
+<code class="sig-name descname">elicitation_solver_tester</code><span class="sig-paren">(</span><em class="sig-param">true_prices</em>, <em class="sig-param">epsilon</em>, <em class="sig-param">nb_min=100</em>, <em class="sig-param">nb_max=200</em>, <em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.elicitation_solver_tester" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Test empirique de la résolution avec élicitation. À chaque fois qu’on
+doit prendre une action, on vérifie d’abord s’il y a des questions à
+répondre et, si oui, on les répond toutes correctement selon
+true_prices. Ensuite, la méthode calcule la séquence d’actions
+itérativement à l’aide de myopic_solver et réalise au plus nb_max
+repetitions d’un système tiré au hasard, le tirage au hasard étant
+identique à celui de myopic_solver_tester. Si après nb_min repétitions
+l’erreur estimée est plus petite que epsilon, on fait une sortie
+anticipée. La fonction calcule les couts empiriques de réparation, en
+utilisant pour cela true_prices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>true_prices</strong> (<em>dict</em>) – Dictionnaire de prix de réparation des composantes réparables.</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em>) – Tolerance relative de la moyenne.</p></li>
+<li><p><strong>nb_min</strong> (<em>int</em>) – Nombre minimum de répétitions à être realisées.</p></li>
+<li><p><strong>nb_max</strong> (<em>int</em>) – Nombre maximum de répétitions à être realisées.</p></li>
+<li><p><strong>debug</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Si True, affiche des messages montrant le déroulement de
+l’algorithme.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>sortie_anti</strong> (<em>bool</em>) – True en cas de sortie anticipée, False sinon.</p></li>
+<li><p><strong>costs</strong> (<em>numpy.ndarray</em>) – Tableau avec les cout associés.</p></li>
+<li><p><strong>mean</strong> (<em>float</em>) – Moyenne des couts.</p></li>
+<li><p><strong>std</strong> (<em>float</em>) – Variance des couts.</p></li>
+<li><p><strong>cpt_repair</strong> (<em>numpy.ndarray</em>) – Tableau avec le nombre de composantes réparées à chaque répétition.</p></li>
+<li><p><strong>cpt_obs</strong> (<em>numpy.ndarray</em>) – Tableau avec le nombre d’observations globales faites à chaque
+répétition.</p></li>
+<li><p><strong>cpt_questions</strong> (<em>numpy.ndarray</em>) – Tableau avec le nombre de questions répondues à chaque répétition.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.expected_cost_of_repair">
+<code class="sig-name descname">expected_cost_of_repair</code><span class="sig-paren">(</span><em class="sig-param">strategy_tree</em>, <em class="sig-param">obs_obsolete=False</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.expected_cost_of_repair" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Calcule le coût espéré de réparation étant donné un arbre de décision.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>strategy_tree</strong> (<a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree"><em>StrategyTree.StrategyTree</em></a>) – Arbre de stratégie dont le coût il faut calculer.</p></li>
+<li><p><strong>obs_obsolete</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Si True, on remet en cause les noeuds d’observation globale après
+une réparation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>ecr</strong> – Coût espéré de réparation d’un arbre de stratégie fourni.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.expected_cost_of_repair_seq_of_actions">
+<code class="sig-name descname">expected_cost_of_repair_seq_of_actions</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.expected_cost_of_repair_seq_of_actions" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Calcule un coût espéré de réparation à partir d’une séquence d’actions
+donnée. On utilise la formule
+ECR = coût(C1 | E0)
++ P(C1 = Normal | E0) * coût(C2 | E1)
++ P(C1 = Normal | E0) * P(C2 = Normal | E1) * coût(C2 | E2)
++ …</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>seq</strong> (<em>list</em><em>(</em><em>str</em><em>)</em>) – Séquence d’actions de réparations dont le coût espéré est à
+calculer.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>ecr</strong> – Coût espéré de réparation de la séquence donnée.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.get_proba">
+<code class="sig-name descname">get_proba</code><span class="sig-paren">(</span><em class="sig-param">node</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.get_proba" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Récupère à partir du réseau bayésien la probabilité que le noeud node
+ait la valeur value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>string</em>) – Nom du noeud de bay_lp dont on veut calculer la probabilité.</p></li>
+<li><p><strong>value</strong> (<em>string</em>) – Valeur du noeud dont on veut calculer la probabilité.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p>La probabilité P(node = value)</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.myopic_solver">
+<code class="sig-name descname">myopic_solver</code><span class="sig-paren">(</span><em class="sig-param">debug=False</em>, <em class="sig-param">esp_obs=False</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.myopic_solver" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Implémente une étape du solveur myope. Étant donné l’état actuel du
+réseau, ce solveur utilise dans un premier temps le simple_solver_obs
+pour déterminer quelle action du type « observation-réparation » serait
+la meilleure. Ensuite, il calcule les coûts myopes espérés avec chaque
+observation possible et choisit à la fin la meilleure action à être
+prise.</p>
+<p>Cette fonction est itérative et ne fait qu’un seul tour de
+l’algorithme myope car elle attend des nouvelles informations venues
+de l’utilisateur (résultat de l’observation si c’est le cas).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>debug</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Si True, affiche des messages montrant le déroulement de
+l’algorithme.</p></li>
+<li><p><strong>esp_obs</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Si True, retourne en plus un dictionnaire indexé par les
+observations possibles et contenants leurs couts myopes espérés
+respectifs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>chosen_node</strong> (<em>string</em>) – Le meilleur noeud de ce tour</p></li>
+<li><p><strong>type_node</strong> (<em>string</em>) – Type du meilleur noeud (« repair » ou « obs »)</p></li>
+<li><p><strong>eco</strong> (<em>dict</em>) – Retourné uniquement lorsque esp_obs vaut True. Dictionnaire des
+couts espérés des observations.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.myopic_solver_st">
+<code class="sig-name descname">myopic_solver_st</code><span class="sig-paren">(</span><em class="sig-param">evid_init=None</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.myopic_solver_st" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui récupère un arbre de stratégie qu’on peut construire à partir de myopic_solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>evid_init</strong> (<em>dict</em><em>, </em><em>facultatif</em>) – Un dictionnaire des évidences par défaut.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>strat_tree</strong> – Un arbre de stratégie qu’on construit utilisant pas-à-pas une méthode myopic_solver en remplissant cet arbre
+en largeur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree">StrategyTree.StrategyTree</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.myopic_solver_tester">
+<code class="sig-name descname">myopic_solver_tester</code><span class="sig-paren">(</span><em class="sig-param">true_prices</em>, <em class="sig-param">epsilon</em>, <em class="sig-param">nb_min=100</em>, <em class="sig-param">nb_max=200</em>, <em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.myopic_solver_tester" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Test empirique de la méthode myopic_solver. Cette méthode calcule
+la séquence d’actions itérativement à l’aide de myopic_solver et
+réalise au plus nb_max repetitions d’un système tiré au hasard. À
+chaque observation globale, son résultat est tiré au hasard. Pour les
+paires « observation-réparation », on tire au hasard si la composante
+correspondante marche ou pas. Si oui, on ajoute juste le cout de
+l’observation et on continue, si non, on ajoute les couts d’observation
+et de réparation et on s’arrête (single fault assumption). Si on a
+une réparation simple sans observation associée, on ajoute directement
+le cout de réparation de la composante. Si après nb_min repétitions
+l’erreur estimée est plus petite que epsilon, on fait une sortie
+anticipée. La fonction calcule les couts empiriques de réparation, en
+utilisant pour cela true_prices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>true_prices</strong> (<em>dict</em>) – Dictionnaire de prix de réparation des composantes réparables.</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em>) – Tolerance relative de la moyenne.</p></li>
+<li><p><strong>nb_min</strong> (<em>int</em>) – Nombre minimum de répétitions à être realisées.</p></li>
+<li><p><strong>nb_max</strong> (<em>int</em>) – Nombre maximum de répétitions à être realisées.</p></li>
+<li><p><strong>debug</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Si True, affiche des messages montrant le déroulement de
+l’algorithme.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>sortie_anti</strong> (<em>bool</em>) – True en cas de sortie anticipée, False sinon.</p></li>
+<li><p><strong>costs</strong> (<em>numpy.ndarray</em>) – Tableau avec les cout associés.</p></li>
+<li><p><strong>mean</strong> (<em>float</em>) – Moyenne des couts.</p></li>
+<li><p><strong>std</strong> (<em>float</em>) – Variance des couts.</p></li>
+<li><p><strong>cpt_repair</strong> (<em>numpy.ndarray</em>) – Tableau avec le nombre de composantes réparées à chaque répétition.</p></li>
+<li><p><strong>cpt_obs</strong> (<em>numpy.ndarray</em>) – Tableau avec le nombre d’observations globales faites à chaque
+répétition.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.myopic_wraper">
+<code class="sig-name descname">myopic_wraper</code><span class="sig-paren">(</span><em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.myopic_wraper" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Interface textuelle pour le solveur myope. Utilise myopic_solver à
+chaque tour de boucle pour déterminer la meilleure action à prendre.
+Si c’est une observation, le résultat de l’observation est demandé,
+sinon on demande juste si l’action a résolu le problème. Les
+élicitations de couts ne sont pas implémentées. Les entrées de
+l’utilisateur ne sont pas sécurisées.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>debug</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Si True, affiche des messages montrant le déroulement de
+l’algorithme.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.noeud_ant">
+<code class="sig-name descname">noeud_ant</code><span class="sig-paren">(</span><em class="sig-param">node</em>, <em class="sig-param">visites</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.noeud_ant" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Détermine tous les noeuds d’observation impactés par un changement
+du noeud node et qui sont antécesseurs de node, sans visiter les noeuds
+déjà dans l’ensemble des visites. Cette fonction est auxiliaire et n’a
+pas vocation à être appellée en dehors de la fonction principale
+observation_obsolete.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>string</em>) – Nom du noeud don l’information a changé.</p></li>
+<li><p><strong>visites</strong> (<em>set</em>) – Contient les noeuds déjà visités.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>ant_obs</strong> – Ensemble des noeuds d’observation affectés par node et qui sont
+antecesseurs de node sans être dans visites.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.observation_obsolete">
+<code class="sig-name descname">observation_obsolete</code><span class="sig-paren">(</span><em class="sig-param">node</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.observation_obsolete" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Étant donné un noeud dont l’information a changé, on détermine, à
+partir du réseau bayésien, tous les noeuds d’observation impactés par
+ce chagement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>string</em>) – Nom du noeud dont l’information a changé.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>obs</strong> – Ensemble contenant les noeuds d’observation impactés.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.remove_evidence">
+<code class="sig-name descname">remove_evidence</code><span class="sig-paren">(</span><em class="sig-param">node</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.remove_evidence" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction wrapper pour la fonction chgEvidence de l’objet bay_lp du
+type pyAgrum.LazyPropagation qui retire une inference et mantient le
+dictionnaire evidences actualisé.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>string</em>) – Nom du noeud de bay_lp qui va être modifié.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.reset_bay_lp">
+<code class="sig-name descname">reset_bay_lp</code><span class="sig-paren">(</span><em class="sig-param">dict_inf={}</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.reset_bay_lp" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Reinitialise les inférences des noeuds du BN qui peuvent être modifiés
+(réparés/observés/appelés). Pour les noeuds dans dict_inf, l’inférence
+est mis à la valeur associé au noeud dans dict_inf, pour les autres
+l’inférence est mis à 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>dict_inf</strong> (<em>dict</em><em>, </em><em>facultatif</em>) – Dictionnaire où les clés sont des noeuds et les valeurs sont des
+inférences.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.simple_solver">
+<code class="sig-name descname">simple_solver</code><span class="sig-paren">(</span><em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.simple_solver" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Solveur simple pour le problème du TroubleShooting.
+On ne prend pas en considèration des observations et on ne révise pas
+les probabilités, c’est-à-dire on ne met pas à jour les probabilités
+si on répare une composante.
+À cause de cela, ce solveur n’est pas iteractif et renvoie l’ordre de
+réparation entière (jusqu’au appel au service).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>debug</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Si True, affiche des messages montrant le déroulement de
+l’algorithme.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>rep_seq</strong> (<em>list</em>) – Séquence des noeuds à être réparés dans l’ordre.</p></li>
+<li><p><strong>exp_cost</strong> (<em>float</em>) – Espérance du coût de réparation de cette séquence.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.simple_solver_obs">
+<code class="sig-name descname">simple_solver_obs</code><span class="sig-paren">(</span><em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.simple_solver_obs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Solveur simple pour le problème du Troubleshooting.
+On prend en considèration des paires « observation-réparation » (cf.
+définition dans l’état de l’art) mais pas les observations globales
+et on révise les probabilités, c’est-à-dire on met à jour les
+probabilités quand on « répare » une composante avant de calculer le
+prochaine composante de la séquence.</p>
+<p>Le solveur n’est pas encore iteractif et renvoie l’ordre de réparation
+entière (jusqu’au appel au service). Cette choix à été fait car on
+utilise cet algorithme comme part de l’agorithme plus complexe et
+iteratif.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>debug</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Si True, affiche des messages montrant le déroulement de
+l’algorithme.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>rep_seq</strong> (<em>list</em>) – Séquence des noeuds à être réparés dans l’ordre.</p></li>
+<li><p><strong>exp_cost</strong> (<em>float</em>) – Espérance du coût de réparation de cette séquence.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.simple_solver_obs_tester">
+<code class="sig-name descname">simple_solver_obs_tester</code><span class="sig-paren">(</span><em class="sig-param">true_prices</em>, <em class="sig-param">epsilon</em>, <em class="sig-param">nb_min=100</em>, <em class="sig-param">nb_max=200</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.simple_solver_obs_tester" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Test empirique de la méthode simple_solver_obs. Cette méthode calcule
+la séquence d’actions à l’aide de simple_solver_obs et réalise au plus
+nb_max répétitions d’un système tiré au hasard : si on a une paire
+« observation-réparation », on tire au hasard si la composante
+correspondante marche ou pas. Si oui, on ajoute juste le cout de
+l’observation et on continue, si non, on ajoute les couts d’observation
+et de réparation et on s’arrête (single fault assumption). Si on a
+une réparation simple sans observation associée, on ajoute directement
+le cout de réparation de la composante. Si après nb_min repétitions
+l’erreur estimée est plus petite que epsilon, on fait une sortie
+anticipée. La fonction calcule les couts empiriques de réparation, en
+utilisant pour cela true_prices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>true_prices</strong> (<em>dict</em>) – Dictionnaire de prix de réparation des composantes réparables.</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em>) – Tolerance relative de la moyenne.</p></li>
+<li><p><strong>nb_min</strong> (<em>int</em>) – Nombre minimum de répétitions à être realisées.</p></li>
+<li><p><strong>nb_max</strong> (<em>int</em>) – Nombre maximum de répétitions à être realisées.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>sortie_anti</strong> (<em>bool</em>) – True en cas de sortie anticipée, False sinon.</p></li>
+<li><p><strong>costs</strong> (<em>numpy.ndarray</em>) – Tableau avec les cout associés.</p></li>
+<li><p><strong>mean</strong> (<em>float</em>) – Moyenne des couts.</p></li>
+<li><p><strong>std</strong> (<em>float</em>) – Variance des couts.</p></li>
+<li><p><strong>cpt_repair</strong> (<em>numpy.ndarray</em>) – Tableau avec le nombre de composantes réparées à chaque répétition.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.simple_solver_tester">
+<code class="sig-name descname">simple_solver_tester</code><span class="sig-paren">(</span><em class="sig-param">true_prices</em>, <em class="sig-param">epsilon</em>, <em class="sig-param">nb_min=100</em>, <em class="sig-param">nb_max=200</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.simple_solver_tester" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Test empirique de la méthode simple_solver. Cette méthode calcule la
+séquence d’actions à l’aide de simple_solver et réalise au plus nb_max
+repétitions d’un système tiré au hasard : à chaque fois qu’on a une
+probabilité qu’une action résoud le problème, on tire au hasard pour
+déterminer si le problème a effectivement été résolu ou pas suite à
+cette action. Si après nb_min repétitions l’erreur estimée est plus
+petite que epsilon, on fait une sortie anticipée. La fonction calcule
+aussi les couts empiriques de réparation, en utilisant pour cela
+true_prices. Cette méthode utilise la single fault assumption.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>true_prices</strong> (<em>dict</em>) – Dictionnaire de prix de réparation des composantes réparables.</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em>) – Tolerance relative de la moyenne.</p></li>
+<li><p><strong>nb_min</strong> (<em>int</em>) – Nombre minimum de répétitions à être realisées.</p></li>
+<li><p><strong>nb_max</strong> (<em>int</em>) – Nombre maximum de répétitions à être realisées.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>sortie_anti</strong> (<em>bool</em>) – True en cas de sortie anticipée, False sinon.</p></li>
+<li><p><strong>costs</strong> (<em>numpy.ndarray</em>) – Tableau avec les cout associés.</p></li>
+<li><p><strong>mean</strong> (<em>float</em>) – Moyenne des couts.</p></li>
+<li><p><strong>std</strong> (<em>float</em>) – Variance des couts.</p></li>
+<li><p><strong>cpt_repair</strong> (<em>numpy.ndarray</em>) – Tableau avec le nombre de composantes réparées à chaque répétition.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="DecisionTheoreticTroubleshooting.bcolors">
+<em class="property">class </em><code class="sig-prename descclassname">DecisionTheoreticTroubleshooting.</code><code class="sig-name descname">bcolors</code><a class="headerlink" href="#DecisionTheoreticTroubleshooting.bcolors" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Stockage de couleurs.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="DecisionTheoreticTroubleshooting.diff_dicts">
+<code class="sig-prename descclassname">DecisionTheoreticTroubleshooting.</code><code class="sig-name descname">diff_dicts</code><span class="sig-paren">(</span><em class="sig-param">left</em>, <em class="sig-param">right</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.diff_dicts" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Calcule la différence des dictionnaires <em>left</em> et <em>right</em> : les entrées de
+<em>left</em> dont la clé est aussi présente dans <em>right</em> sont supprimées, les
+autres sont gardées.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<em>dict</em>) – Premier dictionnaire, duquel on supprime les clés apparaissant dans
+<em>right</em>.</p></li>
+<li><p><strong>right</strong> (<em>dict</em>) – Deuxième dictionnaire, celui avec les clés qui doivent être supprimées
+de <em>left</em>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>res</strong> – Résultat de la différence entre <em>left</em> et <em>right</em>.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="DecisionTheoreticTroubleshooting.merge_dicts">
+<code class="sig-prename descclassname">DecisionTheoreticTroubleshooting.</code><code class="sig-name descname">merge_dicts</code><span class="sig-paren">(</span><em class="sig-param">left</em>, <em class="sig-param">right</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.merge_dicts" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fusionne deux dictionnaire passés sans les changer. Les couples (clé,
+valeur) du dictionnaire <em>right</em> sont plus prioritaires que celles de
+<em>left</em> ; c’est-à-dire, s’il existe une valeur associée à la même clé k dans
+les deux dictionnaires, on ajoute dans le résultat seulement celle qui
+appartient à <em>right</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<em>dict</em>) – Un des dictionnaires à fusionner, celui qui est moins prioritaire.</p></li>
+<li><p><strong>right</strong> (<em>dict</em>) – L’autre dictionnaire à fusionner, celui qui est plus prioritaire.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>res</strong> – Résultat de la fusion.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="DecisionTheoreticTroubleshooting.shallow_copy_list_of_copyable">
+<code class="sig-prename descclassname">DecisionTheoreticTroubleshooting.</code><code class="sig-name descname">shallow_copy_list_of_copyable</code><span class="sig-paren">(</span><em class="sig-param">l</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.shallow_copy_list_of_copyable" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Crée une copie de profondeur 1 de la liste passée en argument : la liste
+est recopiée et remplie avec l’appel de la méthode copy() en chaque élément
+de la liste donnée.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>l</strong> (<em>list&lt;Copyable&gt;</em>) – La liste qui sera copiée. Chacun de ses éléments doit implémenter la
+méthode copy().</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>cl</strong> – Copie de profondeur 1 de la liste passée en argument.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>list&lt;Copyable&gt;</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="DecisionTheoreticTroubleshooting.shallow_copy_parent">
+<code class="sig-prename descclassname">DecisionTheoreticTroubleshooting.</code><code class="sig-name descname">shallow_copy_parent</code><span class="sig-paren">(</span><em class="sig-param">parent</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.shallow_copy_parent" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Crée une copie superficielle de <em>parent</em> (cf la méthode
+TroubleShootingProblem._evaluate_all_st ci-dessous).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>list</em><em>(</em><em>tuple</em><em>(</em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>StrategyTree.NodeST</em></a><em>, </em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>StrategyTree.NodeST</em></a><em>, </em><a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree"><em>StrategyTree.StrategyTree</em></a><em>)</em><em>)</em>) – Parent dont la copie il faut créer.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>parent_copy</strong> – Copie superficielle du parent passé.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>list(tuple(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">StrategyTree.NodeST</a>, <a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">StrategyTree.NodeST</a>, <a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree">StrategyTree.StrategyTree</a>))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-StrategyTree"></span><dl class="class">
+<dt id="StrategyTree.NodeST">
+<em class="property">class </em><code class="sig-prename descclassname">StrategyTree.</code><code class="sig-name descname">NodeST</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">cost</em>, <em class="sig-param">name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Classe qui représente un noeud plutôt abstrait d’un arbre de stratégie ; on remarque que cette classe ne dispose pas
+d’un enfant (il n’y a pas d’un attribut qui correspond à un noeud suivant), pourtant, on suppose que ses sous-
+classes en auront.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Identificateur unique d’un noeud.</p></li>
+<li><p><strong>cost</strong> (<em>float</em>) – Un attribut qui correspond à « coût » d’un noeud.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom d’un noeud qui peut être pas unique ; si rien a été soumis, on pose que <em>_name</em> = <em>_id</em>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="StrategyTree.NodeST._id">
+<code class="sig-name descname">_id</code><a class="headerlink" href="#StrategyTree.NodeST._id" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Identificateur unique d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.NodeST._cost">
+<code class="sig-name descname">_cost</code><a class="headerlink" href="#StrategyTree.NodeST._cost" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un attribut qui correspond à « coût » d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.NodeST._name">
+<code class="sig-name descname">_name</code><a class="headerlink" href="#StrategyTree.NodeST._name" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un nom d’un noeud qui peut être pas unique ; si rien a été passé, on pose que <em>_name</em> = <em>_id_</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.__eq__">
+<code class="sig-name descname">__eq__</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.__eq__" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Overloading d’opérateur __eq__ ; on dit que deux noeuds sont égaux ssi ils ont les mêmes ids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Un autre noeud à comparer avec celui-ci.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>comp_res</strong> – True, si self._id == other._id ET si self et other ont le même type ; False, sinon.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.__str__">
+<code class="sig-name descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.__str__" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Overloading d’opérateur __str__.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>corr_str</strong> – Une représentation d’un noeud sous une forme de str.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.add_child">
+<code class="sig-name descname">add_child</code><span class="sig-paren">(</span><em class="sig-param">child</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.add_child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode abstraite qui ajouterait un enfant d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Un enfant à ajouter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.bn_labels_children_association">
+<code class="sig-name descname">bn_labels_children_association</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.bn_labels_children_association" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode abstraite qui retournera un dictionnaire des associations entre des labels d’un réseau
+bayésien et des enfants d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>da</strong> – Un dictionnaire des associations concerné.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.copy" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui retournerait une copie superficielle d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>copy</strong> – Une copie superficielle d’un noeud.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.get_child_by_attribute">
+<code class="sig-name descname">get_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.get_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode abstraite qui retournerait un enfant d’un noeud correspondant à attr.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>attr</strong> (<em>str</em>) – Un attribut (un type) d’enfant qu’il faudrait retourner.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>child</strong> – Un enfant d’un noeud qui correspond à un attribut soumis.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.get_cost">
+<code class="sig-name descname">get_cost</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.get_cost" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Getter d’un attribut <em>_cost</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>_cost</strong> – Une valeur de coût d’un noeud.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.get_id">
+<code class="sig-name descname">get_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.get_id" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Getter d’un attribut <em>_id</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>_id</strong> – Identificateur unique courant d’un noeud.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.get_list_of_children">
+<code class="sig-name descname">get_list_of_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.get_list_of_children" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode abstraite qui permettrait d’obtenir une liste de tous les enfants d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>list_of_children</strong> – Une liste de tous les enfants d’un noeud.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.get_name">
+<code class="sig-name descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.get_name" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Getter d’un attribut <em>_name</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>_name</strong> – Un nom d’un noeud.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.set_child_by_attribute">
+<code class="sig-name descname">set_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em>, <em class="sig-param">child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.set_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode abstraite qui mettrait en place un enfant d’un noeud correspondant à attr.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<em>str</em>) – Un attribut (un type) d’enfant qu’il faudrait mettre en place.</p></li>
+<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à un attribut soumis et qu’il faut mettre en place.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.set_cost">
+<code class="sig-name descname">set_cost</code><span class="sig-paren">(</span><em class="sig-param">cost</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.set_cost" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Setter d’un attribut <em>_cost</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>cost</strong> (<em>float</em>) – Une valeur de coût d’un noeud à mettre en place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.set_id">
+<code class="sig-name descname">set_id</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.set_id" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Setter d’un attribut <em>_id</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em>) – Identificateur unique d’un noeud pour mettre en place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.NodeST.set_name">
+<code class="sig-name descname">set_name</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.set_name" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Setter d’un attribut <em>_name</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Un nom d’un noeud pour mettre en place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="StrategyTree.Observation">
+<em class="property">class </em><code class="sig-prename descclassname">StrategyTree.</code><code class="sig-name descname">Observation</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">cost</em>, <em class="sig-param">name=None</em>, <em class="sig-param">yes_child=None</em>, <em class="sig-param">no_child=None</em>, <em class="sig-param">obs_rep_couples=False</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Classe qui représente un noeud de type correspondant à une action d’observation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Identificateur unique d’un noeud.</p></li>
+<li><p><strong>cost</strong> (<em>float</em>) – Un attribut qui correspond à « coût » d’un noeud.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom d’un noeud qui peut être pas unique ; si rien a été soumis, on pose que <em>_name</em> = <em>_id</em>.</p></li>
+<li><p><strong>yes_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à une branche « yes ».</p></li>
+<li><p><strong>no_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à une branche « no ».</p></li>
+<li><p><strong>obs_rep_couples</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
+observation-réparation ou pas.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="StrategyTree.Observation._id">
+<code class="sig-name descname">_id</code><a class="headerlink" href="#StrategyTree.Observation._id" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Identificateur unique d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.Observation._cost">
+<code class="sig-name descname">_cost</code><a class="headerlink" href="#StrategyTree.Observation._cost" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un attribut qui correspond à « coût » d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.Observation._name">
+<code class="sig-name descname">_name</code><a class="headerlink" href="#StrategyTree.Observation._name" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un nom d’un noeud qui peut être pas unique ; si rien a été passé, on pose que <em>_name</em> = <em>_id</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.Observation._yes_child">
+<code class="sig-name descname">_yes_child</code><a class="headerlink" href="#StrategyTree.Observation._yes_child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un enfant d’un noeud qui correspond à une branche « yes ».</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.Observation._no_child">
+<code class="sig-name descname">_no_child</code><a class="headerlink" href="#StrategyTree.Observation._no_child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un enfant d’un noeud qui correspond à une branche « no ».</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.Observation._obs_rep_couples">
+<code class="sig-name descname">_obs_rep_couples</code><a class="headerlink" href="#StrategyTree.Observation._obs_rep_couples" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
+observation-réparation ou pas</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.add_child">
+<code class="sig-name descname">add_child</code><span class="sig-paren">(</span><em class="sig-param">child</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.add_child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui ajoute littéralement un enfant dans une liste des enfants d’un noeud.
+ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour cela, veuillez utiliser set_child !</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Un enfant à ajouter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.bn_labels_children_association">
+<code class="sig-name descname">bn_labels_children_association</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.bn_labels_children_association" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode plutôt auxiliare qui retourne un dictionnaire des associations entre des labels d’un réseau
+bayésien et des enfants d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>da</strong> – Un dictionnaire des associations concerné.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.copy" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui retourne une copie superficielle d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>copy</strong> – Une copie superficielle d’un noeud.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p><a class="reference internal" href="#StrategyTree.Observation" title="StrategyTree.Observation">Observation</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.get_child_by_attribute">
+<code class="sig-name descname">get_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.get_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui retourne un enfant d’un noeud correspondant à l’attribut de la branche soumise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>attr</strong> (<em>str</em>) – Attribut de la branche.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>child</strong> – Un enfant correspondant à l’attribut.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.get_list_of_children">
+<code class="sig-name descname">get_list_of_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.get_list_of_children" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui retourne une liste avec tous les enfants d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>list_of_children</strong> – Une liste avec tous les enfants d’un noeud.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.get_no_child">
+<code class="sig-name descname">get_no_child</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.get_no_child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Getter d’un attribut <em>_no_child</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>_no_child</strong> – Un enfant d’un noeud qui correspond à une branche « no ».</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.get_obs_rep_couples">
+<code class="sig-name descname">get_obs_rep_couples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.get_obs_rep_couples" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Getter d’un attribut <em>_obs_rep_couples</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>_obs_rep_couples</strong> – Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
+observation-réparation ou pas.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.get_yes_child">
+<code class="sig-name descname">get_yes_child</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.get_yes_child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Getter d’un attribut <em>_yes_child</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>_yes_child</strong> – Un enfant d’un noeud qui correspond à une branche « yes ».</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.set_child_by_attribute">
+<code class="sig-name descname">set_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em>, <em class="sig-param">child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.set_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui met en place un enfant d’un noeud correspondant à l’attribut de la branche soumise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<em>str</em>) – Attribut de la branche.</p></li>
+<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant qu’il faut mettre en place.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.set_no_child">
+<code class="sig-name descname">set_no_child</code><span class="sig-paren">(</span><em class="sig-param">no_child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.set_no_child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Setter d’un attribut <em>_no_child</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>no_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à une branche « no ».</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.set_obs_rep_couples">
+<code class="sig-name descname">set_obs_rep_couples</code><span class="sig-paren">(</span><em class="sig-param">obs_rep_couples</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.set_obs_rep_couples" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Setter d’un attribut <em>_obs_rep_couples</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>obs_rep_couples</strong> (<em>bool</em>) – Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
+observation-réparation ou pas.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Observation.set_yes_child">
+<code class="sig-name descname">set_yes_child</code><span class="sig-paren">(</span><em class="sig-param">yes_child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.set_yes_child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Setter d’un attribut <em>_yes_child</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>yes_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à une branche « yes ».</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="StrategyTree.Repair">
+<em class="property">class </em><code class="sig-prename descclassname">StrategyTree.</code><code class="sig-name descname">Repair</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">cost</em>, <em class="sig-param">name=None</em>, <em class="sig-param">child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Classe qui représente un noeud de type plus précis : celui correspondant à une action de réparation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Identificateur unique d’un noeud.</p></li>
+<li><p><strong>cost</strong> (<em>float</em>) – Un attribut qui correspond à « coût » d’un noeud.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom d’un noeud qui peut être pas unique ; si rien a été soumis, on pose que <em>_name</em> = <em>_id</em>.</p></li>
+<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="StrategyTree.Repair._id">
+<code class="sig-name descname">_id</code><a class="headerlink" href="#StrategyTree.Repair._id" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Identificateur unique d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.Repair._cost">
+<code class="sig-name descname">_cost</code><a class="headerlink" href="#StrategyTree.Repair._cost" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un attribut qui correspond à « coût » d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.Repair._name">
+<code class="sig-name descname">_name</code><a class="headerlink" href="#StrategyTree.Repair._name" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un nom d’un noeud qui peut être pas unique ; si rien a été passé, on pose que <em>_name</em> = <em>_id</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.Repair._child">
+<code class="sig-name descname">_child</code><a class="headerlink" href="#StrategyTree.Repair._child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un enfant d’un noeud, c’est-à-dire, un noeud suivant dans un arbre.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Repair.add_child">
+<code class="sig-name descname">add_child</code><span class="sig-paren">(</span><em class="sig-param">child</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.add_child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui ajoute littéralement un enfant dans une liste des enfants d’un noeud.
+ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour cela, veuillez utiliser set_child !</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Un enfant à ajouter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Repair.bn_labels_children_association">
+<code class="sig-name descname">bn_labels_children_association</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.bn_labels_children_association" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode plutôt auxiliare qui retourne un dictionnaire des associations entre des labels d’un réseau
+bayésien et des enfants d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>da</strong> – Un dictionnaire des associations concerné.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Repair.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.copy" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui retourne une copie superficielle d’un noeud.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>copy</strong> – Une copie superficielle d’un noeud.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p><a class="reference internal" href="#StrategyTree.Repair" title="StrategyTree.Repair">Repair</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Repair.get_child">
+<code class="sig-name descname">get_child</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.get_child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Getter d’un attribut <em>_child</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>_child</strong> – Un enfant d’un noeud.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Repair.get_child_by_attribute">
+<code class="sig-name descname">get_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.get_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui réalise une version abstraite de superclass ; comme ce type de noeud ne dispose que d’un seul
+enfant, on y retourne toujours cet enfant pour n’importe quel attr indiqué</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>attr</strong> (<em>str</em>) – Un attribut (un type) d’enfant qu’il faudrait retourner.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>child</strong> – Un enfant d’un noeud.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Repair.get_list_of_children">
+<code class="sig-name descname">get_list_of_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.get_list_of_children" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui retourne une liste qui contient tous les enfants d’un noeud ; pour ce cas-là alors, soit
+une liste avec un seul élément, soit une liste vide.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>list_of_children</strong> – Une liste de tous les enfants d’un noeud (soit une liste avec un seul élément, soit une liste vide).</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Repair.set_child">
+<code class="sig-name descname">set_child</code><span class="sig-paren">(</span><em class="sig-param">child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.set_child" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Setter d’un attribut <em>_child</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.Repair.set_child_by_attribute">
+<code class="sig-name descname">set_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em>, <em class="sig-param">child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.set_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui met en place un enfant d’un noeud correspondant à attr réalisant une méthode correspondante
+superclass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<em>str</em>) – Un attribut (un type) d’enfant qu’il faut mettre en place.</p></li>
+<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à un attribut soumis et qu’il faut mettre en place.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="StrategyTree.StrategyTree">
+<em class="property">class </em><code class="sig-prename descclassname">StrategyTree.</code><code class="sig-name descname">StrategyTree</code><span class="sig-paren">(</span><em class="sig-param">root=None</em>, <em class="sig-param">nodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une classe pour représenter un arbre de stratégie qui fait face au problème de Troubleshooting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Une racine de l’arbre, i.e. une action pour commencer.</p></li>
+<li><p><strong>nodes</strong> (<em>list</em><em>(</em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>)</em><em>, </em><em>facultatif</em>) – Une liste des noeuds de l’arbre.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="StrategyTree.StrategyTree._root">
+<code class="sig-name descname">_root</code><a class="headerlink" href="#StrategyTree.StrategyTree._root" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une racine de l’arbre, i.e. une action pour commencer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.StrategyTree._nodes">
+<code class="sig-name descname">_nodes</code><a class="headerlink" href="#StrategyTree.StrategyTree._nodes" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une liste des noeuds de l’arbre.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.StrategyTree._adj_dict">
+<code class="sig-name descname">_adj_dict</code><a class="headerlink" href="#StrategyTree.StrategyTree._adj_dict" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un dictionnaire pour indiquer lesquels noeuds sont liés par des arcs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.StrategyTree.fout_newline">
+<code class="sig-name descname">fout_newline</code><a class="headerlink" href="#StrategyTree.StrategyTree.fout_newline" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un attribut utilisé pour indiquer le début d’une nouvelle ligne quand on transforme cet arbre ans un fichier
+textuel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="StrategyTree.StrategyTree.fout_sep">
+<code class="sig-name descname">fout_sep</code><a class="headerlink" href="#StrategyTree.StrategyTree.fout_sep" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un séparateur des attributs qu’on utilise quand on transforme cet arbre dans un fichier textuel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.__str__">
+<code class="sig-name descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.__str__" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui réalise transformation de l’arbre vers str.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>st_str</strong> – Une représentation de l’arbre de stratégie en forme de str.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.add_edge">
+<code class="sig-name descname">add_edge</code><span class="sig-paren">(</span><em class="sig-param">parent</em>, <em class="sig-param">child</em>, <em class="sig-param">child_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.add_edge" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui permet d’ajouter un arc dans un arbre entre deux noeuds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<em>str / NodeST</em>) – Un noeud qui doit être un parent dans cet arc, donc un noeud duquel cet arc part.</p></li>
+<li><p><strong>child</strong> (<em>str / NodeST</em>) – Un noeud qui doit être un enfant dans cet arc, donc un noeud auquel cet arc entre.</p></li>
+<li><p><strong>child_type</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un attribut de la branche du parent à laquelle il faut ajouter un enfant (par exemple si parent est une
+observation alors child_type est égal soit à “no”, soit à “yes”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.add_node">
+<code class="sig-name descname">add_node</code><span class="sig-paren">(</span><em class="sig-param">node</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.add_node" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui permet d’ajouter un.des nouveau.x noeud.s dans l’arbre.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>NodeST / list</em><em>(</em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>)</em>) – Noeud.s à ajouter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.connect">
+<code class="sig-name descname">connect</code><span class="sig-paren">(</span><em class="sig-param">root_with_subtree</em>, <em class="sig-param">root_child_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.connect" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui nous permet de connecter deux arbre, plus précisément, on connecte tout cet arbre avec celui
+soumis dans root_with_subtree en remplissant sa branche qui correspond à root_child_type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root_with_subtree</strong> (<a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree"><em>StrategyTree</em></a>) – Un arbre vers la racine duquel on va connecter cet arbre.</p></li>
+<li><p><strong>root_child_type</strong> (<em>str</em>) – Un attribut de la branche de la racine du root_with_subtree.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>merged_tree</strong> – Un arbre fusionné.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree">StrategyTree</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.copy" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui retourne une copie superficielle de cet arbre.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>copy</strong> – Une copie superficielle de cet arbre-là.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p><a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree">StrategyTree</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.get_adj_dict">
+<code class="sig-name descname">get_adj_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_adj_dict" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un getter d’un attribut <em>_adj_dict</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>_adj_dict</strong> – Une copie superficielle d’un dictionnaire d’adjacence.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.get_edges">
+<code class="sig-name descname">get_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_edges" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui récupère tous les arcs de l’arbres.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>edges</strong> – Une liste de triplets où chaque celui edge correspond à un arc d’un graphe de manière que edge[0] est un
+parent, edge[1] est un enfant tandis que edge[2] est un attribut de la branche.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>list(tuple(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>, <a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>, str))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.get_node">
+<code class="sig-name descname">get_node</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_node" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui retourne un noeud exacte (en sens de l’objet dans mémoire vivant) de l’arbre avec id indiqué.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str / NodeST</em>) – Soit id de noeud, soit un noeud lui-même dont un clone (en sens d’id) il faut trouver dans l’arbre.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>n</strong> – Un noeud de l’arbre avec la même id que celui soumis.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.get_node_by_name">
+<code class="sig-name descname">get_node_by_name</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_node_by_name" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui retourne tous les noeuds de l’arbre dont les noms sont égaux à celui indiqué.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Un nom ou un noeud dont le nom on doit utiliser.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>nodes</strong> – Une liste de tous les noeuds de l’arbre qui ont le même nom que celui donné.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.get_nodes">
+<code class="sig-name descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_nodes" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un getter d’un attribut <em>_nodes</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>_nodes</strong> – Une copie superficielle d’une liste des noeuds d’un arbre.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.get_parent">
+<code class="sig-name descname">get_parent</code><span class="sig-paren">(</span><em class="sig-param">child</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_parent" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui cherche et qui retourne un parent d’un noeud soumis dans l’arbre. Remarque : dans un arbre comme
+ça chaque noeud ne doit avoir qu’un seul parent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>child</strong> (<em>str / NodeST</em>) – Un enfant dont le parent il faut trouver dans cet arbre-là.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>parent</strong> – Un parent trouvé d’un noeud soumis.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.get_root">
+<code class="sig-name descname">get_root</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_root" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un getter d’un attribut <em>_root</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>_root</strong> – Une racine de l’arbre.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.get_sub_tree">
+<code class="sig-name descname">get_sub_tree</code><span class="sig-paren">(</span><em class="sig-param">sub_root</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_sub_tree" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui retourne un sous-arbre de cet arbre-là étant donné une sous-racine à partir de laquelle ce
+sous-arbre commence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>sub_root</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Une sous-racine de l’arbre qui est une racine de sous-arbre qu’il faut retourner.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>sub_tree</strong> – Un sous-arbre de cet arbre dont la racine est sub_root.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree">StrategyTree</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.remove_sub_tree">
+<code class="sig-name descname">remove_sub_tree</code><span class="sig-paren">(</span><em class="sig-param">sub_root</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.remove_sub_tree" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui nous permet de supprimer un sous-arbre de cet arbre étant donné une sous-racine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>sub_root</strong> (<em>str / NodeST</em>) – Une sous-racine d’un sous-arbre qu’il faut supprimer.</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>flag</strong> – Une variable booléen qui est égale à True si on supprime quelque chose et False sinon.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.set_root">
+<code class="sig-name descname">set_root</code><span class="sig-paren">(</span><em class="sig-param">root</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.set_root" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un setter d’un attribut <em>_root</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Une racine à mettre en place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.str_alt">
+<code class="sig-name descname">str_alt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.str_alt" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui réalise une transformation particulière de l’arbre vers str.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>st_str</strong> – Une représentation de l’arbre de stratégie en forme de str.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.str_alt_2">
+<code class="sig-name descname">str_alt_2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.str_alt_2" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une autre méthode qui réalise une transformation particulière de l’arbre vers str.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie</dt>
+<dd class="field-odd"><p><strong>st_str</strong> – Une représentation de l’arbre de stratégie en forme de str de manière alternative.</p>
+</dd>
+<dt class="field-even">Type renvoyé</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.to_file">
+<code class="sig-name descname">to_file</code><span class="sig-paren">(</span><em class="sig-param">filemame='last_best_tree.txt'</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.to_file" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui permet de sauvegarder cet arbre de stratégie sous en forme de fichier textuel. On y utilise le
+modèle suivant :</p>
+<blockquote>
+<div><p>1) chaque noeud est représenté par une ligne dévouée : _id,_cost,_name,_type ; c’est bien possible de
+remplacer une virgule “,” par un séparateur différent en précisant un attribut self.fout_sep de
+cette classe ;
+2) chaque arc est représenté par une ligne dévouée : _id_parent,_id_child,_attribut ; où _attribut est le
+type d’arc pour cet arbre-là (par exemple “yes” ou “no” si parent est une Observation) ;
+3) le fichier lui-même a la structure suivante :
+racine de l’arbre    # ligne 1
+[ligne vide]         # ligne 2
+noeud_1              # ligne 3
+noeud_2              # ligne 4
+…
+noeud_n              # ligne n + 2
+[ligne vide]         # ligne n + 3
+arc_1                # ligne n + 4
+arc_2                # ligne n + 5
+…
+arc_m                # ligne n + m + 3</p>
+</div></blockquote>
+<p>Cette méthode utilise également un attribut self.fout_newline pour représenter une signe qui indique le début
+d’une nouvelle ligne.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>filemame</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom de fichier où il faut sauvegarder l’arbre concerné.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="StrategyTree.StrategyTree.visualize">
+<code class="sig-name descname">visualize</code><span class="sig-paren">(</span><em class="sig-param">filename='last_best_strategy_tree.gv'</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.visualize" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode qui nous permet d’afficher cet arbre de stratégie via un module graphviz. L’image construit est
+sauvegardé dans un fichier “filename.pdf”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom de fichier où il faut sauvegarder une image obtenue.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="StrategyTree.st_from_file">
+<code class="sig-prename descclassname">StrategyTree.</code><code class="sig-name descname">st_from_file</code><span class="sig-paren">(</span><em class="sig-param">filename='last_best_tree.txt'</em>, <em class="sig-param">sep='</em>, <em class="sig-param">'</em>, <em class="sig-param">newline=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.st_from_file" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une méthode statique du module qui permet de créer un objet du type StrategyTree à partir du fichier qui suit un
+modèle fourni par la méthode StrategyTree.to_file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom du fichier où on stocke l’arbre sous en forme textuelle.</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un séparateur utilisé dans le fichier passé.</p></li>
+<li><p><strong>newline</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Une signe qui indique le début d’une nouvelle ligne.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>stin</strong> – Un arbre créé à partir des paramètres passés.</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree">StrategyTree</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Index général"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Index des modules Python"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Documentation Decision Theoretic Troubleshooting </a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Ariana Carnielli, Ivan Kachaikin.
+      Créé avec <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.0.
+    </div>
+  </body>
+</html>

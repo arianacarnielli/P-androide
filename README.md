@@ -12,6 +12,6 @@ Enseignants résponsables :
   
 Dernières modifications / Prochains pas :
 
-Le logiciel a une interface graphique interactive implémentant l'algorithme myope avec des intervalles des valeurs pour les prix inconnus de réparation et une élicitation simple sur ces prix. Le code n'est pas encore comenté, on compte le faire dans les prochains jours / semaines. 
+Le logiciel a une interface graphique interactive implémentant 5 algorithmes differents pour la résolution d'un problème défini sur ProblemDefinition.py. On a un manuel d'utilisateur en pdf et la documentation du code a été créée avec Sphinx. Le rapport est presque près, il manque que les parties sur l'algorithme exacte. 
 
-L'état de l'art à été modifié pour prendre en consideration les remarques faites par les encadrants. On a aussi ajouté une partie sur l'élicitation implémenté par notre code.
+On travaille maintenant sur les slides et la présentation par video. 
