@@ -1601,7 +1601,7 @@ class TroubleShootingProblem:
 
     def expected_cost_of_repair_seq_of_actions(self, seq):
         """
-        Calcule un coût espéré de réparation à partir d'une séquence d'actions
+        Calcule le coût espéré de réparation à partir d'une séquence d'actions
         donnée. On utilise la formule
         ECR = coût(C1 | E0)
         + P(C1 = Normal | E0) * coût(C2 | E1)
@@ -2420,7 +2420,7 @@ class TroubleShootingProblem:
              Dictionnaire de prix d'observations des composantes observables.
         
         Returns
-        -------
+        ------- 
         sortie_anti : bool
             True en cas de sortie anticipée, False sinon.
         costs : numpy.ndarray

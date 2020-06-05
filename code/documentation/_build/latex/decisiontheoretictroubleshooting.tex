@@ -95,7 +95,7 @@
 \pagestyle{normal}
 \phantomsection\label{\detokenize{index::doc}}
 
-\index{DecisionTheoreticTroubleshooting (module)@\spxentry{DecisionTheoreticTroubleshooting}\spxextra{module}}\index{TroubleShootingProblem (classe dans DecisionTheoreticTroubleshooting)@\spxentry{TroubleShootingProblem}\spxextra{classe dans DecisionTheoreticTroubleshooting}}
+\phantomsection\label{\detokenize{index:module-DecisionTheoreticTroubleshooting}}\index{DecisionTheoreticTroubleshooting (module)@\spxentry{DecisionTheoreticTroubleshooting}\spxextra{module}}\index{TroubleShootingProblem (classe dans DecisionTheoreticTroubleshooting)@\spxentry{TroubleShootingProblem}\spxextra{classe dans DecisionTheoreticTroubleshooting}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:DecisionTheoreticTroubleshooting.TroubleShootingProblem}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{DecisionTheoreticTroubleshooting.}}\sphinxbfcode{\sphinxupquote{TroubleShootingProblem}}}{\emph{bayesian\_network}, \emph{costs}, \emph{nodes\_types}}{}
@@ -895,7 +895,7 @@ float
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:DecisionTheoreticTroubleshooting.TroubleShootingProblem.expected_cost_of_repair_seq_of_actions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{expected\_cost\_of\_repair\_seq\_of\_actions}}}{\emph{seq}}{}
-Calcule un coût espéré de réparation à partir d’une séquence d’actions
+Calcule le coût espéré de réparation à partir d’une séquence d’actions
 donnée. On utilise la formule
 ECR = coût(C1 | E0)
 + P(C1 = Normal | E0) * coût(C2 | E1)
@@ -1464,19 +1464,21 @@ list(tuple({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{St
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{StrategyTree.}}\sphinxbfcode{\sphinxupquote{NodeST}}}{\emph{id}, \emph{cost}, \emph{name=None}}{}
-Classe qui représente un noeud plutôt abstrait d’un arbre de stratégie ; on remarque que cette classe ne dispose pas
-d’un enfant (il n’y a pas d’un attribut qui correspond à un noeud suivant), pourtant, on suppose que ses sous\sphinxhyphen{}
-classes en auront.
+Représente un noeud abstrait d’un arbre de stratégie; on remarque que cette
+classe ne dispose pas d’attribut correspondant à des enfants (il n’y a pas
+un attribut qui correspond à les noeuds suivants), pourtant, on suppose que
+ses sous\sphinxhyphen{}classes en auront.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode\begin{itemize}
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{id}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Identificateur unique d’un noeud.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{cost}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Un attribut qui correspond à « coût » d’un noeud.
+\sphinxstyleliteralstrong{\sphinxupquote{cost}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Correspond au « coût » du noeud.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un nom d’un noeud qui peut être pas unique ; si rien a été soumis, on pose que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id}.
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id}.
 
 \end{itemize}
 
@@ -1498,7 +1500,7 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST._cost}}\pysigline{\sphinxbfcode{\sphinxupquote{\_cost}}}
-Un attribut qui correspond à « coût » d’un noeud.
+Correspond au « coût » du noeud.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 float
@@ -1511,7 +1513,8 @@ float
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST._name}}\pysigline{\sphinxbfcode{\sphinxupquote{\_name}}}
-Un nom d’un noeud qui peut être pas unique ; si rien a été passé, on pose que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id\_}.
+Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id}.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 str
@@ -1524,13 +1527,15 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.__eq__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_eq\_\_}}}{\emph{other}}{}
-Overloading d’opérateur \_\_eq\_\_ ; on dit que deux noeuds sont égaux ssi ils ont les mêmes ids.
+Overloading de l’opérateur \_\_eq\_\_ ; on dit que deux noeuds sont égaux
+ssi ils ont les mêmes ids.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{other}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} Un autre noeud à comparer avec celui\sphinxhyphen{}ci.
+\sphinxstyleliteralstrong{\sphinxupquote{other}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} Le noeud à comparer avec le noeud concerné.
 
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{comp\_res} \textendash{} True, si self.\_id == other.\_id ET si self et other ont le même type ; False, sinon.
+\sphinxstylestrong{comp\_res} \textendash{} True si self.\_id == other.\_id ET si self et other ont le même type.
+False, sinon.
 
 \item[{Type renvoyé}] \leavevmode
 bool
@@ -1543,10 +1548,10 @@ bool
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.__str__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_str\_\_}}}{}{}
-Overloading d’opérateur \_\_str\_\_.
+Overloading de l’opérateur \_\_str\_\_.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{corr\_str} \textendash{} Une représentation d’un noeud sous une forme de str.
+\sphinxstylestrong{corr\_str} \textendash{} La représentation du noeud sous la forme de str.
 
 \item[{Type renvoyé}] \leavevmode
 str
@@ -1559,10 +1564,10 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.add_child}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_child}}}{\emph{child}}{}
-Une méthode abstraite qui ajouterait un enfant d’un noeud.
+Méthode abstraite qui ajouterait un enfant au noeud.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} Un enfant à ajouter.
+\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} L’enfant à ajouter.
 
 \end{description}\end{quote}
 
@@ -1572,11 +1577,11 @@ Une méthode abstraite qui ajouterait un enfant d’un noeud.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.bn_labels_children_association}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{bn\_labels\_children\_association}}}{}{}
-Une méthode abstraite qui retournera un dictionnaire des associations entre des labels d’un réseau
-bayésien et des enfants d’un noeud.
+Méthode abstraite qui retournera un dictionnaire des associations entre
+les labels du réseau Bayésien et les enfants du noeud.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{da} \textendash{} Un dictionnaire des associations concerné.
+\sphinxstylestrong{da} \textendash{} Le dictionnaire des associations.
 
 \item[{Type renvoyé}] \leavevmode
 dict
@@ -1589,10 +1594,10 @@ dict
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.copy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{copy}}}{}{}
-Une méthode qui retournerait une copie superficielle d’un noeud.
+Retournerait une copie superficielle du noeud.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{copy} \textendash{} Une copie superficielle d’un noeud.
+\sphinxstylestrong{copy} \textendash{} Copie superficielle du noeud.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -1605,13 +1610,14 @@ Une méthode qui retournerait une copie superficielle d’un noeud.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.get_child_by_attribute}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_child\_by\_attribute}}}{\emph{attr}}{}
-Une méthode abstraite qui retournerait un enfant d’un noeud correspondant à attr.
+Méthode abstraite qui retournerait l’enfant du noeud correspondant à
+\sphinxstyleemphasis{attr}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Un attribut (un type) d’enfant qu’il faudrait retourner.
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} L’attribut de l’enfant qu’il faut retourner.
 
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{child} \textendash{} Un enfant d’un noeud qui correspond à un attribut soumis.
+\sphinxstylestrong{child} \textendash{} L’enfant du noeud concerné qui correspond à l’attribut soumis.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -1624,10 +1630,10 @@ Une méthode abstraite qui retournerait un enfant d’un noeud correspondant à 
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.get_cost}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_cost}}}{}{}
-Getter d’un attribut \sphinxstyleemphasis{\_cost}.
+Getter de l’attribut \sphinxstyleemphasis{\_cost}.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{\_cost} \textendash{} Une valeur de coût d’un noeud.
+\sphinxstylestrong{\_cost} \textendash{} La valeur du coût du noeud concerné.
 
 \item[{Type renvoyé}] \leavevmode
 float
@@ -1640,10 +1646,10 @@ float
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.get_id}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_id}}}{}{}
-Getter d’un attribut \sphinxstyleemphasis{\_id}.
+Getter de l’attribut \sphinxstyleemphasis{\_id}.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{\_id} \textendash{} Identificateur unique courant d’un noeud.
+\sphinxstylestrong{\_id} \textendash{} Identificateur unique courant du noeud concerné.
 
 \item[{Type renvoyé}] \leavevmode
 str
@@ -1656,10 +1662,11 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.get_list_of_children}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_list\_of\_children}}}{}{}
-Une méthode abstraite qui permettrait d’obtenir une liste de tous les enfants d’un noeud.
+Méthode abstraite qui permettrait d’obtenir la liste de tous les
+enfants d’un noeud.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{list\_of\_children} \textendash{} Une liste de tous les enfants d’un noeud.
+\sphinxstylestrong{list\_of\_children} \textendash{} Liste de tous les enfants d’un noeud.
 
 \item[{Type renvoyé}] \leavevmode
 list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}})
@@ -1672,10 +1679,10 @@ list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.get_name}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_name}}}{}{}
-Getter d’un attribut \sphinxstyleemphasis{\_name}.
+Getter de l’attribut \sphinxstyleemphasis{\_name}.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{\_name} \textendash{} Un nom d’un noeud.
+\sphinxstylestrong{\_name} \textendash{} Le nom du noeud concerné.
 
 \item[{Type renvoyé}] \leavevmode
 str
@@ -1688,14 +1695,16 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.set_child_by_attribute}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_child\_by\_attribute}}}{\emph{attr}, \emph{child=None}}{}
-Une méthode abstraite qui mettrait en place un enfant d’un noeud correspondant à attr.
+Méthode abstraite qui ajouterait un enfant correspondant à \sphinxstyleemphasis{attr} aux
+enfants du noeud concerné.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Un attribut (un type) d’enfant qu’il faudrait mettre en place.
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} L’attribut (un type) de l’enfant qui va être ajouté.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un enfant d’un noeud qui correspond à un attribut soumis et qu’il faut mettre en place.
+\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} L’enfant qu’on veut ajouter. Il faut qu’il correspond à l’attribut
+soumis.
 
 \end{itemize}
 
@@ -1707,10 +1716,10 @@ Une méthode abstraite qui mettrait en place un enfant d’un noeud correspondan
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.set_cost}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_cost}}}{\emph{cost}}{}
-Setter d’un attribut \sphinxstyleemphasis{\_cost}.
+Setter de l’attribut \sphinxstyleemphasis{\_cost}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{cost}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Une valeur de coût d’un noeud à mettre en place.
+\sphinxstyleliteralstrong{\sphinxupquote{cost}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Valeur du coût du noeud en question. Plus grand ou égal à zero.
 
 \end{description}\end{quote}
 
@@ -1720,10 +1729,10 @@ Setter d’un attribut \sphinxstyleemphasis{\_cost}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.set_id}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_id}}}{\emph{id}}{}
-Setter d’un attribut \sphinxstyleemphasis{\_id}.
+Setter de l’attribut \sphinxstyleemphasis{\_id}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{id}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Identificateur unique d’un noeud pour mettre en place.
+\sphinxstyleliteralstrong{\sphinxupquote{id}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Nouvel identificateur du noeud en question. Doit être unique.
 
 \end{description}\end{quote}
 
@@ -1733,10 +1742,10 @@ Setter d’un attribut \sphinxstyleemphasis{\_id}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.NodeST.set_name}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_name}}}{\emph{name}}{}
-Setter d’un attribut \sphinxstyleemphasis{\_name}.
+Setter de l’attribut \sphinxstyleemphasis{\_name}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Un nom d’un noeud pour mettre en place.
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Le nouveau nom du noeud en question.
 
 \end{description}\end{quote}
 
@@ -1749,27 +1758,28 @@ Setter d’un attribut \sphinxstyleemphasis{\_name}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{StrategyTree.}}\sphinxbfcode{\sphinxupquote{Observation}}}{\emph{id}, \emph{cost}, \emph{name=None}, \emph{yes\_child=None}, \emph{no\_child=None}, \emph{obs\_rep\_couples=False}}{}
-Classe qui représente un noeud de type correspondant à une action d’observation.
+Classe pour répresenter les noeuds des arbres de stratégie correspondants à
+des actions d’observation.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{id}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Identificateur unique d’un noeud.
+\sphinxstyleliteralstrong{\sphinxupquote{id}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Identificateur unique du noeud.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{cost}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Un attribut qui correspond à « coût » d’un noeud.
+\sphinxstyleliteralstrong{\sphinxupquote{cost}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Correspond au « coût » du noeud.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un nom d’un noeud qui peut être pas unique ; si rien a été soumis, on pose que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id}.
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id}.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{yes\_child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un enfant d’un noeud qui correspond à une branche « yes ».
+\sphinxstyleliteralstrong{\sphinxupquote{yes\_child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Enfant du noeud qui correspond à la branche « yes ».
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{no\_child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un enfant d’un noeud qui correspond à une branche « no ».
+\sphinxstyleliteralstrong{\sphinxupquote{no\_child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Enfant du noeud qui correspond à la branche « no ».
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{obs\_rep\_couples}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
-observation\sphinxhyphen{}réparation ou pas.
+\sphinxstyleliteralstrong{\sphinxupquote{obs\_rep\_couples}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Indique si le noeud représente un couple observation\sphinxhyphen{}réparation ou pas.
 
 \end{itemize}
 
@@ -1778,7 +1788,7 @@ observation\sphinxhyphen{}réparation ou pas.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation._id}}\pysigline{\sphinxbfcode{\sphinxupquote{\_id}}}
-Identificateur unique d’un noeud.
+Identificateur unique du noeud.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 str
@@ -1791,7 +1801,7 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation._cost}}\pysigline{\sphinxbfcode{\sphinxupquote{\_cost}}}
-Un attribut qui correspond à « coût » d’un noeud.
+Correspond au « coût » du noeud.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 float
@@ -1804,10 +1814,11 @@ float
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation._name}}\pysigline{\sphinxbfcode{\sphinxupquote{\_name}}}
-Un nom d’un noeud qui peut être pas unique ; si rien a été passé, on pose que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id}.
+Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id}.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
-str
+str, facultatif
 
 \end{description}\end{quote}
 
@@ -1817,10 +1828,10 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation._yes_child}}\pysigline{\sphinxbfcode{\sphinxupquote{\_yes\_child}}}
-Un enfant d’un noeud qui correspond à une branche « yes ».
+Enfant du noeud qui correspond à la branche « yes ».
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
-{\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
+{\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}, facultatif
 
 \end{description}\end{quote}
 
@@ -1830,10 +1841,10 @@ Un enfant d’un noeud qui correspond à une branche « yes ».
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation._no_child}}\pysigline{\sphinxbfcode{\sphinxupquote{\_no\_child}}}
-Un enfant d’un noeud qui correspond à une branche « no ».
+Enfant du noeud qui correspond à la branche « no ».
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
-{\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
+{\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}, facultatif
 
 \end{description}\end{quote}
 
@@ -1843,11 +1854,10 @@ Un enfant d’un noeud qui correspond à une branche « no ».
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation._obs_rep_couples}}\pysigline{\sphinxbfcode{\sphinxupquote{\_obs\_rep\_couples}}}
-Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
-observation\sphinxhyphen{}réparation ou pas
+Indique si le noeud représente un couple observation\sphinxhyphen{}réparation ou pas.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
-bool
+bool, facultatif
 
 \end{description}\end{quote}
 
@@ -1857,11 +1867,13 @@ bool
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.add_child}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_child}}}{\emph{child}}{}
-Une méthode qui ajoute littéralement un enfant dans une liste des enfants d’un noeud.
-ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour cela, veuillez utiliser set\_child !
+Ajoute un enfant dans la liste des enfants du noeud.
+ATTENTION : ce méthode ne change pas un enfant qui existe déjà; pour
+cela, veuillez utiliser set\_child. Par defaut, essaie d’ajouter
+l’enfant au branche \_yes\_child d’abord.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} Un enfant à ajouter.
+\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} L’enfant à ajouter.
 
 \end{description}\end{quote}
 
@@ -1871,11 +1883,11 @@ ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour c
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.bn_labels_children_association}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{bn\_labels\_children\_association}}}{}{}
-Une méthode plutôt auxiliare qui retourne un dictionnaire des associations entre des labels d’un réseau
-bayésien et des enfants d’un noeud.
+Retourne un dictionnaire des associations entre les labels d’un réseau
+Bayésien et les enfants du noeud.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{da} \textendash{} Un dictionnaire des associations concerné.
+\sphinxstylestrong{da} \textendash{} Le dictionnaire des associations concerné.
 
 \item[{Type renvoyé}] \leavevmode
 dict
@@ -1888,10 +1900,10 @@ dict
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.copy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{copy}}}{}{}
-Une méthode qui retourne une copie superficielle d’un noeud.
+Retourne une copie superficielle du noeud.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{copy} \textendash{} Une copie superficielle d’un noeud.
+\sphinxstylestrong{copy} \textendash{} copie superficielle du noeud.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.Observation}]{\sphinxcrossref{Observation}}}
@@ -1904,13 +1916,15 @@ Une méthode qui retourne une copie superficielle d’un noeud.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.get_child_by_attribute}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_child\_by\_attribute}}}{\emph{attr}}{}
-Une méthode qui retourne un enfant d’un noeud correspondant à l’attribut de la branche soumise.
+Retourne l’enfant du noeud qui correspond à l’attribut passé en
+argument, c’est\sphinxhyphen{}à\sphinxhyphen{}dire l’enfant sur branche \_yes\_child si « yes » est
+passé en argument et l’enfant sur branche \_no\_child if « no » est passé.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Attribut de la branche.
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Indique la branche voulue.
 
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{child} \textendash{} Un enfant correspondant à l’attribut.
+\sphinxstylestrong{child} \textendash{} L’enfant correspondant à l’attribut.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -1923,10 +1937,10 @@ Une méthode qui retourne un enfant d’un noeud correspondant à l’attribut d
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.get_list_of_children}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_list\_of\_children}}}{}{}
-Une méthode qui retourne une liste avec tous les enfants d’un noeud.
+Retourne la liste avec tous les enfants du noeud.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{list\_of\_children} \textendash{} Une liste avec tous les enfants d’un noeud.
+\sphinxstylestrong{list\_of\_children} \textendash{} Liste avec tous les enfants du noeud.
 
 \item[{Type renvoyé}] \leavevmode
 list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}})
@@ -1939,10 +1953,10 @@ list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.get_no_child}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_no\_child}}}{}{}
-Getter d’un attribut \sphinxstyleemphasis{\_no\_child}.
+Getter de l’attribut \sphinxstyleemphasis{\_no\_child}.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{\_no\_child} \textendash{} Un enfant d’un noeud qui correspond à une branche « no ».
+\sphinxstylestrong{\_no\_child} \textendash{} Enfant du noeud qui correspond à la branche « no ».
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -1955,11 +1969,11 @@ Getter d’un attribut \sphinxstyleemphasis{\_no\_child}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.get_obs_rep_couples}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_obs\_rep\_couples}}}{}{}
-Getter d’un attribut \sphinxstyleemphasis{\_obs\_rep\_couples}.
+Getter de l’attribut \sphinxstyleemphasis{\_obs\_rep\_couples}.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{\_obs\_rep\_couples} \textendash{} Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
-observation\sphinxhyphen{}réparation ou pas.
+\sphinxstylestrong{\_obs\_rep\_couples} \textendash{} Indique si le noeud représente un couple d’observation\sphinxhyphen{}réparation
+ou pas.
 
 \item[{Type renvoyé}] \leavevmode
 bool
@@ -1972,10 +1986,10 @@ bool
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.get_yes_child}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_yes\_child}}}{}{}
-Getter d’un attribut \sphinxstyleemphasis{\_yes\_child}.
+Getter de l’attribut \sphinxstyleemphasis{\_yes\_child}.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{\_yes\_child} \textendash{} Un enfant d’un noeud qui correspond à une branche « yes ».
+\sphinxstylestrong{\_yes\_child} \textendash{} Enfant du noeud qui correspond à la branche « yes ».
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -1988,14 +2002,15 @@ Getter d’un attribut \sphinxstyleemphasis{\_yes\_child}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.set_child_by_attribute}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_child\_by\_attribute}}}{\emph{attr}, \emph{child=None}}{}
-Une méthode qui met en place un enfant d’un noeud correspondant à l’attribut de la branche soumise.
+Met en place l’enfant correspondant à l’attribut de la branche indiqué
+par \sphinxstyleemphasis{attr}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Attribut de la branche.
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Indique la branche voulue.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un enfant qu’il faut mettre en place.
+\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Enfant qui va être mis en place.
 
 \end{itemize}
 
@@ -2007,10 +2022,10 @@ Une méthode qui met en place un enfant d’un noeud correspondant à l’attrib
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.set_no_child}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_no\_child}}}{\emph{no\_child=None}}{}
-Setter d’un attribut \sphinxstyleemphasis{\_no\_child}.
+Setter de l’attribut \sphinxstyleemphasis{\_no\_child}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{no\_child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un enfant d’un noeud qui correspond à une branche « no ».
+\sphinxstyleliteralstrong{\sphinxupquote{no\_child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Enfant du noeud qui correspond à la branche « no ».
 
 \end{description}\end{quote}
 
@@ -2020,11 +2035,11 @@ Setter d’un attribut \sphinxstyleemphasis{\_no\_child}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.set_obs_rep_couples}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_obs\_rep\_couples}}}{\emph{obs\_rep\_couples}}{}
-Setter d’un attribut \sphinxstyleemphasis{\_obs\_rep\_couples}.
+Setter de l’attribut \sphinxstyleemphasis{\_obs\_rep\_couples}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{obs\_rep\_couples}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
-observation\sphinxhyphen{}réparation ou pas.
+\sphinxstyleliteralstrong{\sphinxupquote{obs\_rep\_couples}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Indique si le noeud représente un couple d’observation\sphinxhyphen{}réparation
+ou pas.
 
 \end{description}\end{quote}
 
@@ -2034,10 +2049,10 @@ observation\sphinxhyphen{}réparation ou pas.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Observation.set_yes_child}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_yes\_child}}}{\emph{yes\_child=None}}{}
-Setter d’un attribut \sphinxstyleemphasis{\_yes\_child}.
+Setter de l’attribut \sphinxstyleemphasis{\_yes\_child}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{yes\_child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un enfant d’un noeud qui correspond à une branche « yes ».
+\sphinxstyleliteralstrong{\sphinxupquote{yes\_child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Enfant du noeud qui correspond à la branche « yes ».
 
 \end{description}\end{quote}
 
@@ -2050,20 +2065,22 @@ Setter d’un attribut \sphinxstyleemphasis{\_yes\_child}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{StrategyTree.}}\sphinxbfcode{\sphinxupquote{Repair}}}{\emph{id}, \emph{cost}, \emph{name=None}, \emph{child=None}}{}
-Classe qui représente un noeud de type plus précis : celui correspondant à une action de réparation.
+Classe pour répresenter les noeuds des arbres de stratégie correspondants à
+des actions de réparation.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{id}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Identificateur unique d’un noeud.
+\sphinxstyleliteralstrong{\sphinxupquote{id}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Identificateur unique du noeud.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{cost}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Un attribut qui correspond à « coût » d’un noeud.
+\sphinxstyleliteralstrong{\sphinxupquote{cost}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Correspond au « coût » du noeud.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un nom d’un noeud qui peut être pas unique ; si rien a été soumis, on pose que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id}.
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id}.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un enfant d’un noeud.
+\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Enfant du noeud, c’est\sphinxhyphen{}à\sphinxhyphen{}dire, le noeud suivant dans un arbre.
 
 \end{itemize}
 
@@ -2072,7 +2089,7 @@ Classe qui représente un noeud de type plus précis : celui correspondant à un
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair._id}}\pysigline{\sphinxbfcode{\sphinxupquote{\_id}}}
-Identificateur unique d’un noeud.
+Identificateur unique du noeud.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 str
@@ -2085,7 +2102,7 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair._cost}}\pysigline{\sphinxbfcode{\sphinxupquote{\_cost}}}
-Un attribut qui correspond à « coût » d’un noeud.
+Correspond au « coût » du noeud.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 float
@@ -2094,14 +2111,15 @@ float
 
 \end{fulllineitems}
 
-\index{\_name (attribut StrategyTree.Repair)@\spxentry{\_name}\spxextra{attribut StrategyTree.Repair}}
+\index{name (attribut StrategyTree.Repair)@\spxentry{name}\spxextra{attribut StrategyTree.Repair}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{index:StrategyTree.Repair._name}}\pysigline{\sphinxbfcode{\sphinxupquote{\_name}}}
-Un nom d’un noeud qui peut être pas unique ; si rien a été passé, on pose que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id}.
+\phantomsection\label{\detokenize{index:StrategyTree.Repair.name}}\pysigline{\sphinxbfcode{\sphinxupquote{name}}}
+Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que \sphinxstyleemphasis{\_name} = \sphinxstyleemphasis{\_id}.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
-str
+str, facultatif
 
 \end{description}\end{quote}
 
@@ -2111,7 +2129,7 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair._child}}\pysigline{\sphinxbfcode{\sphinxupquote{\_child}}}
-Un enfant d’un noeud, c’est\sphinxhyphen{}à\sphinxhyphen{}dire, un noeud suivant dans un arbre.
+Enfant du noeud, c’est\sphinxhyphen{}à\sphinxhyphen{}dire, le noeud suivant dans un arbre.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -2124,11 +2142,12 @@ Un enfant d’un noeud, c’est\sphinxhyphen{}à\sphinxhyphen{}dire, un noeud su
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair.add_child}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_child}}}{\emph{child}}{}
-Une méthode qui ajoute littéralement un enfant dans une liste des enfants d’un noeud.
-ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour cela, veuillez utiliser set\_child !
+Ajoute un enfant dans la liste des enfants du noeud.
+ATTENTION : ce méthode ne change pas un enfant qui existe déjà; pour
+cela, veuillez utiliser set\_child.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} Un enfant à ajouter.
+\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} L’enfant à ajouter.
 
 \end{description}\end{quote}
 
@@ -2138,11 +2157,11 @@ ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour c
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair.bn_labels_children_association}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{bn\_labels\_children\_association}}}{}{}
-Une méthode plutôt auxiliare qui retourne un dictionnaire des associations entre des labels d’un réseau
-bayésien et des enfants d’un noeud.
+Retourne un dictionnaire des associations entre les labels d’un réseau
+Bayésien et les enfants du noeud.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{da} \textendash{} Un dictionnaire des associations concerné.
+\sphinxstylestrong{da} \textendash{} Dictionnaire des associations concerné.
 
 \item[{Type renvoyé}] \leavevmode
 dict
@@ -2155,10 +2174,10 @@ dict
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair.copy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{copy}}}{}{}
-Une méthode qui retourne une copie superficielle d’un noeud.
+Retourne une copie superficielle du noeud.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{copy} \textendash{} Une copie superficielle d’un noeud.
+\sphinxstylestrong{copy} \textendash{} Copie superficielle du noeud.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.Repair}]{\sphinxcrossref{Repair}}}
@@ -2171,10 +2190,10 @@ Une méthode qui retourne une copie superficielle d’un noeud.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair.get_child}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_child}}}{}{}
-Getter d’un attribut \sphinxstyleemphasis{\_child}.
+Getter de l’attribut \sphinxstyleemphasis{\_child}.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{\_child} \textendash{} Un enfant d’un noeud.
+\sphinxstylestrong{\_child} \textendash{} L’enfant du noeud concerné.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -2187,14 +2206,16 @@ Getter d’un attribut \sphinxstyleemphasis{\_child}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair.get_child_by_attribute}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_child\_by\_attribute}}}{\emph{attr}}{}
-Une méthode qui réalise une version abstraite de superclass ; comme ce type de noeud ne dispose que d’un seul
-enfant, on y retourne toujours cet enfant pour n’importe quel attr indiqué
+Realisation d’une méthode abstraite de la superclass; comme ce type de
+noeud ne dispose que d’un seul enfant on retourne toujours cet enfant
+pour n’importe quel \sphinxstyleemphasis{attr} passé en argument.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Un attribut (un type) d’enfant qu’il faudrait retourner.
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} L’attribut de l’enfant qu’il faut retourner. Peut être n’importe
+quoi ici.
 
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{child} \textendash{} Un enfant d’un noeud.
+\sphinxstylestrong{child} \textendash{} L’enfant du noeud concerné.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -2207,11 +2228,12 @@ enfant, on y retourne toujours cet enfant pour n’importe quel attr indiqué
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair.get_list_of_children}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_list\_of\_children}}}{}{}
-Une méthode qui retourne une liste qui contient tous les enfants d’un noeud ; pour ce cas\sphinxhyphen{}là alors, soit
-une liste avec un seul élément, soit une liste vide.
+Retourne la liste qui contient tous les enfants du noeud; pour ce cas,
+soit une liste avec un seul élément, soit une liste vide.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{list\_of\_children} \textendash{} Une liste de tous les enfants d’un noeud (soit une liste avec un seul élément, soit une liste vide).
+\sphinxstylestrong{list\_of\_children} \textendash{} La liste de tous les enfants du noeud (ici soit une liste avec un
+seul élément, soit une liste vide).
 
 \item[{Type renvoyé}] \leavevmode
 list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}})
@@ -2224,10 +2246,10 @@ list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair.set_child}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_child}}}{\emph{child=None}}{}
-Setter d’un attribut \sphinxstyleemphasis{\_child}.
+Setter de l’attribut \sphinxstyleemphasis{\_child}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un enfant d’un noeud.
+\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} L’enfant du noeud.
 
 \end{description}\end{quote}
 
@@ -2237,15 +2259,17 @@ Setter d’un attribut \sphinxstyleemphasis{\_child}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.Repair.set_child_by_attribute}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_child\_by\_attribute}}}{\emph{attr}, \emph{child=None}}{}
-Une méthode qui met en place un enfant d’un noeud correspondant à attr réalisant une méthode correspondante
+Realisation d’une méthode abstraite de la superclass qui met en place
+un enfant correspondant à \sphinxstyleemphasis{attr} au noeud concerné.
 superclass.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Un attribut (un type) d’enfant qu’il faut mettre en place.
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} L’attribut (un type) de l””enfant qu’il faut mettre en place.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un enfant d’un noeud qui correspond à un attribut soumis et qu’il faut mettre en place.
+\sphinxstyleliteralstrong{\sphinxupquote{child}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} L’enfant qu’on veut ajouter. Il faut qu’il correspond à l’attribut
+soumis.
 
 \end{itemize}
 
@@ -2260,14 +2284,15 @@ superclass.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{StrategyTree.}}\sphinxbfcode{\sphinxupquote{StrategyTree}}}{\emph{root=None}, \emph{nodes=None}}{}
-Une classe pour représenter un arbre de stratégie qui fait face au problème de Troubleshooting.
+Représente l’arbre de stratégie qui est utilisé à la résolution du problème
+de Troubleshooting.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{root}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Une racine de l’arbre, i.e. une action pour commencer.
+\sphinxstyleliteralstrong{\sphinxupquote{root}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Racine de l’arbre, i.e. une action pour commencer.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{nodes}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}\sphinxstyleliteralemphasis{\sphinxupquote{(}}{\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{)}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Une liste des noeuds de l’arbre.
+\sphinxstyleliteralstrong{\sphinxupquote{nodes}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}\sphinxstyleliteralemphasis{\sphinxupquote{(}}{\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{)}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Liste des noeuds de l’arbre.
 
 \end{itemize}
 
@@ -2276,7 +2301,7 @@ Une classe pour représenter un arbre de stratégie qui fait face au problème d
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree._root}}\pysigline{\sphinxbfcode{\sphinxupquote{\_root}}}
-Une racine de l’arbre, i.e. une action pour commencer.
+Racine de l’arbre, i.e. une action pour commencer.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -2289,7 +2314,7 @@ Une racine de l’arbre, i.e. une action pour commencer.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree._nodes}}\pysigline{\sphinxbfcode{\sphinxupquote{\_nodes}}}
-Une liste des noeuds de l’arbre.
+Liste des noeuds de l’arbre.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}})
@@ -2302,7 +2327,7 @@ list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree._adj_dict}}\pysigline{\sphinxbfcode{\sphinxupquote{\_adj\_dict}}}
-Un dictionnaire pour indiquer lesquels noeuds sont liés par des arcs.
+Dictionnaire qui indique quels noeuds sont liés par des arcs.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 dict
@@ -2315,8 +2340,8 @@ dict
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.fout_newline}}\pysigline{\sphinxbfcode{\sphinxupquote{fout\_newline}}}
-Un attribut utilisé pour indiquer le début d’une nouvelle ligne quand on transforme cet arbre ans un fichier
-textuel.
+Indique le début d’une nouvelle ligne quand on transforme cet arbre en
+un fichier de texte.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 str
@@ -2329,7 +2354,8 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.fout_sep}}\pysigline{\sphinxbfcode{\sphinxupquote{fout\_sep}}}
-Un séparateur des attributs qu’on utilise quand on transforme cet arbre dans un fichier textuel.
+Séparateur d’attributs qu’on utilise quand on transforme cet arbre en
+un fichier texte.
 \begin{quote}\begin{description}
 \item[{Type}] \leavevmode
 str
@@ -2342,10 +2368,10 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.__str__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_str\_\_}}}{}{}
-Une méthode qui réalise transformation de l’arbre vers str.
+Réalise la transformation de l’arbre vers str.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{st\_str} \textendash{} Une représentation de l’arbre de stratégie en forme de str.
+\sphinxstylestrong{st\_str} \textendash{} Représentation de l’arbre de stratégie en forme de str.
 
 \item[{Type renvoyé}] \leavevmode
 str
@@ -2358,18 +2384,19 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.add_edge}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_edge}}}{\emph{parent}, \emph{child}, \emph{child\_type=None}}{}
-Une méthode qui permet d’ajouter un arc dans un arbre entre deux noeuds.
+Permet d’ajouter un arc dans un arbre entre deux noeuds.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{parent}} (\sphinxstyleliteralemphasis{\sphinxupquote{str / NodeST}}) \textendash{} Un noeud qui doit être un parent dans cet arc, donc un noeud duquel cet arc part.
+\sphinxstyleliteralstrong{\sphinxupquote{parent}} (\sphinxstyleliteralemphasis{\sphinxupquote{str / NodeST}}) \textendash{} Noeud qui va être le parent. Le noeud duquel l’arc part.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{child}} (\sphinxstyleliteralemphasis{\sphinxupquote{str / NodeST}}) \textendash{} Un noeud qui doit être un enfant dans cet arc, donc un noeud auquel cet arc entre.
+\sphinxstyleliteralstrong{\sphinxupquote{child}} (\sphinxstyleliteralemphasis{\sphinxupquote{str / NodeST}}) \textendash{} Noeud qui va être l’enfant. Le noeud auquel l’arc arrive.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{child\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un attribut de la branche du parent à laquelle il faut ajouter un enfant (par exemple si parent est une
-observation alors child\_type est égal soit à “no”, soit à “yes”).
+\sphinxstyleliteralstrong{\sphinxupquote{child\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} L’attribut de la branche du parent à laquelle il faut ajouter
+l’enfant (par exemple si parent est une observation alors
+child\_type est égal soit à “no”, soit à “yes”).
 
 \end{itemize}
 
@@ -2381,7 +2408,7 @@ observation alors child\_type est égal soit à “no”, soit à “yes”).
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.add_node}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_node}}}{\emph{node}}{}
-Une méthode qui permet d’ajouter un.des nouveau.x noeud.s dans l’arbre.
+Permet d’ajouter un ou plusieurs nouveaux noeuds dans l’arbre.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
 \sphinxstyleliteralstrong{\sphinxupquote{node}} (\sphinxstyleliteralemphasis{\sphinxupquote{NodeST / list}}\sphinxstyleliteralemphasis{\sphinxupquote{(}}{\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}\sphinxstyleliteralemphasis{\sphinxupquote{)}}) \textendash{} Noeud.s à ajouter.
@@ -2394,20 +2421,21 @@ Une méthode qui permet d’ajouter un.des nouveau.x noeud.s dans l’arbre.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.connect}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{connect}}}{\emph{root\_with\_subtree}, \emph{root\_child\_type=None}}{}
-Une méthode qui nous permet de connecter deux arbre, plus précisément, on connecte tout cet arbre avec celui
-soumis dans root\_with\_subtree en remplissant sa branche qui correspond à root\_child\_type.
+Connecte deux arbres, plus précisément, on connecte l’arbre actuel à
+l’arbre \sphinxstyleemphasis{root\_with\_subtree} en remplissant la branche qui correspond à
+root\_child\_type dans \sphinxstyleemphasis{root\_with\_subtree}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{root\_with\_subtree}} ({\hyperref[\detokenize{index:StrategyTree.StrategyTree}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{StrategyTree}}}}}) \textendash{} Un arbre vers la racine duquel on va connecter cet arbre.
+\sphinxstyleliteralstrong{\sphinxupquote{root\_with\_subtree}} ({\hyperref[\detokenize{index:StrategyTree.StrategyTree}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{StrategyTree}}}}}) \textendash{} L’arbre vers la racine duquel on va connecter l’arbre actuel.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{root\_child\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Un attribut de la branche de la racine du root\_with\_subtree.
+\sphinxstyleliteralstrong{\sphinxupquote{root\_child\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} L’attribut de la branche de la racine du root\_with\_subtree.
 
 \end{itemize}
 
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{merged\_tree} \textendash{} Un arbre fusionné.
+\sphinxstylestrong{merged\_tree} \textendash{} L’arbre fusionné.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.StrategyTree}]{\sphinxcrossref{StrategyTree}}}
@@ -2420,10 +2448,10 @@ soumis dans root\_with\_subtree en remplissant sa branche qui correspond à root
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.copy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{copy}}}{}{}
-Une méthode qui retourne une copie superficielle de cet arbre.
+Retourne une copie superficielle de l’arbre.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{copy} \textendash{} Une copie superficielle de cet arbre\sphinxhyphen{}là.
+\sphinxstylestrong{copy} \textendash{} Copie superficielle de l’arbre.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.StrategyTree}]{\sphinxcrossref{StrategyTree}}}
@@ -2436,10 +2464,10 @@ Une méthode qui retourne une copie superficielle de cet arbre.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.get_adj_dict}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_adj\_dict}}}{}{}
-Un getter d’un attribut \sphinxstyleemphasis{\_adj\_dict}.
+Getter de l’attribut \sphinxstyleemphasis{\_adj\_dict}.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{\_adj\_dict} \textendash{} Une copie superficielle d’un dictionnaire d’adjacence.
+\sphinxstylestrong{\_adj\_dict} \textendash{} Copie superficielle du dictionnaire d’adjacence de l’arbre.
 
 \item[{Type renvoyé}] \leavevmode
 dict
@@ -2452,11 +2480,12 @@ dict
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.get_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_edges}}}{}{}
-Une méthode qui récupère tous les arcs de l’arbres.
+Récupère tous les arcs de l’arbre.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{edges} \textendash{} Une liste de triplets où chaque celui edge correspond à un arc d’un graphe de manière que edge{[}0{]} est un
-parent, edge{[}1{]} est un enfant tandis que edge{[}2{]} est un attribut de la branche.
+\sphinxstylestrong{edges} \textendash{} Liste de triplets où chaque élement correspond à un arc d’un graphe
+de manière que tuple{[}0{]} est un parent, tuple{[}1{]} est leur enfant et
+tuple{[}2{]} est l’attribut identifiant la branche.
 
 \item[{Type renvoyé}] \leavevmode
 list(tuple({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}, {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}, str))
@@ -2469,13 +2498,15 @@ list(tuple({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{No
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.get_node}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_node}}}{\emph{id}}{}
-Une méthode qui retourne un noeud exacte (en sens de l’objet dans mémoire vivant) de l’arbre avec id indiqué.
+Retourne le noeud exacte (en sens de l’objet dans mémoire vivant) de
+l’arbre avec \sphinxstyleemphasis{id} indiqué.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{id}} (\sphinxstyleliteralemphasis{\sphinxupquote{str / NodeST}}) \textendash{} Soit id de noeud, soit un noeud lui\sphinxhyphen{}même dont un clone (en sens d’id) il faut trouver dans l’arbre.
+\sphinxstyleliteralstrong{\sphinxupquote{id}} (\sphinxstyleliteralemphasis{\sphinxupquote{str / NodeST}}) \textendash{} Soit \sphinxstyleemphasis{id} du noeud, soit un noeud lui\sphinxhyphen{}même dont on cherche un clone
+(en sens d’id) dans l’arbre.
 
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{n} \textendash{} Un noeud de l’arbre avec la même id que celui soumis.
+\sphinxstylestrong{n} \textendash{} Noeud de l’arbre avec la \sphinxstyleemphasis{id} soumis.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -2488,13 +2519,15 @@ Une méthode qui retourne un noeud exacte (en sens de l’objet dans mémoire vi
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.get_node_by_name}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_node\_by\_name}}}{\emph{name}}{}
-Une méthode qui retourne tous les noeuds de l’arbre dont les noms sont égaux à celui indiqué.
+Retourne tous les noeuds de l’arbre dont les noms sont égaux à celui
+indiqué.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
 \sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Un nom ou un noeud dont le nom on doit utiliser.
 
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{nodes} \textendash{} Une liste de tous les noeuds de l’arbre qui ont le même nom que celui donné.
+\sphinxstylestrong{nodes} \textendash{} Liste de tous les noeuds de l’arbre qui ont le même nom que celui
+indiqué.
 
 \item[{Type renvoyé}] \leavevmode
 list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}})
@@ -2507,10 +2540,10 @@ list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.get_nodes}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_nodes}}}{}{}
-Un getter d’un attribut \sphinxstyleemphasis{\_nodes}.
+Getter de l’attribut \sphinxstyleemphasis{\_nodes}.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{\_nodes} \textendash{} Une copie superficielle d’une liste des noeuds d’un arbre.
+\sphinxstylestrong{\_nodes} \textendash{} Copie superficielle de la liste des noeuds de l’arbre.
 
 \item[{Type renvoyé}] \leavevmode
 list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}})
@@ -2523,14 +2556,14 @@ list({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.get_parent}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_parent}}}{\emph{child}}{}
-Une méthode qui cherche et qui retourne un parent d’un noeud soumis dans l’arbre. Remarque : dans un arbre comme
-ça chaque noeud ne doit avoir qu’un seul parent.
+Retourne le parent du noeud \sphinxstyleemphasis{child} dans l’arbre. Remarque : dans cette
+implémentation d’arbre chaque noeud ne peut avoir qu’un seul parent.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{child}} (\sphinxstyleliteralemphasis{\sphinxupquote{str / NodeST}}) \textendash{} Un enfant dont le parent il faut trouver dans cet arbre\sphinxhyphen{}là.
+\sphinxstyleliteralstrong{\sphinxupquote{child}} (\sphinxstyleliteralemphasis{\sphinxupquote{str / NodeST}}) \textendash{} L’enfant dont le parent on cherche dans l’arbre.
 
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{parent} \textendash{} Un parent trouvé d’un noeud soumis.
+\sphinxstylestrong{parent} \textendash{} Parent du noeud \sphinxstyleemphasis{child}.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -2543,10 +2576,10 @@ Une méthode qui cherche et qui retourne un parent d’un noeud soumis dans l’
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.get_root}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_root}}}{}{}
-Un getter d’un attribut \sphinxstyleemphasis{\_root}.
+Getter de l’attribut \sphinxstyleemphasis{\_root}.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{\_root} \textendash{} Une racine de l’arbre.
+\sphinxstylestrong{\_root} \textendash{} Racine de l’arbre.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{NodeST}}}
@@ -2559,14 +2592,13 @@ Un getter d’un attribut \sphinxstyleemphasis{\_root}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.get_sub_tree}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_sub\_tree}}}{\emph{sub\_root}}{}
-Une méthode qui retourne un sous\sphinxhyphen{}arbre de cet arbre\sphinxhyphen{}là étant donné une sous\sphinxhyphen{}racine à partir de laquelle ce
-sous\sphinxhyphen{}arbre commence.
+Retourne le sous\sphinxhyphen{}arbre qui a le noeud \sphinxstyleemphasis{sub\_root} comme racine.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{sub\_root}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} Une sous\sphinxhyphen{}racine de l’arbre qui est une racine de sous\sphinxhyphen{}arbre qu’il faut retourner.
+\sphinxstyleliteralstrong{\sphinxupquote{sub\_root}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} Racine de le sous\sphinxhyphen{}arbre.
 
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{sub\_tree} \textendash{} Un sous\sphinxhyphen{}arbre de cet arbre dont la racine est sub\_root.
+\sphinxstylestrong{sub\_tree} \textendash{} Sous\sphinxhyphen{}arbre de cet arbre dont la racine est \sphinxstyleemphasis{sub\_root}.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.StrategyTree}]{\sphinxcrossref{StrategyTree}}}
@@ -2579,13 +2611,13 @@ sous\sphinxhyphen{}arbre commence.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.remove_sub_tree}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{remove\_sub\_tree}}}{\emph{sub\_root}}{}
-Une méthode qui nous permet de supprimer un sous\sphinxhyphen{}arbre de cet arbre étant donné une sous\sphinxhyphen{}racine.
+Supprime le sous\sphinxhyphen{}arbre qui a comme racine \sphinxstyleemphasis{sub\_root}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{sub\_root}} (\sphinxstyleliteralemphasis{\sphinxupquote{str / NodeST}}) \textendash{} Une sous\sphinxhyphen{}racine d’un sous\sphinxhyphen{}arbre qu’il faut supprimer.
+\sphinxstyleliteralstrong{\sphinxupquote{sub\_root}} (\sphinxstyleliteralemphasis{\sphinxupquote{str / NodeST}}) \textendash{} Racine du sous\sphinxhyphen{}arbre qu’il faut supprimer.
 
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{flag} \textendash{} Une variable booléen qui est égale à True si on supprime quelque chose et False sinon.
+\sphinxstylestrong{flag} \textendash{} Égale à True si la fonction a supprimé un sous\sphinxhyphen{}arbre, False sinon.
 
 \item[{Type renvoyé}] \leavevmode
 bool
@@ -2598,10 +2630,10 @@ bool
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.set_root}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_root}}}{\emph{root}}{}
-Un setter d’un attribut \sphinxstyleemphasis{\_root}.
+Setter de l’attribut \sphinxstyleemphasis{\_root}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{root}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} Une racine à mettre en place.
+\sphinxstyleliteralstrong{\sphinxupquote{root}} ({\hyperref[\detokenize{index:StrategyTree.NodeST}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{NodeST}}}}}) \textendash{} Racine à mettre en place.
 
 \end{description}\end{quote}
 
@@ -2611,10 +2643,10 @@ Un setter d’un attribut \sphinxstyleemphasis{\_root}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.str_alt}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{str\_alt}}}{}{}
-Une méthode qui réalise une transformation particulière de l’arbre vers str.
+Réalise la transformation de l’arbre vers str.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{st\_str} \textendash{} Une représentation de l’arbre de stratégie en forme de str.
+\sphinxstylestrong{st\_str} \textendash{} Représentation de l’arbre de stratégie en forme de str.
 
 \item[{Type renvoyé}] \leavevmode
 str
@@ -2627,10 +2659,11 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.str_alt_2}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{str\_alt\_2}}}{}{}
-Une autre méthode qui réalise une transformation particulière de l’arbre vers str.
+Transformation alternative de l’arbre vers str.
 \begin{quote}\begin{description}
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{st\_str} \textendash{} Une représentation de l’arbre de stratégie en forme de str de manière alternative.
+\sphinxstylestrong{st\_str} \textendash{} Représentation de l’arbre de stratégie en forme de str de manière
+alternative.
 
 \item[{Type renvoyé}] \leavevmode
 str
@@ -2643,16 +2676,17 @@ str
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.to_file}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{to\_file}}}{\emph{filemame=\textquotesingle{}last\_best\_tree.txt\textquotesingle{}}}{}
-Une méthode qui permet de sauvegarder cet arbre de stratégie sous en forme de fichier textuel. On y utilise le
-modèle suivant :
-\begin{quote}
-
-1) chaque noeud est représenté par une ligne dévouée : \_id,\_cost,\_name,\_type ; c’est bien possible de
-remplacer une virgule “,” par un séparateur différent en précisant un attribut self.fout\_sep de
-cette classe ;
-2) chaque arc est représenté par une ligne dévouée : \_id\_parent,\_id\_child,\_attribut ; où \_attribut est le
-type d’arc pour cet arbre\sphinxhyphen{}là (par exemple “yes” ou “no” si parent est une Observation) ;
-3) le fichier lui\sphinxhyphen{}même a la structure suivante :
+Permet de sauvegarder l’arbre de stratégie sous forme de fichier texte.
+On utilise le modèle suivant :
+1) Chaque noeud est représenté par une ligne du type :
+\_id,\_cost,\_name,\_type
+C’est bien possible de remplacer la virgule par un séparateur
+différent en précisant l’attribut \sphinxstyleemphasis{self.fout\_sep} de la classe.
+2) Chaque arc est représenté par une ligne du type :
+\_id\_parent,\_id\_child,\_attribut
+Où \_attribut est le type d’arc (par exemple “yes” ou “no” si parent
+est une Observation).
+3) Le fichier lui\sphinxhyphen{}même a la structure suivante :
 racine de l’arbre    \# ligne 1
 {[}ligne vide{]}         \# ligne 2
 noeud\_1              \# ligne 3
@@ -2664,13 +2698,11 @@ arc\_1                \# ligne n + 4
 arc\_2                \# ligne n + 5
 …
 arc\_m                \# ligne n + m + 3
-\end{quote}
-
-Cette méthode utilise également un attribut self.fout\_newline pour représenter une signe qui indique le début
-d’une nouvelle ligne.
+Cette méthode utilise également l’attribut self.fout\_newline pour
+représenter le signe qui indique le début d’une nouvelle ligne.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{filemame}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un nom de fichier où il faut sauvegarder l’arbre concerné.
+\sphinxstyleliteralstrong{\sphinxupquote{filemame}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Le nom du fichier où on sauvegarde le texte.
 
 \end{description}\end{quote}
 
@@ -2680,11 +2712,11 @@ d’une nouvelle ligne.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.StrategyTree.visualize}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{visualize}}}{\emph{filename=\textquotesingle{}last\_best\_strategy\_tree.gv\textquotesingle{}}}{}
-Une méthode qui nous permet d’afficher cet arbre de stratégie via un module graphviz. L’image construit est
-sauvegardé dans un fichier “filename.pdf”.
+Affiche l’arbre de stratégie via le module graphviz. L’image construit
+est sauvegardé dans le fichier \sphinxstyleemphasis{filename.pdf}.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{filename}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un nom de fichier où il faut sauvegarder une image obtenue.
+\sphinxstyleliteralstrong{\sphinxupquote{filename}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Le nom du fichier où on sauvegarde l’image.
 
 \end{description}\end{quote}
 
@@ -2697,23 +2729,24 @@ sauvegardé dans un fichier “filename.pdf”.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{index:StrategyTree.st_from_file}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{StrategyTree.}}\sphinxbfcode{\sphinxupquote{st\_from\_file}}}{\emph{filename=\textquotesingle{}last\_best\_tree.txt\textquotesingle{}}, \emph{sep=\textquotesingle{}}, \emph{\textquotesingle{}}, \emph{newline=None}}{}
-Une méthode statique du module qui permet de créer un objet du type StrategyTree à partir du fichier qui suit un
-modèle fourni par la méthode StrategyTree.to\_file.
+Permet de créer un objet du type StrategyTree à partir du fichier indiqué
+par \sphinxstyleemphasis{filename} en suivant le modèle fourni par la méthode
+StrategyTree.to\_file.
 \begin{quote}\begin{description}
 \item[{Paramètres}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{filename}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un nom du fichier où on stocke l’arbre sous en forme textuelle.
+\sphinxstyleliteralstrong{\sphinxupquote{filename}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Nom du fichier où l’arbre est stocké l’arbre sous forme textuelle.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{sep}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Un séparateur utilisé dans le fichier passé.
+\sphinxstyleliteralstrong{\sphinxupquote{sep}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Le séparateur utilisé dans le fichier.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{newline}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Une signe qui indique le début d’une nouvelle ligne.
+\sphinxstyleliteralstrong{\sphinxupquote{newline}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{facultatif}}) \textendash{} Signe qui indique le début d’une nouvelle ligne.
 
 \end{itemize}
 
 \item[{Renvoie}] \leavevmode
-\sphinxstylestrong{stin} \textendash{} Un arbre créé à partir des paramètres passés.
+\sphinxstylestrong{stin} \textendash{} L’arbre créé à partir des paramètres passés.
 
 \item[{Type renvoyé}] \leavevmode
 {\hyperref[\detokenize{index:StrategyTree.StrategyTree}]{\sphinxcrossref{StrategyTree}}}

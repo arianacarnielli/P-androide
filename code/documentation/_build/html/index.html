@@ -661,7 +661,7 @@ une réparation.</p></li>
 <dl class="method">
 <dt id="DecisionTheoreticTroubleshooting.TroubleShootingProblem.expected_cost_of_repair_seq_of_actions">
 <code class="sig-name descname">expected_cost_of_repair_seq_of_actions</code><span class="sig-paren">(</span><em class="sig-param">seq</em><span class="sig-paren">)</span><a class="headerlink" href="#DecisionTheoreticTroubleshooting.TroubleShootingProblem.expected_cost_of_repair_seq_of_actions" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Calcule un coût espéré de réparation à partir d’une séquence d’actions
+<dd><p>Calcule le coût espéré de réparation à partir d’une séquence d’actions
 donnée. On utilise la formule
 ECR = coût(C1 | E0)
 + P(C1 = Normal | E0) * coût(C2 | E1)
@@ -1105,15 +1105,17 @@ TroubleShootingProblem._evaluate_all_st ci-dessous).</p>
 <span class="target" id="module-StrategyTree"></span><dl class="class">
 <dt id="StrategyTree.NodeST">
 <em class="property">class </em><code class="sig-prename descclassname">StrategyTree.</code><code class="sig-name descname">NodeST</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">cost</em>, <em class="sig-param">name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Classe qui représente un noeud plutôt abstrait d’un arbre de stratégie ; on remarque que cette classe ne dispose pas
-d’un enfant (il n’y a pas d’un attribut qui correspond à un noeud suivant), pourtant, on suppose que ses sous-
-classes en auront.</p>
+<dd><p>Représente un noeud abstrait d’un arbre de stratégie; on remarque que cette
+classe ne dispose pas d’attribut correspondant à des enfants (il n’y a pas
+un attribut qui correspond à les noeuds suivants), pourtant, on suppose que
+ses sous-classes en auront.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>id</strong> (<em>str</em>) – Identificateur unique d’un noeud.</p></li>
-<li><p><strong>cost</strong> (<em>float</em>) – Un attribut qui correspond à « coût » d’un noeud.</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom d’un noeud qui peut être pas unique ; si rien a été soumis, on pose que <em>_name</em> = <em>_id</em>.</p></li>
+<li><p><strong>cost</strong> (<em>float</em>) – Correspond au « coût » du noeud.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que <em>_name</em> = <em>_id</em>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1131,7 +1133,7 @@ classes en auront.</p>
 <dl class="attribute">
 <dt id="StrategyTree.NodeST._cost">
 <code class="sig-name descname">_cost</code><a class="headerlink" href="#StrategyTree.NodeST._cost" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un attribut qui correspond à « coût » d’un noeud.</p>
+<dd><p>Correspond au « coût » du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
@@ -1142,7 +1144,8 @@ classes en auront.</p>
 <dl class="attribute">
 <dt id="StrategyTree.NodeST._name">
 <code class="sig-name descname">_name</code><a class="headerlink" href="#StrategyTree.NodeST._name" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un nom d’un noeud qui peut être pas unique ; si rien a été passé, on pose que <em>_name</em> = <em>_id_</em>.</p>
+<dd><p>Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que <em>_name</em> = <em>_id</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -1153,13 +1156,15 @@ classes en auront.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.__eq__">
 <code class="sig-name descname">__eq__</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.__eq__" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Overloading d’opérateur __eq__ ; on dit que deux noeuds sont égaux ssi ils ont les mêmes ids.</p>
+<dd><p>Overloading de l’opérateur __eq__ ; on dit que deux noeuds sont égaux
+ssi ils ont les mêmes ids.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Un autre noeud à comparer avec celui-ci.</p>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Le noeud à comparer avec le noeud concerné.</p>
 </dd>
 <dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><strong>comp_res</strong> – True, si self._id == other._id ET si self et other ont le même type ; False, sinon.</p>
+<dd class="field-even"><p><strong>comp_res</strong> – True si self._id == other._id ET si self et other ont le même type.
+False, sinon.</p>
 </dd>
 <dt class="field-odd">Type renvoyé</dt>
 <dd class="field-odd"><p>bool</p>
@@ -1170,10 +1175,10 @@ classes en auront.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.__str__">
 <code class="sig-name descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.__str__" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Overloading d’opérateur __str__.</p>
+<dd><p>Overloading de l’opérateur __str__.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>corr_str</strong> – Une représentation d’un noeud sous une forme de str.</p>
+<dd class="field-odd"><p><strong>corr_str</strong> – La représentation du noeud sous la forme de str.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>str</p>
@@ -1184,10 +1189,10 @@ classes en auront.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.add_child">
 <code class="sig-name descname">add_child</code><span class="sig-paren">(</span><em class="sig-param">child</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.add_child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode abstraite qui ajouterait un enfant d’un noeud.</p>
+<dd><p>Méthode abstraite qui ajouterait un enfant au noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Un enfant à ajouter.</p>
+<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – L’enfant à ajouter.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1195,11 +1200,11 @@ classes en auront.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.bn_labels_children_association">
 <code class="sig-name descname">bn_labels_children_association</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.bn_labels_children_association" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode abstraite qui retournera un dictionnaire des associations entre des labels d’un réseau
-bayésien et des enfants d’un noeud.</p>
+<dd><p>Méthode abstraite qui retournera un dictionnaire des associations entre
+les labels du réseau Bayésien et les enfants du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>da</strong> – Un dictionnaire des associations concerné.</p>
+<dd class="field-odd"><p><strong>da</strong> – Le dictionnaire des associations.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>dict</p>
@@ -1210,10 +1215,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.copy">
 <code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.copy" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui retournerait une copie superficielle d’un noeud.</p>
+<dd><p>Retournerait une copie superficielle du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>copy</strong> – Une copie superficielle d’un noeud.</p>
+<dd class="field-odd"><p><strong>copy</strong> – Copie superficielle du noeud.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -1224,13 +1229,14 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.get_child_by_attribute">
 <code class="sig-name descname">get_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.get_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode abstraite qui retournerait un enfant d’un noeud correspondant à attr.</p>
+<dd><p>Méthode abstraite qui retournerait l’enfant du noeud correspondant à
+<em>attr</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>attr</strong> (<em>str</em>) – Un attribut (un type) d’enfant qu’il faudrait retourner.</p>
+<dd class="field-odd"><p><strong>attr</strong> (<em>str</em>) – L’attribut de l’enfant qu’il faut retourner.</p>
 </dd>
 <dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><strong>child</strong> – Un enfant d’un noeud qui correspond à un attribut soumis.</p>
+<dd class="field-even"><p><strong>child</strong> – L’enfant du noeud concerné qui correspond à l’attribut soumis.</p>
 </dd>
 <dt class="field-odd">Type renvoyé</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -1241,10 +1247,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.get_cost">
 <code class="sig-name descname">get_cost</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.get_cost" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Getter d’un attribut <em>_cost</em>.</p>
+<dd><p>Getter de l’attribut <em>_cost</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>_cost</strong> – Une valeur de coût d’un noeud.</p>
+<dd class="field-odd"><p><strong>_cost</strong> – La valeur du coût du noeud concerné.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>float</p>
@@ -1255,10 +1261,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.get_id">
 <code class="sig-name descname">get_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.get_id" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Getter d’un attribut <em>_id</em>.</p>
+<dd><p>Getter de l’attribut <em>_id</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>_id</strong> – Identificateur unique courant d’un noeud.</p>
+<dd class="field-odd"><p><strong>_id</strong> – Identificateur unique courant du noeud concerné.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>str</p>
@@ -1269,10 +1275,11 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.get_list_of_children">
 <code class="sig-name descname">get_list_of_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.get_list_of_children" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode abstraite qui permettrait d’obtenir une liste de tous les enfants d’un noeud.</p>
+<dd><p>Méthode abstraite qui permettrait d’obtenir la liste de tous les
+enfants d’un noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>list_of_children</strong> – Une liste de tous les enfants d’un noeud.</p>
+<dd class="field-odd"><p><strong>list_of_children</strong> – Liste de tous les enfants d’un noeud.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
@@ -1283,10 +1290,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.get_name">
 <code class="sig-name descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.get_name" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Getter d’un attribut <em>_name</em>.</p>
+<dd><p>Getter de l’attribut <em>_name</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>_name</strong> – Un nom d’un noeud.</p>
+<dd class="field-odd"><p><strong>_name</strong> – Le nom du noeud concerné.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>str</p>
@@ -1297,12 +1304,14 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.set_child_by_attribute">
 <code class="sig-name descname">set_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em>, <em class="sig-param">child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.set_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode abstraite qui mettrait en place un enfant d’un noeud correspondant à attr.</p>
+<dd><p>Méthode abstraite qui ajouterait un enfant correspondant à <em>attr</em> aux
+enfants du noeud concerné.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>attr</strong> (<em>str</em>) – Un attribut (un type) d’enfant qu’il faudrait mettre en place.</p></li>
-<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à un attribut soumis et qu’il faut mettre en place.</p></li>
+<li><p><strong>attr</strong> (<em>str</em>) – L’attribut (un type) de l’enfant qui va être ajouté.</p></li>
+<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – L’enfant qu’on veut ajouter. Il faut qu’il correspond à l’attribut
+soumis.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1311,10 +1320,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.set_cost">
 <code class="sig-name descname">set_cost</code><span class="sig-paren">(</span><em class="sig-param">cost</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.set_cost" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Setter d’un attribut <em>_cost</em>.</p>
+<dd><p>Setter de l’attribut <em>_cost</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>cost</strong> (<em>float</em>) – Une valeur de coût d’un noeud à mettre en place.</p>
+<dd class="field-odd"><p><strong>cost</strong> (<em>float</em>) – Valeur du coût du noeud en question. Plus grand ou égal à zero.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1322,10 +1331,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.set_id">
 <code class="sig-name descname">set_id</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.set_id" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Setter d’un attribut <em>_id</em>.</p>
+<dd><p>Setter de l’attribut <em>_id</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>id</strong> (<em>str</em>) – Identificateur unique d’un noeud pour mettre en place.</p>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em>) – Nouvel identificateur du noeud en question. Doit être unique.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1333,10 +1342,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.NodeST.set_name">
 <code class="sig-name descname">set_name</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.NodeST.set_name" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Setter d’un attribut <em>_name</em>.</p>
+<dd><p>Setter de l’attribut <em>_name</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Un nom d’un noeud pour mettre en place.</p>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Le nouveau nom du noeud en question.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1346,24 +1355,25 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="class">
 <dt id="StrategyTree.Observation">
 <em class="property">class </em><code class="sig-prename descclassname">StrategyTree.</code><code class="sig-name descname">Observation</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">cost</em>, <em class="sig-param">name=None</em>, <em class="sig-param">yes_child=None</em>, <em class="sig-param">no_child=None</em>, <em class="sig-param">obs_rep_couples=False</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Classe qui représente un noeud de type correspondant à une action d’observation.</p>
+<dd><p>Classe pour répresenter les noeuds des arbres de stratégie correspondants à
+des actions d’observation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<em>str</em>) – Identificateur unique d’un noeud.</p></li>
-<li><p><strong>cost</strong> (<em>float</em>) – Un attribut qui correspond à « coût » d’un noeud.</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom d’un noeud qui peut être pas unique ; si rien a été soumis, on pose que <em>_name</em> = <em>_id</em>.</p></li>
-<li><p><strong>yes_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à une branche « yes ».</p></li>
-<li><p><strong>no_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à une branche « no ».</p></li>
-<li><p><strong>obs_rep_couples</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
-observation-réparation ou pas.</p></li>
+<li><p><strong>id</strong> (<em>str</em>) – Identificateur unique du noeud.</p></li>
+<li><p><strong>cost</strong> (<em>float</em>) – Correspond au « coût » du noeud.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que <em>_name</em> = <em>_id</em>.</p></li>
+<li><p><strong>yes_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Enfant du noeud qui correspond à la branche « yes ».</p></li>
+<li><p><strong>no_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Enfant du noeud qui correspond à la branche « no ».</p></li>
+<li><p><strong>obs_rep_couples</strong> (<em>bool</em><em>, </em><em>facultatif</em>) – Indique si le noeud représente un couple observation-réparation ou pas.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="attribute">
 <dt id="StrategyTree.Observation._id">
 <code class="sig-name descname">_id</code><a class="headerlink" href="#StrategyTree.Observation._id" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Identificateur unique d’un noeud.</p>
+<dd><p>Identificateur unique du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -1374,7 +1384,7 @@ observation-réparation ou pas.</p></li>
 <dl class="attribute">
 <dt id="StrategyTree.Observation._cost">
 <code class="sig-name descname">_cost</code><a class="headerlink" href="#StrategyTree.Observation._cost" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un attribut qui correspond à « coût » d’un noeud.</p>
+<dd><p>Correspond au « coût » du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
@@ -1385,10 +1395,11 @@ observation-réparation ou pas.</p></li>
 <dl class="attribute">
 <dt id="StrategyTree.Observation._name">
 <code class="sig-name descname">_name</code><a class="headerlink" href="#StrategyTree.Observation._name" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un nom d’un noeud qui peut être pas unique ; si rien a été passé, on pose que <em>_name</em> = <em>_id</em>.</p>
+<dd><p>Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que <em>_name</em> = <em>_id</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str, facultatif</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1396,10 +1407,10 @@ observation-réparation ou pas.</p></li>
 <dl class="attribute">
 <dt id="StrategyTree.Observation._yes_child">
 <code class="sig-name descname">_yes_child</code><a class="headerlink" href="#StrategyTree.Observation._yes_child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un enfant d’un noeud qui correspond à une branche « yes ».</p>
+<dd><p>Enfant du noeud qui correspond à la branche « yes ».</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>, facultatif</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1407,10 +1418,10 @@ observation-réparation ou pas.</p></li>
 <dl class="attribute">
 <dt id="StrategyTree.Observation._no_child">
 <code class="sig-name descname">_no_child</code><a class="headerlink" href="#StrategyTree.Observation._no_child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un enfant d’un noeud qui correspond à une branche « no ».</p>
+<dd><p>Enfant du noeud qui correspond à la branche « no ».</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>, facultatif</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1418,11 +1429,10 @@ observation-réparation ou pas.</p></li>
 <dl class="attribute">
 <dt id="StrategyTree.Observation._obs_rep_couples">
 <code class="sig-name descname">_obs_rep_couples</code><a class="headerlink" href="#StrategyTree.Observation._obs_rep_couples" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
-observation-réparation ou pas</p>
+<dd><p>Indique si le noeud représente un couple observation-réparation ou pas.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>bool</p>
+<dd class="field-odd"><p>bool, facultatif</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1430,11 +1440,13 @@ observation-réparation ou pas</p>
 <dl class="method">
 <dt id="StrategyTree.Observation.add_child">
 <code class="sig-name descname">add_child</code><span class="sig-paren">(</span><em class="sig-param">child</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.add_child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui ajoute littéralement un enfant dans une liste des enfants d’un noeud.
-ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour cela, veuillez utiliser set_child !</p>
+<dd><p>Ajoute un enfant dans la liste des enfants du noeud.
+ATTENTION : ce méthode ne change pas un enfant qui existe déjà; pour
+cela, veuillez utiliser set_child. Par defaut, essaie d’ajouter
+l’enfant au branche _yes_child d’abord.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Un enfant à ajouter.</p>
+<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – L’enfant à ajouter.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1442,11 +1454,11 @@ ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour c
 <dl class="method">
 <dt id="StrategyTree.Observation.bn_labels_children_association">
 <code class="sig-name descname">bn_labels_children_association</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.bn_labels_children_association" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode plutôt auxiliare qui retourne un dictionnaire des associations entre des labels d’un réseau
-bayésien et des enfants d’un noeud.</p>
+<dd><p>Retourne un dictionnaire des associations entre les labels d’un réseau
+Bayésien et les enfants du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>da</strong> – Un dictionnaire des associations concerné.</p>
+<dd class="field-odd"><p><strong>da</strong> – Le dictionnaire des associations concerné.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>dict</p>
@@ -1457,10 +1469,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.Observation.copy">
 <code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.copy" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui retourne une copie superficielle d’un noeud.</p>
+<dd><p>Retourne une copie superficielle du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>copy</strong> – Une copie superficielle d’un noeud.</p>
+<dd class="field-odd"><p><strong>copy</strong> – copie superficielle du noeud.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p><a class="reference internal" href="#StrategyTree.Observation" title="StrategyTree.Observation">Observation</a></p>
@@ -1471,13 +1483,15 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.Observation.get_child_by_attribute">
 <code class="sig-name descname">get_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.get_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui retourne un enfant d’un noeud correspondant à l’attribut de la branche soumise.</p>
+<dd><p>Retourne l’enfant du noeud qui correspond à l’attribut passé en
+argument, c’est-à-dire l’enfant sur branche _yes_child si « yes » est
+passé en argument et l’enfant sur branche _no_child if « no » est passé.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>attr</strong> (<em>str</em>) – Attribut de la branche.</p>
+<dd class="field-odd"><p><strong>attr</strong> (<em>str</em>) – Indique la branche voulue.</p>
 </dd>
 <dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><strong>child</strong> – Un enfant correspondant à l’attribut.</p>
+<dd class="field-even"><p><strong>child</strong> – L’enfant correspondant à l’attribut.</p>
 </dd>
 <dt class="field-odd">Type renvoyé</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -1488,10 +1502,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.Observation.get_list_of_children">
 <code class="sig-name descname">get_list_of_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.get_list_of_children" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui retourne une liste avec tous les enfants d’un noeud.</p>
+<dd><p>Retourne la liste avec tous les enfants du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>list_of_children</strong> – Une liste avec tous les enfants d’un noeud.</p>
+<dd class="field-odd"><p><strong>list_of_children</strong> – Liste avec tous les enfants du noeud.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
@@ -1502,10 +1516,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.Observation.get_no_child">
 <code class="sig-name descname">get_no_child</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.get_no_child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Getter d’un attribut <em>_no_child</em>.</p>
+<dd><p>Getter de l’attribut <em>_no_child</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>_no_child</strong> – Un enfant d’un noeud qui correspond à une branche « no ».</p>
+<dd class="field-odd"><p><strong>_no_child</strong> – Enfant du noeud qui correspond à la branche « no ».</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -1516,11 +1530,11 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.Observation.get_obs_rep_couples">
 <code class="sig-name descname">get_obs_rep_couples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.get_obs_rep_couples" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Getter d’un attribut <em>_obs_rep_couples</em>.</p>
+<dd><p>Getter de l’attribut <em>_obs_rep_couples</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>_obs_rep_couples</strong> – Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
-observation-réparation ou pas.</p>
+<dd class="field-odd"><p><strong>_obs_rep_couples</strong> – Indique si le noeud représente un couple d’observation-réparation
+ou pas.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>bool</p>
@@ -1531,10 +1545,10 @@ observation-réparation ou pas.</p>
 <dl class="method">
 <dt id="StrategyTree.Observation.get_yes_child">
 <code class="sig-name descname">get_yes_child</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.get_yes_child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Getter d’un attribut <em>_yes_child</em>.</p>
+<dd><p>Getter de l’attribut <em>_yes_child</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>_yes_child</strong> – Un enfant d’un noeud qui correspond à une branche « yes ».</p>
+<dd class="field-odd"><p><strong>_yes_child</strong> – Enfant du noeud qui correspond à la branche « yes ».</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -1545,12 +1559,13 @@ observation-réparation ou pas.</p>
 <dl class="method">
 <dt id="StrategyTree.Observation.set_child_by_attribute">
 <code class="sig-name descname">set_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em>, <em class="sig-param">child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.set_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui met en place un enfant d’un noeud correspondant à l’attribut de la branche soumise.</p>
+<dd><p>Met en place l’enfant correspondant à l’attribut de la branche indiqué
+par <em>attr</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>attr</strong> (<em>str</em>) – Attribut de la branche.</p></li>
-<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant qu’il faut mettre en place.</p></li>
+<li><p><strong>attr</strong> (<em>str</em>) – Indique la branche voulue.</p></li>
+<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Enfant qui va être mis en place.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1559,10 +1574,10 @@ observation-réparation ou pas.</p>
 <dl class="method">
 <dt id="StrategyTree.Observation.set_no_child">
 <code class="sig-name descname">set_no_child</code><span class="sig-paren">(</span><em class="sig-param">no_child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.set_no_child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Setter d’un attribut <em>_no_child</em>.</p>
+<dd><p>Setter de l’attribut <em>_no_child</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>no_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à une branche « no ».</p>
+<dd class="field-odd"><p><strong>no_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Enfant du noeud qui correspond à la branche « no ».</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1570,11 +1585,11 @@ observation-réparation ou pas.</p>
 <dl class="method">
 <dt id="StrategyTree.Observation.set_obs_rep_couples">
 <code class="sig-name descname">set_obs_rep_couples</code><span class="sig-paren">(</span><em class="sig-param">obs_rep_couples</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.set_obs_rep_couples" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Setter d’un attribut <em>_obs_rep_couples</em>.</p>
+<dd><p>Setter de l’attribut <em>_obs_rep_couples</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>obs_rep_couples</strong> (<em>bool</em>) – Un attribut sous la forme d’une variable boléenne qui indique si le noeud représente une couple
-observation-réparation ou pas.</p>
+<dd class="field-odd"><p><strong>obs_rep_couples</strong> (<em>bool</em>) – Indique si le noeud représente un couple d’observation-réparation
+ou pas.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1582,10 +1597,10 @@ observation-réparation ou pas.</p>
 <dl class="method">
 <dt id="StrategyTree.Observation.set_yes_child">
 <code class="sig-name descname">set_yes_child</code><span class="sig-paren">(</span><em class="sig-param">yes_child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Observation.set_yes_child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Setter d’un attribut <em>_yes_child</em>.</p>
+<dd><p>Setter de l’attribut <em>_yes_child</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>yes_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à une branche « yes ».</p>
+<dd class="field-odd"><p><strong>yes_child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Enfant du noeud qui correspond à la branche « yes ».</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1595,21 +1610,23 @@ observation-réparation ou pas.</p>
 <dl class="class">
 <dt id="StrategyTree.Repair">
 <em class="property">class </em><code class="sig-prename descclassname">StrategyTree.</code><code class="sig-name descname">Repair</code><span class="sig-paren">(</span><em class="sig-param">id</em>, <em class="sig-param">cost</em>, <em class="sig-param">name=None</em>, <em class="sig-param">child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Classe qui représente un noeud de type plus précis : celui correspondant à une action de réparation.</p>
+<dd><p>Classe pour répresenter les noeuds des arbres de stratégie correspondants à
+des actions de réparation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<em>str</em>) – Identificateur unique d’un noeud.</p></li>
-<li><p><strong>cost</strong> (<em>float</em>) – Un attribut qui correspond à « coût » d’un noeud.</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom d’un noeud qui peut être pas unique ; si rien a été soumis, on pose que <em>_name</em> = <em>_id</em>.</p></li>
-<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud.</p></li>
+<li><p><strong>id</strong> (<em>str</em>) – Identificateur unique du noeud.</p></li>
+<li><p><strong>cost</strong> (<em>float</em>) – Correspond au « coût » du noeud.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que <em>_name</em> = <em>_id</em>.</p></li>
+<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Enfant du noeud, c’est-à-dire, le noeud suivant dans un arbre.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="attribute">
 <dt id="StrategyTree.Repair._id">
 <code class="sig-name descname">_id</code><a class="headerlink" href="#StrategyTree.Repair._id" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Identificateur unique d’un noeud.</p>
+<dd><p>Identificateur unique du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -1620,7 +1637,7 @@ observation-réparation ou pas.</p>
 <dl class="attribute">
 <dt id="StrategyTree.Repair._cost">
 <code class="sig-name descname">_cost</code><a class="headerlink" href="#StrategyTree.Repair._cost" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un attribut qui correspond à « coût » d’un noeud.</p>
+<dd><p>Correspond au « coût » du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
@@ -1629,12 +1646,13 @@ observation-réparation ou pas.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="StrategyTree.Repair._name">
-<code class="sig-name descname">_name</code><a class="headerlink" href="#StrategyTree.Repair._name" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un nom d’un noeud qui peut être pas unique ; si rien a été passé, on pose que <em>_name</em> = <em>_id</em>.</p>
+<dt id="StrategyTree.Repair.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#StrategyTree.Repair.name" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+que <em>_name</em> = <em>_id</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>str, facultatif</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1642,7 +1660,7 @@ observation-réparation ou pas.</p>
 <dl class="attribute">
 <dt id="StrategyTree.Repair._child">
 <code class="sig-name descname">_child</code><a class="headerlink" href="#StrategyTree.Repair._child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un enfant d’un noeud, c’est-à-dire, un noeud suivant dans un arbre.</p>
+<dd><p>Enfant du noeud, c’est-à-dire, le noeud suivant dans un arbre.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -1653,11 +1671,12 @@ observation-réparation ou pas.</p>
 <dl class="method">
 <dt id="StrategyTree.Repair.add_child">
 <code class="sig-name descname">add_child</code><span class="sig-paren">(</span><em class="sig-param">child</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.add_child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui ajoute littéralement un enfant dans une liste des enfants d’un noeud.
-ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour cela, veuillez utiliser set_child !</p>
+<dd><p>Ajoute un enfant dans la liste des enfants du noeud.
+ATTENTION : ce méthode ne change pas un enfant qui existe déjà; pour
+cela, veuillez utiliser set_child.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Un enfant à ajouter.</p>
+<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – L’enfant à ajouter.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1665,11 +1684,11 @@ ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour c
 <dl class="method">
 <dt id="StrategyTree.Repair.bn_labels_children_association">
 <code class="sig-name descname">bn_labels_children_association</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.bn_labels_children_association" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode plutôt auxiliare qui retourne un dictionnaire des associations entre des labels d’un réseau
-bayésien et des enfants d’un noeud.</p>
+<dd><p>Retourne un dictionnaire des associations entre les labels d’un réseau
+Bayésien et les enfants du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>da</strong> – Un dictionnaire des associations concerné.</p>
+<dd class="field-odd"><p><strong>da</strong> – Dictionnaire des associations concerné.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>dict</p>
@@ -1680,10 +1699,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.Repair.copy">
 <code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.copy" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui retourne une copie superficielle d’un noeud.</p>
+<dd><p>Retourne une copie superficielle du noeud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>copy</strong> – Une copie superficielle d’un noeud.</p>
+<dd class="field-odd"><p><strong>copy</strong> – Copie superficielle du noeud.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p><a class="reference internal" href="#StrategyTree.Repair" title="StrategyTree.Repair">Repair</a></p>
@@ -1694,10 +1713,10 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.Repair.get_child">
 <code class="sig-name descname">get_child</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.get_child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Getter d’un attribut <em>_child</em>.</p>
+<dd><p>Getter de l’attribut <em>_child</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>_child</strong> – Un enfant d’un noeud.</p>
+<dd class="field-odd"><p><strong>_child</strong> – L’enfant du noeud concerné.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -1708,14 +1727,16 @@ bayésien et des enfants d’un noeud.</p>
 <dl class="method">
 <dt id="StrategyTree.Repair.get_child_by_attribute">
 <code class="sig-name descname">get_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.get_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui réalise une version abstraite de superclass ; comme ce type de noeud ne dispose que d’un seul
-enfant, on y retourne toujours cet enfant pour n’importe quel attr indiqué</p>
+<dd><p>Realisation d’une méthode abstraite de la superclass; comme ce type de
+noeud ne dispose que d’un seul enfant on retourne toujours cet enfant
+pour n’importe quel <em>attr</em> passé en argument.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>attr</strong> (<em>str</em>) – Un attribut (un type) d’enfant qu’il faudrait retourner.</p>
+<dd class="field-odd"><p><strong>attr</strong> (<em>str</em>) – L’attribut de l’enfant qu’il faut retourner. Peut être n’importe
+quoi ici.</p>
 </dd>
 <dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><strong>child</strong> – Un enfant d’un noeud.</p>
+<dd class="field-even"><p><strong>child</strong> – L’enfant du noeud concerné.</p>
 </dd>
 <dt class="field-odd">Type renvoyé</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -1726,11 +1747,12 @@ enfant, on y retourne toujours cet enfant pour n’importe quel attr indiqué</p
 <dl class="method">
 <dt id="StrategyTree.Repair.get_list_of_children">
 <code class="sig-name descname">get_list_of_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.get_list_of_children" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui retourne une liste qui contient tous les enfants d’un noeud ; pour ce cas-là alors, soit
-une liste avec un seul élément, soit une liste vide.</p>
+<dd><p>Retourne la liste qui contient tous les enfants du noeud; pour ce cas,
+soit une liste avec un seul élément, soit une liste vide.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>list_of_children</strong> – Une liste de tous les enfants d’un noeud (soit une liste avec un seul élément, soit une liste vide).</p>
+<dd class="field-odd"><p><strong>list_of_children</strong> – La liste de tous les enfants du noeud (ici soit une liste avec un
+seul élément, soit une liste vide).</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
@@ -1741,10 +1763,10 @@ une liste avec un seul élément, soit une liste vide.</p>
 <dl class="method">
 <dt id="StrategyTree.Repair.set_child">
 <code class="sig-name descname">set_child</code><span class="sig-paren">(</span><em class="sig-param">child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.set_child" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Setter d’un attribut <em>_child</em>.</p>
+<dd><p>Setter de l’attribut <em>_child</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud.</p>
+<dd class="field-odd"><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – L’enfant du noeud.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1752,13 +1774,15 @@ une liste avec un seul élément, soit une liste vide.</p>
 <dl class="method">
 <dt id="StrategyTree.Repair.set_child_by_attribute">
 <code class="sig-name descname">set_child_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">attr</em>, <em class="sig-param">child=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.Repair.set_child_by_attribute" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui met en place un enfant d’un noeud correspondant à attr réalisant une méthode correspondante
+<dd><p>Realisation d’une méthode abstraite de la superclass qui met en place
+un enfant correspondant à <em>attr</em> au noeud concerné.
 superclass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>attr</strong> (<em>str</em>) – Un attribut (un type) d’enfant qu’il faut mettre en place.</p></li>
-<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Un enfant d’un noeud qui correspond à un attribut soumis et qu’il faut mettre en place.</p></li>
+<li><p><strong>attr</strong> (<em>str</em>) – L’attribut (un type) de l””enfant qu’il faut mettre en place.</p></li>
+<li><p><strong>child</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – L’enfant qu’on veut ajouter. Il faut qu’il correspond à l’attribut
+soumis.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1769,19 +1793,20 @@ superclass.</p>
 <dl class="class">
 <dt id="StrategyTree.StrategyTree">
 <em class="property">class </em><code class="sig-prename descclassname">StrategyTree.</code><code class="sig-name descname">StrategyTree</code><span class="sig-paren">(</span><em class="sig-param">root=None</em>, <em class="sig-param">nodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une classe pour représenter un arbre de stratégie qui fait face au problème de Troubleshooting.</p>
+<dd><p>Représente l’arbre de stratégie qui utilisé à la résolution du problème
+de Troubleshooting.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Une racine de l’arbre, i.e. une action pour commencer.</p></li>
-<li><p><strong>nodes</strong> (<em>list</em><em>(</em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>)</em><em>, </em><em>facultatif</em>) – Une liste des noeuds de l’arbre.</p></li>
+<li><p><strong>root</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>, </em><em>facultatif</em>) – Racine de l’arbre, i.e. une action pour commencer.</p></li>
+<li><p><strong>nodes</strong> (<em>list</em><em>(</em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>)</em><em>, </em><em>facultatif</em>) – Liste des noeuds de l’arbre.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="attribute">
 <dt id="StrategyTree.StrategyTree._root">
 <code class="sig-name descname">_root</code><a class="headerlink" href="#StrategyTree.StrategyTree._root" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une racine de l’arbre, i.e. une action pour commencer.</p>
+<dd><p>Racine de l’arbre, i.e. une action pour commencer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -1792,7 +1817,7 @@ superclass.</p>
 <dl class="attribute">
 <dt id="StrategyTree.StrategyTree._nodes">
 <code class="sig-name descname">_nodes</code><a class="headerlink" href="#StrategyTree.StrategyTree._nodes" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une liste des noeuds de l’arbre.</p>
+<dd><p>Liste des noeuds de l’arbre.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
@@ -1803,7 +1828,7 @@ superclass.</p>
 <dl class="attribute">
 <dt id="StrategyTree.StrategyTree._adj_dict">
 <code class="sig-name descname">_adj_dict</code><a class="headerlink" href="#StrategyTree.StrategyTree._adj_dict" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un dictionnaire pour indiquer lesquels noeuds sont liés par des arcs.</p>
+<dd><p>Dictionnaire qui indique quels noeuds sont liés par des arcs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>dict</p>
@@ -1814,8 +1839,8 @@ superclass.</p>
 <dl class="attribute">
 <dt id="StrategyTree.StrategyTree.fout_newline">
 <code class="sig-name descname">fout_newline</code><a class="headerlink" href="#StrategyTree.StrategyTree.fout_newline" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un attribut utilisé pour indiquer le début d’une nouvelle ligne quand on transforme cet arbre ans un fichier
-textuel.</p>
+<dd><p>Indique le début d’une nouvelle ligne quand on transforme cet arbre en
+un fichier de texte.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -1826,7 +1851,8 @@ textuel.</p>
 <dl class="attribute">
 <dt id="StrategyTree.StrategyTree.fout_sep">
 <code class="sig-name descname">fout_sep</code><a class="headerlink" href="#StrategyTree.StrategyTree.fout_sep" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un séparateur des attributs qu’on utilise quand on transforme cet arbre dans un fichier textuel.</p>
+<dd><p>Séparateur d’attributs qu’on utilise quand on transforme cet arbre en
+un fichier texte.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -1837,10 +1863,10 @@ textuel.</p>
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.__str__">
 <code class="sig-name descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.__str__" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui réalise transformation de l’arbre vers str.</p>
+<dd><p>Réalise la transformation de l’arbre vers str.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>st_str</strong> – Une représentation de l’arbre de stratégie en forme de str.</p>
+<dd class="field-odd"><p><strong>st_str</strong> – Représentation de l’arbre de stratégie en forme de str.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>str</p>
@@ -1851,14 +1877,15 @@ textuel.</p>
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.add_edge">
 <code class="sig-name descname">add_edge</code><span class="sig-paren">(</span><em class="sig-param">parent</em>, <em class="sig-param">child</em>, <em class="sig-param">child_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.add_edge" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui permet d’ajouter un arc dans un arbre entre deux noeuds.</p>
+<dd><p>Permet d’ajouter un arc dans un arbre entre deux noeuds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>parent</strong> (<em>str / NodeST</em>) – Un noeud qui doit être un parent dans cet arc, donc un noeud duquel cet arc part.</p></li>
-<li><p><strong>child</strong> (<em>str / NodeST</em>) – Un noeud qui doit être un enfant dans cet arc, donc un noeud auquel cet arc entre.</p></li>
-<li><p><strong>child_type</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un attribut de la branche du parent à laquelle il faut ajouter un enfant (par exemple si parent est une
-observation alors child_type est égal soit à “no”, soit à “yes”).</p></li>
+<li><p><strong>parent</strong> (<em>str / NodeST</em>) – Noeud qui va être le parent. Le noeud duquel l’arc part.</p></li>
+<li><p><strong>child</strong> (<em>str / NodeST</em>) – Noeud qui va être l’enfant. Le noeud auquel l’arc arrive.</p></li>
+<li><p><strong>child_type</strong> (<em>str</em><em>, </em><em>facultatif</em>) – L’attribut de la branche du parent à laquelle il faut ajouter
+l’enfant (par exemple si parent est une observation alors
+child_type est égal soit à “no”, soit à “yes”).</p></li>
 </ul>
 </dd>
 </dl>
@@ -1867,7 +1894,7 @@ observation alors child_type est égal soit à “no”, soit à “yes”).</p>
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.add_node">
 <code class="sig-name descname">add_node</code><span class="sig-paren">(</span><em class="sig-param">node</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.add_node" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui permet d’ajouter un.des nouveau.x noeud.s dans l’arbre.</p>
+<dd><p>Permet d’ajouter un ou plusieurs nouveaux noeuds dans l’arbre.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><p><strong>node</strong> (<em>NodeST / list</em><em>(</em><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a><em>)</em>) – Noeud.s à ajouter.</p>
@@ -1878,17 +1905,18 @@ observation alors child_type est égal soit à “no”, soit à “yes”).</p>
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.connect">
 <code class="sig-name descname">connect</code><span class="sig-paren">(</span><em class="sig-param">root_with_subtree</em>, <em class="sig-param">root_child_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.connect" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui nous permet de connecter deux arbre, plus précisément, on connecte tout cet arbre avec celui
-soumis dans root_with_subtree en remplissant sa branche qui correspond à root_child_type.</p>
+<dd><p>Connecte deux arbres, plus précisément, on connecte l’arbre actuel à
+l’arbre <em>root_with_subtree</em> en remplissant la branche qui correspond à
+root_child_type dans <em>root_with_subtree</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>root_with_subtree</strong> (<a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree"><em>StrategyTree</em></a>) – Un arbre vers la racine duquel on va connecter cet arbre.</p></li>
-<li><p><strong>root_child_type</strong> (<em>str</em>) – Un attribut de la branche de la racine du root_with_subtree.</p></li>
+<li><p><strong>root_with_subtree</strong> (<a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree"><em>StrategyTree</em></a>) – L’arbre vers la racine duquel on va connecter l’arbre actuel.</p></li>
+<li><p><strong>root_child_type</strong> (<em>str</em>) – L’attribut de la branche de la racine du root_with_subtree.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><strong>merged_tree</strong> – Un arbre fusionné.</p>
+<dd class="field-even"><p><strong>merged_tree</strong> – L’arbre fusionné.</p>
 </dd>
 <dt class="field-odd">Type renvoyé</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree">StrategyTree</a></p>
@@ -1899,10 +1927,10 @@ soumis dans root_with_subtree en remplissant sa branche qui correspond à root_c
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.copy">
 <code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.copy" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui retourne une copie superficielle de cet arbre.</p>
+<dd><p>Retourne une copie superficielle de l’arbre.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>copy</strong> – Une copie superficielle de cet arbre-là.</p>
+<dd class="field-odd"><p><strong>copy</strong> – Copie superficielle de l’arbre.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p><a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree">StrategyTree</a></p>
@@ -1913,10 +1941,10 @@ soumis dans root_with_subtree en remplissant sa branche qui correspond à root_c
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.get_adj_dict">
 <code class="sig-name descname">get_adj_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_adj_dict" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un getter d’un attribut <em>_adj_dict</em>.</p>
+<dd><p>Getter de l’attribut <em>_adj_dict</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>_adj_dict</strong> – Une copie superficielle d’un dictionnaire d’adjacence.</p>
+<dd class="field-odd"><p><strong>_adj_dict</strong> – Copie superficielle du dictionnaire d’adjacence de l’arbre.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>dict</p>
@@ -1927,11 +1955,12 @@ soumis dans root_with_subtree en remplissant sa branche qui correspond à root_c
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.get_edges">
 <code class="sig-name descname">get_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_edges" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui récupère tous les arcs de l’arbres.</p>
+<dd><p>Récupère tous les arcs de l’arbre.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>edges</strong> – Une liste de triplets où chaque celui edge correspond à un arc d’un graphe de manière que edge[0] est un
-parent, edge[1] est un enfant tandis que edge[2] est un attribut de la branche.</p>
+<dd class="field-odd"><p><strong>edges</strong> – Liste de triplets où chaque élement correspond à un arc d’un graphe
+de manière que tuple[0] est un parent, tuple[1] est leur enfant et
+tuple[2] est l’attribut identifiant la branche.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>list(tuple(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>, <a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>, str))</p>
@@ -1942,13 +1971,15 @@ parent, edge[1] est un enfant tandis que edge[2] est un attribut de la branche.<
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.get_node">
 <code class="sig-name descname">get_node</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_node" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui retourne un noeud exacte (en sens de l’objet dans mémoire vivant) de l’arbre avec id indiqué.</p>
+<dd><p>Retourne le noeud exacte (en sens de l’objet dans mémoire vivant) de
+l’arbre avec <em>id</em> indiqué.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>id</strong> (<em>str / NodeST</em>) – Soit id de noeud, soit un noeud lui-même dont un clone (en sens d’id) il faut trouver dans l’arbre.</p>
+<dd class="field-odd"><p><strong>id</strong> (<em>str / NodeST</em>) – Soit <em>id</em> du noeud, soit un noeud lui-même dont on cherche un clone
+(en sens d’id) dans l’arbre.</p>
 </dd>
 <dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><strong>n</strong> – Un noeud de l’arbre avec la même id que celui soumis.</p>
+<dd class="field-even"><p><strong>n</strong> – Noeud de l’arbre avec la <em>id</em> soumis.</p>
 </dd>
 <dt class="field-odd">Type renvoyé</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -1959,13 +1990,15 @@ parent, edge[1] est un enfant tandis que edge[2] est un attribut de la branche.<
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.get_node_by_name">
 <code class="sig-name descname">get_node_by_name</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_node_by_name" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui retourne tous les noeuds de l’arbre dont les noms sont égaux à celui indiqué.</p>
+<dd><p>Retourne tous les noeuds de l’arbre dont les noms sont égaux à celui
+indiqué.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Un nom ou un noeud dont le nom on doit utiliser.</p>
 </dd>
 <dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><strong>nodes</strong> – Une liste de tous les noeuds de l’arbre qui ont le même nom que celui donné.</p>
+<dd class="field-even"><p><strong>nodes</strong> – Liste de tous les noeuds de l’arbre qui ont le même nom que celui
+indiqué.</p>
 </dd>
 <dt class="field-odd">Type renvoyé</dt>
 <dd class="field-odd"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
@@ -1976,10 +2009,10 @@ parent, edge[1] est un enfant tandis que edge[2] est un attribut de la branche.<
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.get_nodes">
 <code class="sig-name descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_nodes" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un getter d’un attribut <em>_nodes</em>.</p>
+<dd><p>Getter de l’attribut <em>_nodes</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>_nodes</strong> – Une copie superficielle d’une liste des noeuds d’un arbre.</p>
+<dd class="field-odd"><p><strong>_nodes</strong> – Copie superficielle de la liste des noeuds de l’arbre.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>list(<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a>)</p>
@@ -1990,14 +2023,14 @@ parent, edge[1] est un enfant tandis que edge[2] est un attribut de la branche.<
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.get_parent">
 <code class="sig-name descname">get_parent</code><span class="sig-paren">(</span><em class="sig-param">child</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_parent" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui cherche et qui retourne un parent d’un noeud soumis dans l’arbre. Remarque : dans un arbre comme
-ça chaque noeud ne doit avoir qu’un seul parent.</p>
+<dd><p>Retourne le parent du noeud <em>child</em> dans l’arbre. Remarque : dans cette
+implémentation d’arbre chaque noeud ne peut avoir qu’un seul parent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>child</strong> (<em>str / NodeST</em>) – Un enfant dont le parent il faut trouver dans cet arbre-là.</p>
+<dd class="field-odd"><p><strong>child</strong> (<em>str / NodeST</em>) – L’enfant dont le parent on cherche dans l’arbre.</p>
 </dd>
 <dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><strong>parent</strong> – Un parent trouvé d’un noeud soumis.</p>
+<dd class="field-even"><p><strong>parent</strong> – Parent du noeud <em>child</em>.</p>
 </dd>
 <dt class="field-odd">Type renvoyé</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -2008,10 +2041,10 @@ parent, edge[1] est un enfant tandis que edge[2] est un attribut de la branche.<
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.get_root">
 <code class="sig-name descname">get_root</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_root" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un getter d’un attribut <em>_root</em>.</p>
+<dd><p>Getter de l’attribut <em>_root</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>_root</strong> – Une racine de l’arbre.</p>
+<dd class="field-odd"><p><strong>_root</strong> – Racine de l’arbre.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p><a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST">NodeST</a></p>
@@ -2022,14 +2055,13 @@ parent, edge[1] est un enfant tandis que edge[2] est un attribut de la branche.<
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.get_sub_tree">
 <code class="sig-name descname">get_sub_tree</code><span class="sig-paren">(</span><em class="sig-param">sub_root</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.get_sub_tree" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui retourne un sous-arbre de cet arbre-là étant donné une sous-racine à partir de laquelle ce
-sous-arbre commence.</p>
+<dd><p>Retourne le sous-arbre qui a le noeud <em>sub_root</em> comme racine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>sub_root</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Une sous-racine de l’arbre qui est une racine de sous-arbre qu’il faut retourner.</p>
+<dd class="field-odd"><p><strong>sub_root</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Racine de le sous-arbre.</p>
 </dd>
 <dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><strong>sub_tree</strong> – Un sous-arbre de cet arbre dont la racine est sub_root.</p>
+<dd class="field-even"><p><strong>sub_tree</strong> – Sous-arbre de cet arbre dont la racine est <em>sub_root</em>.</p>
 </dd>
 <dt class="field-odd">Type renvoyé</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree">StrategyTree</a></p>
@@ -2040,13 +2072,13 @@ sous-arbre commence.</p>
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.remove_sub_tree">
 <code class="sig-name descname">remove_sub_tree</code><span class="sig-paren">(</span><em class="sig-param">sub_root</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.remove_sub_tree" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui nous permet de supprimer un sous-arbre de cet arbre étant donné une sous-racine.</p>
+<dd><p>Supprime le sous-arbre qui a comme racine <em>sub_root</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>sub_root</strong> (<em>str / NodeST</em>) – Une sous-racine d’un sous-arbre qu’il faut supprimer.</p>
+<dd class="field-odd"><p><strong>sub_root</strong> (<em>str / NodeST</em>) – Racine du sous-arbre qu’il faut supprimer.</p>
 </dd>
 <dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><strong>flag</strong> – Une variable booléen qui est égale à True si on supprime quelque chose et False sinon.</p>
+<dd class="field-even"><p><strong>flag</strong> – Égale à True si la fonction a supprimé un sous-arbre, False sinon.</p>
 </dd>
 <dt class="field-odd">Type renvoyé</dt>
 <dd class="field-odd"><p>bool</p>
@@ -2057,10 +2089,10 @@ sous-arbre commence.</p>
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.set_root">
 <code class="sig-name descname">set_root</code><span class="sig-paren">(</span><em class="sig-param">root</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.set_root" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un setter d’un attribut <em>_root</em>.</p>
+<dd><p>Setter de l’attribut <em>_root</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Une racine à mettre en place.</p>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="#StrategyTree.NodeST" title="StrategyTree.NodeST"><em>NodeST</em></a>) – Racine à mettre en place.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2068,10 +2100,10 @@ sous-arbre commence.</p>
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.str_alt">
 <code class="sig-name descname">str_alt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.str_alt" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui réalise une transformation particulière de l’arbre vers str.</p>
+<dd><p>Réalise la transformation de l’arbre vers str.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>st_str</strong> – Une représentation de l’arbre de stratégie en forme de str.</p>
+<dd class="field-odd"><p><strong>st_str</strong> – Représentation de l’arbre de stratégie en forme de str.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>str</p>
@@ -2082,10 +2114,11 @@ sous-arbre commence.</p>
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.str_alt_2">
 <code class="sig-name descname">str_alt_2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.str_alt_2" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une autre méthode qui réalise une transformation particulière de l’arbre vers str.</p>
+<dd><p>Transformation alternative de l’arbre vers str.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Renvoie</dt>
-<dd class="field-odd"><p><strong>st_str</strong> – Une représentation de l’arbre de stratégie en forme de str de manière alternative.</p>
+<dd class="field-odd"><p><strong>st_str</strong> – Représentation de l’arbre de stratégie en forme de str de manière
+alternative.</p>
 </dd>
 <dt class="field-even">Type renvoyé</dt>
 <dd class="field-even"><p>str</p>
@@ -2096,15 +2129,17 @@ sous-arbre commence.</p>
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.to_file">
 <code class="sig-name descname">to_file</code><span class="sig-paren">(</span><em class="sig-param">filemame='last_best_tree.txt'</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.to_file" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui permet de sauvegarder cet arbre de stratégie sous en forme de fichier textuel. On y utilise le
-modèle suivant :</p>
-<blockquote>
-<div><p>1) chaque noeud est représenté par une ligne dévouée : _id,_cost,_name,_type ; c’est bien possible de
-remplacer une virgule “,” par un séparateur différent en précisant un attribut self.fout_sep de
-cette classe ;
-2) chaque arc est représenté par une ligne dévouée : _id_parent,_id_child,_attribut ; où _attribut est le
-type d’arc pour cet arbre-là (par exemple “yes” ou “no” si parent est une Observation) ;
-3) le fichier lui-même a la structure suivante :
+<dd><p>Permet de sauvegarder l’arbre de stratégie sous forme de fichier texte.
+On utilise le modèle suivant :
+1) Chaque noeud est représenté par une ligne du type :
+_id,_cost,_name,_type
+C’est bien possible de remplacer la virgule par un séparateur
+différent en précisant l’attribut <em>self.fout_sep</em> de la classe.
+2) Chaque arc est représenté par une ligne du type :
+_id_parent,_id_child,_attribut
+Où _attribut est le type d’arc (par exemple “yes” ou “no” si parent
+est une Observation).
+3) Le fichier lui-même a la structure suivante :
 racine de l’arbre    # ligne 1
 [ligne vide]         # ligne 2
 noeud_1              # ligne 3
@@ -2115,13 +2150,12 @@ noeud_n              # ligne n + 2
 arc_1                # ligne n + 4
 arc_2                # ligne n + 5
 …
-arc_m                # ligne n + m + 3</p>
-</div></blockquote>
-<p>Cette méthode utilise également un attribut self.fout_newline pour représenter une signe qui indique le début
-d’une nouvelle ligne.</p>
+arc_m                # ligne n + m + 3
+Cette méthode utilise également l’attribut self.fout_newline pour
+représenter le signe qui indique le début d’une nouvelle ligne.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>filemame</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom de fichier où il faut sauvegarder l’arbre concerné.</p>
+<dd class="field-odd"><p><strong>filemame</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Le nom du fichier où on sauvegarde le texte.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2129,11 +2163,11 @@ d’une nouvelle ligne.</p>
 <dl class="method">
 <dt id="StrategyTree.StrategyTree.visualize">
 <code class="sig-name descname">visualize</code><span class="sig-paren">(</span><em class="sig-param">filename='last_best_strategy_tree.gv'</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.StrategyTree.visualize" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode qui nous permet d’afficher cet arbre de stratégie via un module graphviz. L’image construit est
-sauvegardé dans un fichier “filename.pdf”.</p>
+<dd><p>Affiche l’arbre de stratégie via le module graphviz. L’image construit
+est sauvegardé dans le fichier <em>filename.pdf</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom de fichier où il faut sauvegarder une image obtenue.</p>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Le nom du fichier où on sauvegarde l’image.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2143,18 +2177,19 @@ sauvegardé dans un fichier “filename.pdf”.</p>
 <dl class="function">
 <dt id="StrategyTree.st_from_file">
 <code class="sig-prename descclassname">StrategyTree.</code><code class="sig-name descname">st_from_file</code><span class="sig-paren">(</span><em class="sig-param">filename='last_best_tree.txt'</em>, <em class="sig-param">sep='</em>, <em class="sig-param">'</em>, <em class="sig-param">newline=None</em><span class="sig-paren">)</span><a class="headerlink" href="#StrategyTree.st_from_file" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une méthode statique du module qui permet de créer un objet du type StrategyTree à partir du fichier qui suit un
-modèle fourni par la méthode StrategyTree.to_file.</p>
+<dd><p>Permet de créer un objet du type StrategyTree à partir du fichier indiqué
+par <em>filename</em> en suivant le modèle fourni par la méthode
+StrategyTree.to_file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un nom du fichier où on stocke l’arbre sous en forme textuelle.</p></li>
-<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Un séparateur utilisé dans le fichier passé.</p></li>
-<li><p><strong>newline</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Une signe qui indique le début d’une nouvelle ligne.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Nom du fichier où l’arbre est stocké l’arbre sous forme textuelle.</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Le séparateur utilisé dans le fichier.</p></li>
+<li><p><strong>newline</strong> (<em>str</em><em>, </em><em>facultatif</em>) – Signe qui indique le début d’une nouvelle ligne.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Renvoie</dt>
-<dd class="field-even"><p><strong>stin</strong> – Un arbre créé à partir des paramètres passés.</p>
+<dd class="field-even"><p><strong>stin</strong> – L’arbre créé à partir des paramètres passés.</p>
 </dd>
 <dt class="field-odd">Type renvoyé</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#StrategyTree.StrategyTree" title="StrategyTree.StrategyTree">StrategyTree</a></p>

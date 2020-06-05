@@ -89,7 +89,7 @@
 \indexentry{Repair (classe dans StrategyTree)@\spxentry{Repair}\spxextra{classe dans StrategyTree}|hyperpage}{14}
 \indexentry{\_id (attribut StrategyTree.Repair)@\spxentry{\_id}\spxextra{attribut StrategyTree.Repair}|hyperpage}{14}
 \indexentry{\_cost (attribut StrategyTree.Repair)@\spxentry{\_cost}\spxextra{attribut StrategyTree.Repair}|hyperpage}{14}
-\indexentry{\_name (attribut StrategyTree.Repair)@\spxentry{\_name}\spxextra{attribut StrategyTree.Repair}|hyperpage}{14}
+\indexentry{name (attribut StrategyTree.Repair)@\spxentry{name}\spxextra{attribut StrategyTree.Repair}|hyperpage}{14}
 \indexentry{\_child (attribut StrategyTree.Repair)@\spxentry{\_child}\spxextra{attribut StrategyTree.Repair}|hyperpage}{14}
 \indexentry{add\_child() (m\IeC {\'e}thode StrategyTree.Repair)@\spxentry{add\_child()}\spxextra{m\IeC {\'e}thode StrategyTree.Repair}|hyperpage}{14}
 \indexentry{bn\_labels\_children\_association() (m\IeC {\'e}thode StrategyTree.Repair)@\spxentry{bn\_labels\_children\_association()}\spxextra{m\IeC {\'e}thode StrategyTree.Repair}|hyperpage}{14}
@@ -115,7 +115,7 @@
 \indexentry{get\_node() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{get\_node()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{16}
 \indexentry{get\_node\_by\_name() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{get\_node\_by\_name()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{16}
 \indexentry{get\_nodes() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{get\_nodes()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{16}
-\indexentry{get\_parent() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{get\_parent()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{17}
+\indexentry{get\_parent() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{get\_parent()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{16}
 \indexentry{get\_root() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{get\_root()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{17}
 \indexentry{get\_sub\_tree() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{get\_sub\_tree()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{17}
 \indexentry{remove\_sub\_tree() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{remove\_sub\_tree()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{17}
@@ -123,5 +123,5 @@
 \indexentry{str\_alt() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{str\_alt()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{17}
 \indexentry{str\_alt\_2() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{str\_alt\_2()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{17}
 \indexentry{to\_file() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{to\_file()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{17}
-\indexentry{visualize() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{visualize()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{18}
-\indexentry{st\_from\_file() (dans le module StrategyTree)@\spxentry{st\_from\_file()}\spxextra{dans le module StrategyTree}|hyperpage}{18}
+\indexentry{visualize() (m\IeC {\'e}thode StrategyTree.StrategyTree)@\spxentry{visualize()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}|hyperpage}{17}
+\indexentry{st\_from\_file() (dans le module StrategyTree)@\spxentry{st\_from\_file()}\spxextra{dans le module StrategyTree}|hyperpage}{17}

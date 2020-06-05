@@ -34,8 +34,6 @@
 		\hyperpage{11}
   \item \spxentry{\_name}\spxextra{attribut StrategyTree.Observation}, 
 		\hyperpage{12}
-  \item \spxentry{\_name}\spxextra{attribut StrategyTree.Repair}, 
-		\hyperpage{14}
   \item \spxentry{\_next\_node\_id()}\spxextra{m\IeC {\'e}thode DecisionTheoreticTroubleshooting.TroubleShootingProblem}, 
 		\hyperpage{3}
   \item \spxentry{\_no\_child}\spxextra{attribut StrategyTree.Observation}, 
@@ -180,7 +178,7 @@
   \item \spxentry{get\_obs\_rep\_couples()}\spxextra{m\IeC {\'e}thode StrategyTree.Observation}, 
 		\hyperpage{13}
   \item \spxentry{get\_parent()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}, 
-		\hyperpage{17}
+		\hyperpage{16}
   \item \spxentry{get\_proba()}\spxextra{m\IeC {\'e}thode DecisionTheoreticTroubleshooting.TroubleShootingProblem}, 
 		\hyperpage{6}
   \item \spxentry{get\_root()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}, 
@@ -205,6 +203,8 @@
 
   \indexspace
 
+  \item \spxentry{name}\spxextra{attribut StrategyTree.Repair}, 
+		\hyperpage{14}
   \item \spxentry{NodeST}\spxextra{classe dans StrategyTree}, 
 		\hyperpage{10}
   \item \spxentry{noeud\_ant()}\spxextra{m\IeC {\'e}thode DecisionTheoreticTroubleshooting.TroubleShootingProblem}, 
@@ -276,7 +276,7 @@
   \item \spxentry{simple\_solver\_tester()}\spxextra{m\IeC {\'e}thode DecisionTheoreticTroubleshooting.TroubleShootingProblem}, 
 		\hyperpage{9}
   \item \spxentry{st\_from\_file()}\spxextra{dans le module StrategyTree}, 
-		\hyperpage{18}
+		\hyperpage{17}
   \item \spxentry{str\_alt()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}, 
 		\hyperpage{17}
   \item \spxentry{str\_alt\_2()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}, 
@@ -300,6 +300,6 @@
   \indexspace
 
   \item \spxentry{visualize()}\spxextra{m\IeC {\'e}thode StrategyTree.StrategyTree}, 
-		\hyperpage{18}
+		\hyperpage{17}
 
 \end{theindex}

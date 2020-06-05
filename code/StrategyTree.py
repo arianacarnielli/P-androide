@@ -5,27 +5,30 @@ from graphviz import Digraph
 class NodeST:
 
     """
-    Classe qui représente un noeud plutôt abstrait d'un arbre de stratégie ; on remarque que cette classe ne dispose pas
-    d'un enfant (il n'y a pas d'un attribut qui correspond à un noeud suivant), pourtant, on suppose que ses sous-
-    classes en auront.
+    Représente un noeud abstrait d'un arbre de stratégie; on remarque que cette
+    classe ne dispose pas d'attribut correspondant à des enfants (il n'y a pas
+    un attribut qui correspond à les noeuds suivants), pourtant, on suppose que
+    ses sous-classes en auront.
 
     Parameters
     ----------
     id : str
         Identificateur unique d'un noeud.
     cost : float
-        Un attribut qui correspond à "coût" d'un noeud.
+        Correspond au "coût" du noeud.
     name : str, facultatif
-        Un nom d'un noeud qui peut être pas unique ; si rien a été soumis, on pose que *_name* = *_id*.
+        Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+        que *_name* = *_id*.
 
     Attributes
     ----------
     _id : str
         Identificateur unique d'un noeud.
     _cost : float
-        Un attribut qui correspond à "coût" d'un noeud.
+        Correspond au "coût" du noeud.
     _name : str
-        Un nom d'un noeud qui peut être pas unique ; si rien a été passé, on pose que *_name* = *_id_*.
+        Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+        que *_name* = *_id*.
     """
 
     def __init__(self, id, cost, name=None):
@@ -35,145 +38,151 @@ class NodeST:
 
     def set_id(self, id):
         """
-        Setter d'un attribut *_id*.
+        Setter de l'attribut *_id*.
 
         Parameters
         ----------
         id : str
-            Identificateur unique d'un noeud pour mettre en place.
+            Nouvel identificateur du noeud en question. Doit être unique. 
         """
         self._id = id
 
     def get_id(self):
         """
-        Getter d'un attribut *_id*.
+        Getter de l'attribut *_id*.
 
         Returns
         -------
         _id : str
-            Identificateur unique courant d'un noeud.
+            Identificateur unique courant du noeud concerné.
         """
         return self._id
 
     def set_cost(self, cost):
         """
-        Setter d'un attribut *_cost*.
+        Setter de l'attribut *_cost*.
 
         Parameters
         ----------
         cost : float
-            Une valeur de coût d'un noeud à mettre en place.
+            Valeur du coût du noeud en question. Plus grand ou égal à zero.
         """
         self._cost = cost
 
     def get_cost(self):
         """
-        Getter d'un attribut *_cost*.
+        Getter de l'attribut *_cost*.
 
         Returns
         -------
         _cost : float
-            Une valeur de coût d'un noeud.
+            La valeur du coût du noeud concerné.
         """
         return self._cost
 
     def set_name(self, name):
         """
-        Setter d'un attribut *_name*.
+        Setter de l'attribut *_name*.
 
         Parameters
         ----------
         name : str
-            Un nom d'un noeud pour mettre en place.
+            Le nouveau nom du noeud en question. 
         """
         self._name = name
 
     def get_name(self):
         """
-        Getter d'un attribut *_name*.
+        Getter de l'attribut *_name*.
 
         Returns
         -------
         _name : str
-            Un nom d'un noeud.
+            Le nom du noeud concerné.
         """
         return self._name
 
     def get_child_by_attribute(self, attr):
         """
-        Une méthode abstraite qui retournerait un enfant d'un noeud correspondant à attr.
+        Méthode abstraite qui retournerait l'enfant du noeud correspondant à 
+        *attr*.
 
         Parameters
         ----------
         attr : str
-            Un attribut (un type) d'enfant qu'il faudrait retourner.
+            L'attribut de l'enfant qu'il faut retourner.
 
         Returns
         -------
         child : NodeST
-            Un enfant d'un noeud qui correspond à un attribut soumis.
+            L'enfant du noeud concerné qui correspond à l'attribut soumis.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
     def set_child_by_attribute(self, attr, child=None):
         """
-        Une méthode abstraite qui mettrait en place un enfant d'un noeud correspondant à attr.
+        Méthode abstraite qui ajouterait un enfant correspondant à *attr* aux
+        enfants du noeud concerné.
 
         Parameters
         ----------
         attr : str
-            Un attribut (un type) d'enfant qu'il faudrait mettre en place.
+            L'attribut (un type) de l'enfant qui va être ajouté.
         child : NodeST, facultatif
-            Un enfant d'un noeud qui correspond à un attribut soumis et qu'il faut mettre en place.
+            L'enfant qu'on veut ajouter. Il faut qu'il correspond à l'attribut
+            soumis.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
     def get_list_of_children(self):
         """
-        Une méthode abstraite qui permettrait d'obtenir une liste de tous les enfants d'un noeud.
+        Méthode abstraite qui permettrait d'obtenir la liste de tous les 
+        enfants d'un noeud.
 
         Returns
         -------
         list_of_children : list(NodeST)
-            Une liste de tous les enfants d'un noeud.
+            Liste de tous les enfants d'un noeud.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
     def add_child(self, child):
         """
-        Une méthode abstraite qui ajouterait un enfant d'un noeud.
+        Méthode abstraite qui ajouterait un enfant au noeud.
 
         Parameters
         ----------
         child : NodeST
-            Un enfant à ajouter.
+            L'enfant à ajouter.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
     def copy(self):
         """
-        Une méthode qui retournerait une copie superficielle d'un noeud.
+        Retournerait une copie superficielle du noeud.
 
         Returns
         -------
         copy : NodeST
-            Une copie superficielle d'un noeud.
+            Copie superficielle du noeud.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
     def __eq__(self, other):
         """
-        Overloading d'opérateur __eq__ ; on dit que deux noeuds sont égaux ssi ils ont les mêmes ids.
+        Overloading de l'opérateur __eq__ ; on dit que deux noeuds sont égaux 
+        ssi ils ont les mêmes ids.
 
         Parameters
         ----------
         other : NodeST
-            Un autre noeud à comparer avec celui-ci.
+            Le noeud à comparer avec le noeud concerné.
 
         Returns
         -------
         comp_res : bool
-            True, si self._id == other._id ET si self et other ont le même type ; False, sinon.
+            True si self._id == other._id ET si self et other ont le même type.
+            False, sinon.
         """
         if (self is None and other is not None) or (self is not None and other is None):
             return False
@@ -181,24 +190,24 @@ class NodeST:
 
     def __str__(self):
         """
-        Overloading d'opérateur __str__.
+        Overloading de l'opérateur __str__.
 
         Returns
         -------
         corr_str : str
-            Une représentation d'un noeud sous une forme de str.
+            La représentation du noeud sous la forme de str.
         """
         return '(' + self._id + ': ' + str(self._cost) + ', ' + self._name + ')'
 
     def bn_labels_children_association(self):
         """
-        Une méthode abstraite qui retournera un dictionnaire des associations entre des labels d'un réseau
-        bayésien et des enfants d'un noeud.
+        Méthode abstraite qui retournera un dictionnaire des associations entre
+        les labels du réseau Bayésien et les enfants du noeud.
 
         Returns
         -------
         da : dict
-            Un dictionnaire des associations concerné.
+            Le dictionnaire des associations.
         """
         raise NotImplementedError('Abstract method! Should be implemented in subclass!')
 
@@ -206,29 +215,32 @@ class NodeST:
 class Repair(NodeST):
 
     """
-    Classe qui représente un noeud de type plus précis : celui correspondant à une action de réparation.
+    Classe pour répresenter les noeuds des arbres de stratégie correspondants à 
+    des actions de réparation.
 
     Parameters
     ----------
     id : str
-        Identificateur unique d'un noeud.
+        Identificateur unique du noeud.
     cost : float
-        Un attribut qui correspond à "coût" d'un noeud.
+        Correspond au "coût" du noeud.
     name : str, facultatif
-        Un nom d'un noeud qui peut être pas unique ; si rien a été soumis, on pose que *_name* = *_id*.
+        Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+        que *_name* = *_id*.
     child : NodeST, facultatif
-        Un enfant d'un noeud.
+        Enfant du noeud, c'est-à-dire, le noeud suivant dans un arbre.
 
     Attributes
     ----------
     _id : str
-        Identificateur unique d'un noeud.
+        Identificateur unique du noeud.
     _cost : float
-        Un attribut qui correspond à "coût" d'un noeud.
-    _name : str
-        Un nom d'un noeud qui peut être pas unique ; si rien a été passé, on pose que *_name* = *_id*.
+        Correspond au "coût" du noeud.
+    name : str, facultatif
+        Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+        que *_name* = *_id*. 
     _child : NodeST
-        Un enfant d'un noeud, c'est-à-dire, un noeud suivant dans un arbre.
+        Enfant du noeud, c'est-à-dire, le noeud suivant dans un arbre.
     """
 
     def __init__(self, id, cost, name=None, child=None):
@@ -237,78 +249,84 @@ class Repair(NodeST):
 
     def set_child(self, child=None):
         """
-        Setter d'un attribut *_child*.
+        Setter de l'attribut *_child*.
 
         Parameters
         ----------
         child : NodeST, facultatif
-            Un enfant d'un noeud.
+            L'enfant du noeud.
         """
         self._child = child
 
     def get_child(self):
         """
-        Getter d'un attribut *_child*.
+        Getter de l'attribut *_child*.
 
         Returns
         -------
         _child : NodeST
-            Un enfant d'un noeud.
+            L'enfant du noeud concerné.
         """
         return self._child
 
     def get_child_by_attribute(self, attr):
         """
-        Une méthode qui réalise une version abstraite de superclass ; comme ce type de noeud ne dispose que d'un seul
-        enfant, on y retourne toujours cet enfant pour n'importe quel attr indiqué
+        Realisation d'une méthode abstraite de la superclass; comme ce type de
+        noeud ne dispose que d'un seul enfant on retourne toujours cet enfant 
+        pour n'importe quel *attr* passé en argument.
 
         Parameters
         ----------
         attr : str
-            Un attribut (un type) d'enfant qu'il faudrait retourner.
+             L'attribut de l'enfant qu'il faut retourner. Peut être n'importe
+             quoi ici.
 
         Returns
         -------
         child : NodeST
-            Un enfant d'un noeud.
+            L'enfant du noeud concerné.
         """
         return self._child
 
     def set_child_by_attribute(self, attr, child=None):
         """
-        Une méthode qui met en place un enfant d'un noeud correspondant à attr réalisant une méthode correspondante
+        Realisation d'une méthode abstraite de la superclass qui met en place 
+        un enfant correspondant à *attr* au noeud concerné. 
         superclass.
 
         Parameters
         ----------
         attr : str
-            Un attribut (un type) d'enfant qu'il faut mettre en place.
+            L'attribut (un type) de l''enfant qu'il faut mettre en place.
         child : NodeST, facultatif
-            Un enfant d'un noeud qui correspond à un attribut soumis et qu'il faut mettre en place.
+            L'enfant qu'on veut ajouter. Il faut qu'il correspond à l'attribut
+            soumis.    
         """
         self.set_child(child)
 
     def get_list_of_children(self):
         """
-        Une méthode qui retourne une liste qui contient tous les enfants d'un noeud ; pour ce cas-là alors, soit
-        une liste avec un seul élément, soit une liste vide.
+        Retourne la liste qui contient tous les enfants du noeud; pour ce cas,
+        soit une liste avec un seul élément, soit une liste vide.
 
         Returns
         -------
         list_of_children : list(NodeST)
-            Une liste de tous les enfants d'un noeud (soit une liste avec un seul élément, soit une liste vide).
+            La liste de tous les enfants du noeud (ici soit une liste avec un 
+            seul élément, soit une liste vide).
         """
         return [self._child] if self._child is not None else []
 
     def add_child(self, child):
         """
-        Une méthode qui ajoute littéralement un enfant dans une liste des enfants d'un noeud.
-        ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour cela, veuillez utiliser set_child !
+        Ajoute un enfant dans la liste des enfants du noeud.
+        ATTENTION : ce méthode ne change pas un enfant qui existe déjà; pour 
+        cela, veuillez utiliser set_child.
 
         Parameters
         ----------
         child : NodeST
-            Un enfant à ajouter.
+            L'enfant à ajouter.
         """
         if child is None:
             return
@@ -318,65 +336,65 @@ class Repair(NodeST):
 
     def copy(self):
         """
-        Une méthode qui retourne une copie superficielle d'un noeud.
+        Retourne une copie superficielle du noeud.
 
         Returns
         -------
         copy : Repair
-            Une copie superficielle d'un noeud.
+            Copie superficielle du noeud.
         """
         new_node = Repair(self._id, self._cost, self._name, self._child.copy() if self._child is not None else None)
         return new_node
 
     def bn_labels_children_association(self):
         """
-        Une méthode plutôt auxiliare qui retourne un dictionnaire des associations entre des labels d'un réseau
-        bayésien et des enfants d'un noeud.
+        Retourne un dictionnaire des associations entre les labels d'un réseau
+        Bayésien et les enfants du noeud.
 
         Returns
         -------
         da : dict
-            Un dictionnaire des associations concerné.
+            Dictionnaire des associations concerné.
         """
         return {'': self.get_child()}
 
 
 class Observation(NodeST):
-
     """
-    Classe qui représente un noeud de type correspondant à une action d'observation.
+    Classe pour répresenter les noeuds des arbres de stratégie correspondants à 
+    des actions d'observation.
 
     Parameters
     ----------
     id : str
-        Identificateur unique d'un noeud.
+        Identificateur unique du noeud.
     cost : float
-        Un attribut qui correspond à "coût" d'un noeud.
+        Correspond au "coût" du noeud.
     name : str, facultatif
-        Un nom d'un noeud qui peut être pas unique ; si rien a été soumis, on pose que *_name* = *_id*.
+        Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+        que *_name* = *_id*.        
     yes_child : NodeST, facultatif
-        Un enfant d'un noeud qui correspond à une branche "yes".
+        Enfant du noeud qui correspond à la branche "yes".
     no_child : NodeST, facultatif
-        Un enfant d'un noeud qui correspond à une branche "no".
+        Enfant du noeud qui correspond à la branche "no".
     obs_rep_couples : bool, facultatif
-        Un attribut sous la forme d'une variable boléenne qui indique si le noeud représente une couple
-        observation-réparation ou pas.
+        Indique si le noeud représente un couple observation-réparation ou pas.
 
     Attributes
     ----------
     _id : str
-        Identificateur unique d'un noeud.
+        Identificateur unique du noeud.
     _cost : float
-        Un attribut qui correspond à "coût" d'un noeud.
-    _name : str
-        Un nom d'un noeud qui peut être pas unique ; si rien a été passé, on pose que *_name* = *_id*.
-    _yes_child : NodeST
-        Un enfant d'un noeud qui correspond à une branche "yes".
-    _no_child : NodeST
-        Un enfant d'un noeud qui correspond à une branche "no".
-    _obs_rep_couples : bool
-        Un attribut sous la forme d'une variable boléenne qui indique si le noeud représente une couple
-        observation-réparation ou pas
+        Correspond au "coût" du noeud.
+    _name : str, facultatif
+        Nom du noeud qui peut ne pas être unique; si rien a été soumis, on pose
+        que *_name* = *_id*.
+    _yes_child : NodeST, facultatif
+        Enfant du noeud qui correspond à la branche "yes".
+    _no_child : NodeST, facultatif
+        Enfant du noeud qui correspond à la branche "no".
+    _obs_rep_couples : bool, facultatif
+        Indique si le noeud représente un couple observation-réparation ou pas.
     """
 
     def __init__(self, id, cost, name=None, yes_child=None, no_child=None, obs_rep_couples=False):
@@ -387,84 +405,86 @@ class Observation(NodeST):
 
     def set_yes_child(self, yes_child=None):
         """
-        Setter d'un attribut *_yes_child*.
+        Setter de l'attribut *_yes_child*.
 
         Parameters
         ----------
         yes_child : NodeST, facultatif
-            Un enfant d'un noeud qui correspond à une branche "yes".
+            Enfant du noeud qui correspond à la branche "yes".
         """
         self._yes_child = yes_child
 
     def get_yes_child(self):
         """
-        Getter d'un attribut *_yes_child*.
+        Getter de l'attribut *_yes_child*.
 
         Returns
         -------
         _yes_child : NodeST
-            Un enfant d'un noeud qui correspond à une branche "yes".
+            Enfant du noeud qui correspond à la branche "yes".
         """
         return self._yes_child
 
     def set_no_child(self, no_child=None):
         """
-        Setter d'un attribut *_no_child*.
+        Setter de l'attribut *_no_child*.
 
         Parameters
         ----------
         no_child : NodeST, facultatif
-            Un enfant d'un noeud qui correspond à une branche "no".
+            Enfant du noeud qui correspond à la branche "no".
         """
         self._no_child = no_child
 
     def get_no_child(self):
         """
-        Getter d'un attribut *_no_child*.
+        Getter de l'attribut *_no_child*.
 
         Returns
         -------
         _no_child : NodeST
-            Un enfant d'un noeud qui correspond à une branche "no".
+            Enfant du noeud qui correspond à la branche "no".
         """
         return self._no_child
 
     def set_obs_rep_couples(self, obs_rep_couples):
         """
-        Setter d'un attribut *_obs_rep_couples*.
+        Setter de l'attribut *_obs_rep_couples*.
 
         Parameters
         ----------
         obs_rep_couples : bool
-            Un attribut sous la forme d'une variable boléenne qui indique si le noeud représente une couple
-            observation-réparation ou pas.
+            Indique si le noeud représente un couple d'observation-réparation 
+            ou pas.
         """
         self._obs_rep_couples = obs_rep_couples
 
     def get_obs_rep_couples(self):
         """
-        Getter d'un attribut *_obs_rep_couples*.
+        Getter de l'attribut *_obs_rep_couples*.
 
         Returns
         -------
         _obs_rep_couples : bool
-            Un attribut sous la forme d'une variable boléenne qui indique si le noeud représente une couple
-            observation-réparation ou pas.
+            Indique si le noeud représente un couple d'observation-réparation 
+            ou pas.
         """
         return self._obs_rep_couples
 
     def get_child_by_attribute(self, attr):
         """
-        Une méthode qui retourne un enfant d'un noeud correspondant à l'attribut de la branche soumise.
+        Retourne l'enfant du noeud qui correspond à l'attribut passé en 
+        argument, c'est-à-dire l'enfant sur branche _yes_child si "yes" est 
+        passé en argument et l'enfant sur branche _no_child if "no" est passé.
 
         Parameters
         ----------
         attr : str
-            Attribut de la branche.
+            Indique la branche voulue.
         Returns
         -------
         child : NodeST
-            Un enfant correspondant à l'attribut.
+            L'enfant correspondant à l'attribut.
         """
 
         # Si attr == "yes", on retourne _yes_child
@@ -478,14 +498,15 @@ class Observation(NodeST):
 
     def set_child_by_attribute(self, attr, child=None):
         """
-        Une méthode qui met en place un enfant d'un noeud correspondant à l'attribut de la branche soumise.
+        Met en place l'enfant correspondant à l'attribut de la branche indiqué
+        par *attr*.
 
         Parameters
         ----------
         attr : str
-            Attribut de la branche.
+            Indique la branche voulue.
         child : NodeST, facultatif
-            Un enfant qu'il faut mettre en place.
+            Enfant qui va être mis en place.
         """
 
         # Si on reconnaît l'attribut, on met en place un enfant
@@ -499,12 +520,12 @@ class Observation(NodeST):
 
     def get_list_of_children(self):
         """
-        Une méthode qui retourne une liste avec tous les enfants d'un noeud.
+        Retourne la liste avec tous les enfants du noeud.
 
         Returns
         -------
         list_of_children : list(NodeST)
-            Une liste avec tous les enfants d'un noeud.
+            Liste avec tous les enfants du noeud.
         """
         # On ajoute les enfants
         res = [self._yes_child, self._no_child]
@@ -515,13 +536,15 @@ class Observation(NodeST):
 
     def add_child(self, child):
         """
-        Une méthode qui ajoute littéralement un enfant dans une liste des enfants d'un noeud.
-        ATTENTION : ce méthode ne peut pas changer un enfant qui existe déjà ; pour cela, veuillez utiliser set_child !
+        Ajoute un enfant dans la liste des enfants du noeud.
+        ATTENTION : ce méthode ne change pas un enfant qui existe déjà; pour 
+        cela, veuillez utiliser set_child. Par defaut, essaie d'ajouter 
+        l'enfant au branche _yes_child d'abord.
 
         Parameters
         ----------
         child : NodeST
-            Un enfant à ajouter.
+            L'enfant à ajouter.
         """
         if child is None:
             return
@@ -538,12 +561,12 @@ class Observation(NodeST):
 
     def copy(self):
         """
-        Une méthode qui retourne une copie superficielle d'un noeud.
+        Retourne une copie superficielle du noeud.
 
         Returns
         -------
         copy : Observation
-            Une copie superficielle d'un noeud.
+            copie superficielle du noeud.
         """
         new_node = Observation(self._id, self._cost, self._name,
                                self._yes_child.copy() if self._yes_child is not None else None,
@@ -553,41 +576,43 @@ class Observation(NodeST):
 
     def bn_labels_children_association(self):
         """
-        Une méthode plutôt auxiliare qui retourne un dictionnaire des associations entre des labels d'un réseau
-        bayésien et des enfants d'un noeud.
+        Retourne un dictionnaire des associations entre les labels d'un réseau
+        Bayésien et les enfants du noeud.
 
         Returns
         -------
         da : dict
-            Un dictionnaire des associations concerné.
+            Le dictionnaire des associations concerné.
         """
         return {'no': self.get_no_child(), 'yes': self.get_yes_child()}
 
 
 class StrategyTree:
     """
-    Une classe pour représenter un arbre de stratégie qui fait face au problème de Troubleshooting.
+    Représente l'arbre de stratégie qui utilisé à la résolution du problème
+    de Troubleshooting.
 
     Parameters
     ----------
     root : NodeST, facultatif
-        Une racine de l'arbre, i.e. une action pour commencer.
+        Racine de l'arbre, i.e. une action pour commencer.
     nodes : list(NodeST), facultatif
-        Une liste des noeuds de l'arbre.
+        Liste des noeuds de l'arbre.
 
     Attributes
     ----------
     _root : NodeST
-        Une racine de l'arbre, i.e. une action pour commencer.
+        Racine de l'arbre, i.e. une action pour commencer.
     _nodes : list(NodeST)
-        Une liste des noeuds de l'arbre.
+        Liste des noeuds de l'arbre.
     _adj_dict : dict
-        Un dictionnaire pour indiquer lesquels noeuds sont liés par des arcs.
+        Dictionnaire qui indique quels noeuds sont liés par des arcs.
     fout_newline : str
-        Un attribut utilisé pour indiquer le début d'une nouvelle ligne quand on transforme cet arbre ans un fichier
-        textuel.
+        Indique le début d'une nouvelle ligne quand on transforme cet arbre en
+        un fichier de texte.
     fout_sep : str
-        Un séparateur des attributs qu'on utilise quand on transforme cet arbre dans un fichier textuel.
+        Séparateur d'attributs qu'on utilise quand on transforme cet arbre en 
+        un fichier texte.
     """
 
     def __init__(self, root=None, nodes=None):
@@ -621,12 +646,12 @@ class StrategyTree:
 
     def __str__(self):
         """
-        Une méthode qui réalise transformation de l'arbre vers str.
+        Réalise la transformation de l'arbre vers str.
 
         Returns
         -------
         st_str : str
-            Une représentation de l'arbre de stratégie en forme de str.
+            Représentation de l'arbre de stratégie en forme de str.
         """
 
         # Plus précisément, on utilise pour cela l'une des méthodes ci-dessous
@@ -634,12 +659,12 @@ class StrategyTree:
 
     def str_alt(self):
         """
-        Une méthode qui réalise une transformation particulière de l'arbre vers str.
+        Réalise la transformation de l'arbre vers str.
 
         Returns
         -------
         st_str : str
-            Une représentation de l'arbre de stratégie en forme de str.
+            Représentation de l'arbre de stratégie en forme de str.
         """
         if self._root is None:
             return '{}'
@@ -667,12 +692,13 @@ class StrategyTree:
 
     def str_alt_2(self):
         """
-        Une autre méthode qui réalise une transformation particulière de l'arbre vers str.
+        Transformation alternative de l'arbre vers str.
 
         Returns
         -------
         st_str : str
-            Une représentation de l'arbre de stratégie en forme de str de manière alternative.
+            Représentation de l'arbre de stratégie en forme de str de manière 
+            alternative.
         """
         if self._root is None:
             return '{}'
@@ -698,12 +724,12 @@ class StrategyTree:
 
     def set_root(self, root):
         """
-        Un setter d'un attribut *_root*.
+        Setter de l'attribut *_root*.
 
         Parameters
         ----------
         root : NodeST
-            Une racine à mettre en place.
+            Racine à mettre en place.
         """
 
         # Si une racine soumise n'était pas de bon type, on évoquerait une exception
@@ -718,28 +744,30 @@ class StrategyTree:
 
     def get_root(self):
         """
-        Un getter d'un attribut *_root*.
+        Getter de l'attribut *_root*.
 
         Returns
         -------
         _root : NodeST
-            Une racine de l'arbre.
+            Racine de l'arbre.
         """
         return self._root
 
     def get_node(self, id):
         """
-        Une méthode qui retourne un noeud exacte (en sens de l'objet dans mémoire vivant) de l'arbre avec id indiqué.
+        Retourne le noeud exacte (en sens de l'objet dans mémoire vivant) de 
+        l'arbre avec *id* indiqué.
 
         Parameters
         ----------
         id : str / NodeST
-            Soit id de noeud, soit un noeud lui-même dont un clone (en sens d'id) il faut trouver dans l'arbre.
+            Soit *id* du noeud, soit un noeud lui-même dont on cherche un clone 
+            (en sens d'id) dans l'arbre.
 
         Returns
         -------
         n : NodeST
-            Un noeud de l'arbre avec la même id que celui soumis.
+            Noeud de l'arbre avec la *id* soumis.
         """
 
         if isinstance(id, NodeST):
@@ -752,7 +780,8 @@ class StrategyTree:
 
     def get_node_by_name(self, name):
         """
-        Une méthode qui retourne tous les noeuds de l'arbre dont les noms sont égaux à celui indiqué.
+        Retourne tous les noeuds de l'arbre dont les noms sont égaux à celui 
+        indiqué.
 
         Parameters
         ----------
@@ -762,7 +791,8 @@ class StrategyTree:
         Returns
         -------
         nodes : list(NodeST)
-            Une liste de tous les noeuds de l'arbre qui ont le même nom que celui donné.
+            Liste de tous les noeuds de l'arbre qui ont le même nom que celui
+            indiqué.
         """
         if isinstance(name, NodeST):
             name = name.get_name()
@@ -774,13 +804,14 @@ class StrategyTree:
 
     def get_edges(self):
         """
-        Une méthode qui récupère tous les arcs de l'arbres.
+        Récupère tous les arcs de l'arbre.
 
         Returns
         -------
         edges : list(tuple(NodeST, NodeST, str))
-            Une liste de triplets où chaque celui edge correspond à un arc d'un graphe de manière que edge[0] est un
-            parent, edge[1] est un enfant tandis que edge[2] est un attribut de la branche.
+            Liste de triplets où chaque élement correspond à un arc d'un graphe
+            de manière que tuple[0] est un parent, tuple[1] est leur enfant et 
+            tuple[2] est l'attribut identifiant la branche.
         """
         res = []
         # On parcourt par tous les parents et par tous leurs enfants
@@ -799,7 +830,7 @@ class StrategyTree:
 
     def add_node(self, node):
         """
-        Une méthode qui permet d'ajouter un.des nouveau.x noeud.s dans l'arbre.
+        Permet d'ajouter un ou plusieurs nouveaux noeuds dans l'arbre.
 
         Parameters
         ----------
@@ -828,17 +859,18 @@ class StrategyTree:
 
     def add_edge(self, parent, child, child_type=None):
         """
-        Une méthode qui permet d'ajouter un arc dans un arbre entre deux noeuds.
+        Permet d'ajouter un arc dans un arbre entre deux noeuds.
 
         Parameters
         ----------
         parent : str / NodeST
-            Un noeud qui doit être un parent dans cet arc, donc un noeud duquel cet arc part.
+            Noeud qui va être le parent. Le noeud duquel l'arc part.
         child : str / NodeST
-            Un noeud qui doit être un enfant dans cet arc, donc un noeud auquel cet arc entre.
+            Noeud qui va être l'enfant. Le noeud auquel l'arc arrive.
         child_type : str, facultatif
-            Un attribut de la branche du parent à laquelle il faut ajouter un enfant (par exemple si parent est une
-            observation alors child_type est égal soit à 'no', soit à 'yes').
+            L'attribut de la branche du parent à laquelle il faut ajouter 
+            l'enfant (par exemple si parent est une observation alors 
+            child_type est égal soit à 'no', soit à 'yes').
         """
 
         # On vérifie si les paramètres soumis ont des bons types
@@ -866,40 +898,39 @@ class StrategyTree:
 
     def get_nodes(self):
         """
-        Un getter d'un attribut *_nodes*.
+        Getter de l'attribut *_nodes*.
 
         Returns
         -------
         _nodes : list(NodeST)
-            Une copie superficielle d'une liste des noeuds d'un arbre.
+            Copie superficielle de la liste des noeuds de l'arbre.
         """
         return self._nodes.copy()
 
     def get_adj_dict(self):
         """
-        Un getter d'un attribut *_adj_dict*.
+        Getter de l'attribut *_adj_dict*.
 
         Returns
         -------
         _adj_dict : dict
-            Une copie superficielle d'un dictionnaire d'adjacence.
+            Copie superficielle du dictionnaire d'adjacence de l'arbre.
         """
         return self._adj_dict.copy()
 
     def get_sub_tree(self, sub_root):
         """
-        Une méthode qui retourne un sous-arbre de cet arbre-là étant donné une sous-racine à partir de laquelle ce
-        sous-arbre commence.
+        Retourne le sous-arbre qui a le noeud *sub_root* comme racine.
 
         Parameters
         ----------
         sub_root : NodeST
-            Une sous-racine de l'arbre qui est une racine de sous-arbre qu'il faut retourner.
+            Racine de le sous-arbre.
 
         Returns
         -------
         sub_tree : StrategyTree
-            Un sous-arbre de cet arbre dont la racine est sub_root.
+            Sous-arbre de cet arbre dont la racine est *sub_root*.
         """
         if sub_root is None:
             return None
@@ -936,18 +967,18 @@ class StrategyTree:
 
     def get_parent(self, child):
         """
-        Une méthode qui cherche et qui retourne un parent d'un noeud soumis dans l'arbre. Remarque : dans un arbre comme
-        ça chaque noeud ne doit avoir qu'un seul parent.
+        Retourne le parent du noeud *child* dans l'arbre. Remarque : dans cette
+        implémentation d'arbre chaque noeud ne peut avoir qu'un seul parent.
 
         Parameters
         ----------
         child : str / NodeST
-            Un enfant dont le parent il faut trouver dans cet arbre-là.
+            L'enfant dont le parent on cherche dans l'arbre.
 
         Returns
         -------
         parent : NodeST
-            Un parent trouvé d'un noeud soumis.
+            Parent du noeud *child*.
         """
         ch = self.get_node(child)
         if ch is None or ch == self._root:
@@ -960,17 +991,17 @@ class StrategyTree:
 
     def remove_sub_tree(self, sub_root):
         """
-        Une méthode qui nous permet de supprimer un sous-arbre de cet arbre étant donné une sous-racine.
-
+        Supprime le sous-arbre qui a comme racine *sub_root*.
+        
         Parameters
         ----------
         sub_root : str / NodeST
-            Une sous-racine d'un sous-arbre qu'il faut supprimer.
+            Racine du sous-arbre qu'il faut supprimer.
 
         Returns
         -------
         flag : bool
-            Une variable booléen qui est égale à True si on supprime quelque chose et False sinon.
+            Égale à True si la fonction a supprimé un sous-arbre, False sinon.
         """
 
         # En exécutant parcours en largeur on récupère les noeuds qu'il faudrait supprimer (cf. une méthode get_sub_tree
@@ -1024,12 +1055,12 @@ class StrategyTree:
 
     def copy(self):
         """
-        Une méthode qui retourne une copie superficielle de cet arbre.
+        Retourne une copie superficielle de l'arbre.
 
         Returns
         -------
         copy : StrategyTree
-            Une copie superficielle de cet arbre-là.
+            Copie superficielle de l'arbre.
         """
         other_root = self._root.copy() if self._root is not None else None
         other_nodes = []
@@ -1039,20 +1070,21 @@ class StrategyTree:
 
     def connect(self, root_with_subtree, root_child_type=None):
         """
-        Une méthode qui nous permet de connecter deux arbre, plus précisément, on connecte tout cet arbre avec celui
-        soumis dans root_with_subtree en remplissant sa branche qui correspond à root_child_type.
+        Connecte deux arbres, plus précisément, on connecte l'arbre actuel à 
+        l'arbre *root_with_subtree* en remplissant la branche qui correspond à 
+        root_child_type dans *root_with_subtree*.
 
         Parameters
         ----------
         root_with_subtree : StrategyTree
-            Un arbre vers la racine duquel on va connecter cet arbre.
+            L'arbre vers la racine duquel on va connecter l'arbre actuel.
         root_child_type : str
-            Un attribut de la branche de la racine du root_with_subtree.
+            L'attribut de la branche de la racine du root_with_subtree.
 
         Returns
         -------
         merged_tree : StrategyTree
-            Un arbre fusionné.
+            L'arbre fusionné.
         """
         if not isinstance(root_with_subtree, StrategyTree):
             raise TypeError('root_with_tree must be an object of type StrategyTree')
@@ -1077,13 +1109,13 @@ class StrategyTree:
 
     def visualize(self, filename='last_best_strategy_tree.gv'):
         """
-        Une méthode qui nous permet d'afficher cet arbre de stratégie via un module graphviz. L'image construit est
-        sauvegardé dans un fichier 'filename.pdf'.
+        Affiche l'arbre de stratégie via le module graphviz. L'image construit 
+        est sauvegardé dans le fichier *filename.pdf*.
 
         Parameters
         ----------
         filename : str, facultatif
-            Un nom de fichier où il faut sauvegarder une image obtenue.
+            Le nom du fichier où on sauvegarde l'image.
         """
         vst = Digraph()
         for node in self._nodes:
@@ -1098,32 +1130,35 @@ class StrategyTree:
 
     def to_file(self, filemame='last_best_tree.txt'):
         """
-        Une méthode qui permet de sauvegarder cet arbre de stratégie sous en forme de fichier textuel. On y utilise le
-        modèle suivant :
-            1) chaque noeud est représenté par une ligne dévouée : _id,_cost,_name,_type ; c'est bien possible de
-            remplacer une virgule ',' par un séparateur différent en précisant un attribut self.fout_sep de
-            cette classe ;
-            2) chaque arc est représenté par une ligne dévouée : _id_parent,_id_child,_attribut ; où _attribut est le
-            type d'arc pour cet arbre-là (par exemple 'yes' ou 'no' si parent est une Observation) ;
-            3) le fichier lui-même a la structure suivante :
-            racine de l'arbre    # ligne 1
-            [ligne vide]         # ligne 2
-            noeud_1              # ligne 3
-            noeud_2              # ligne 4
-            ...
-            noeud_n              # ligne n + 2
-            [ligne vide]         # ligne n + 3
-            arc_1                # ligne n + 4
-            arc_2                # ligne n + 5
-            ...
-            arc_m                # ligne n + m + 3
-        Cette méthode utilise également un attribut self.fout_newline pour représenter une signe qui indique le début
-        d'une nouvelle ligne.
+        Permet de sauvegarder l'arbre de stratégie sous forme de fichier texte.
+        On utilise le modèle suivant :
+        1) Chaque noeud est représenté par une ligne du type :
+        _id,_cost,_name,_type  
+        C'est bien possible de remplacer la virgule par un séparateur 
+        différent en précisant l'attribut *self.fout_sep* de la classe.
+        2) Chaque arc est représenté par une ligne du type :
+        _id_parent,_id_child,_attribut 
+        Où _attribut est le type d'arc (par exemple 'yes' ou 'no' si parent
+        est une Observation).
+        3) Le fichier lui-même a la structure suivante :
+        racine de l'arbre    # ligne 1
+        [ligne vide]         # ligne 2
+        noeud_1              # ligne 3
+        noeud_2              # ligne 4
+        ...
+        noeud_n              # ligne n + 2
+        [ligne vide]         # ligne n + 3
+        arc_1                # ligne n + 4
+        arc_2                # ligne n + 5
+        ...
+        arc_m                # ligne n + m + 3
+        Cette méthode utilise également l'attribut self.fout_newline pour 
+        représenter le signe qui indique le début d'une nouvelle ligne.
 
         Parameters
         ----------
         filemame : str, facultatif
-            Un nom de fichier où il faut sauvegarder l'arbre concerné.
+            Le nom du fichier où on sauvegarde le texte.
         """
         fout = open(filemame, 'w')
         newline = self.fout_newline
@@ -1149,22 +1184,23 @@ class StrategyTree:
 
 def st_from_file(filename='last_best_tree.txt', sep=',', newline=None):
     """
-    Une méthode statique du module qui permet de créer un objet du type StrategyTree à partir du fichier qui suit un
-    modèle fourni par la méthode StrategyTree.to_file.
+    Permet de créer un objet du type StrategyTree à partir du fichier indiqué
+    par *filename* en suivant le modèle fourni par la méthode 
+    StrategyTree.to_file.
 
     Parameters
     ----------
     filename : str, facultatif
-        Un nom du fichier où on stocke l'arbre sous en forme textuelle.
+        Nom du fichier où l'arbre est stocké l'arbre sous forme textuelle.
     sep : str, facultatif
-        Un séparateur utilisé dans le fichier passé.
+        Le séparateur utilisé dans le fichier.
     newline : str, facultatif
-        Une signe qui indique le début d'une nouvelle ligne.
+        Signe qui indique le début d'une nouvelle ligne.
 
     Returns
     -------
     stin : StrategyTree
-        Un arbre créé à partir des paramètres passés.
+        L'arbre créé à partir des paramètres passés.
     """
     if newline is None:
         newline = '\n'
