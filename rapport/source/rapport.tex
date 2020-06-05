@@ -70,6 +70,7 @@
 %                              de documento com mais de uma língua, a padrão é a
 %                              última.
 \NoAutoSpaceBeforeFDP % Utilizar em francês se quiser evitar espaços antes de :
+\usepackage{subcaption}
 
 %-----------------------------------------------------------------------------------%
 % PACOTES DE BIBLIOGRAFIA                                                           %
@@ -641,7 +642,162 @@ Cette inégalité peut ainsi être utilisée comme critère d'arrêt de l'algori
 \subsection{Résolution exacte}
 \label{SecExacte}
 
-\textcolor{red}{TODO~!}
+Comme nous avons indiqué dans la Section~\ref{SecApprochesTrouble}, l'algorithme qui permet de résoudre le problème de \emph{Troubleshooting} de manière exacte est intraitable même pour des tailles de données qui ne sont pas très grandes. C'est pour cette raison qu'en pratique l'on utilise plutôt certaines heuristiques afin de le résoudre. En revanche, des algorithmes exactes restent utiles puisqu'en les utilisant l'on obtient une capacité à tester une technique approchée quelconque. Plus spécifiquement, pour des suffisamment petits problèmes l'on pourrait appliquer une recherche exhaustive qui nous donnerait une stratégie précisément optimale en termes de \emph{coût espéré de réparation}. Ensuite, l'on trouve une solution approchée en utilisant une heuristique. À partir d'ici, l'on pourrait conclure comment cette méthode empirique fait face au problème proposé : mieux l'on s'approche vers une solution optimale, meilleur est l'algorithme.
+
+Pour toutes ces raisons invoquées, nous avons conçu deux algorithmes de recherche par force brute qui permettent de résoudre un problème de \emph{Troubleshooting} de façon exacte. Le premier parmi d'eux consiste à dénombrer toutes les stratégies possible que l'on peut construire étant donné des actions admissibles (des réparations, des observation et des couples ``observation-réparation''). En même temps, le deuxième est une approche qui utilise le principe de programmation dynamique : un arbre de stratégie optimal ne doit contenir que des sous-arbres également optimaux.
+
+\subsubsection{Dénombrement complet}
+\label{SecDenombrComplet}
+
+Soit un ensemble fini $\mathcal C$ est un ensemble de \emph{composantes} avec $\mathcal C_o \subset \mathcal C$ qui est un ensemble de \emph{composantes observables}. De plus, soit $\mathcal O$ est un ensemble d'\emph{observations globales}. L'idée générale de l'algorithme concerné est d'évaluer tous les arbres de stratégie uniques que l'on peut construire à partir des $\mathcal C$, $ \mathcal C_o$ et $\mathcal O$. Par exemple, étant donné $\mathcal C = \{A_1, A_2\}$, $\mathcal C_o = \varnothing$ et $\mathcal O = \{O\}$ avec $O\in\{o_1, o_2\}$ l'on peut construire exactement 8 arbres de stratégies dont les représentations graphiques sont données dans une Figure~\ref{arbresDeStrategies}. Bien que pour le cas où $\mathcal O = \varnothing$ l'on puisse assez simplement dénombrer toutes les stratégies admissible car il suffise au plus d'observer toutes les permutations du  $\mathcal C$, si  $\mathcal O \neq \varnothing$ le problème de dénombrement devient beaucoup plus compliqué parce que chaque conséquence d'une observation globale produit dans l'arbre de stratégie une branche dévouée partant d'un noeud correspondant à cette observation. Ainsi, l'on doit remplir chacune de ces branches de toutes les manières possibles utilisant les noeuds pas encore ajoutés dans un arbre à l'avant entre lesquels l'on peut avoir encore des observations dont les conséquences produiront encore plus de branches. Alors, nous avons eu besoin de mettre en place un algorithme assez spécifique pour ce but.
+
+\begin{remk}
+Par la suite, pour représenter un arbre de stratégie graphiquement l'on n'utilisera pas un arbre de décision complet mais plutôt sa version simplifiée afin d'améliorer sa lisibilité. Ainsi, l'on y réunit un sommet de décision avec celui de loterie à un seul noeud. De plus, pour une action de réparation l'on n'affiche pas une branche où l'on fixe le système en effectuant cette action parce que l'on considère que l'on continue le processus de réparation de quel que soit parent à son enfant si et seulement si le système marche pas encore après avoir exécuté une action correspondante à ce parent. La Figure~\ref{arbresDeStrategies} donne certains exemples d'une telle représentation.
+\end{remk}
+
+\begin{figure}[ht]
+\centering
+
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\begin{tikzpicture}
+            \node[draw, circle, label=$O$] (n0) at (0, 0) {};
+            \node[draw, circle, label=$A_1$] (n1) at (2.5, 1) {};
+            \node[draw, circle, label=$A_1$] (n2) at (2.5, -1) {};
+            \node[draw, circle, label=$A_2$] (n3) at (5, 1) {};
+            \node[draw, circle, label=$A_2$] (n4) at (5, -1) {};
+            
+            \draw[->] (n0) -- node[midway, above] {$o_1$} (n1);
+            \draw[->] (n0) -- node[midway, above] {$o_2$} (n2);
+            \draw[->] (n1) -- (n3);
+            \draw[->] (n2) -- (n4);
+    	\end{tikzpicture}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\begin{tikzpicture}
+            \node[draw, circle, label=$O$] (n0) at (0, 0) {};
+            \node[draw, circle, label=$A_1$] (n1) at (2.5, 1) {};
+            \node[draw, circle, label=$A_2$] (n2) at (2.5, -1) {};
+            \node[draw, circle, label=$A_2$] (n3) at (5, 1) {};
+            \node[draw, circle, label=$A_1$] (n4) at (5, -1) {};
+            
+            \draw[->] (n0) -- node[midway, above] {$o_1$} (n1);
+            \draw[->] (n0) -- node[midway, above] {$o_2$} (n2);
+            \draw[->] (n1) -- (n3);
+            \draw[->] (n2) -- (n4);
+    	\end{tikzpicture}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\begin{tikzpicture}
+            \node[draw, circle, label=$O$] (n0) at (0, 0) {};
+            \node[draw, circle, label=$A_2$] (n1) at (2.5, 1) {};
+            \node[draw, circle, label=$A_1$] (n2) at (2.5, -1) {};
+            \node[draw, circle, label=$A_1$] (n3) at (5, 1) {};
+            \node[draw, circle, label=$A_2$] (n4) at (5, -1) {};
+            
+            \draw[->] (n0) -- node[midway, above] {$o_1$} (n1);
+            \draw[->] (n0) -- node[midway, above] {$o_2$} (n2);
+            \draw[->] (n1) -- (n3);
+            \draw[->] (n2) -- (n4);
+    	\end{tikzpicture}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\begin{tikzpicture}
+            \node[draw, circle, label=$O$] (n0) at (0, 0) {};
+            \node[draw, circle, label=$A_2$] (n1) at (2.5, 1) {};
+            \node[draw, circle, label=$A_2$] (n2) at (2.5, -1) {};
+            \node[draw, circle, label=$A_1$] (n3) at (5, 1) {};
+            \node[draw, circle, label=$A_1$] (n4) at (5, -1) {};
+            
+            \draw[->] (n0) -- node[midway, above] {$o_1$} (n1);
+            \draw[->] (n0) -- node[midway, above] {$o_2$} (n2);
+            \draw[->] (n1) -- (n3);
+            \draw[->] (n2) -- (n4);
+    	\end{tikzpicture}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\begin{tikzpicture}
+            \node[draw, circle, label=$A_1$] (n0) at (0, 0) {};
+            \node[draw, circle, label=$O$] (n1) at (2.5, 0) {};
+            \node[draw, circle, label=$A_2$] (n2) at (5, 1) {};
+            \node[draw, circle, label=$A_2$] (n3) at (5, -1) {};
+            
+            \draw[->] (n0) -- (n1);
+            \draw[->] (n1) -- node[midway, above] {$o_1$} (n2);
+            \draw[->] (n1) -- node[midway, above] {$o_2$} (n3);
+    	\end{tikzpicture}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\begin{tikzpicture}
+            \node[draw, circle, label=$A_2$] (n0) at (0, 0) {};
+            \node[draw, circle, label=$O$] (n1) at (2.5, 0) {};
+            \node[draw, circle, label=$A_1$] (n2) at (5, 1) {};
+            \node[draw, circle, label=$A_1$] (n3) at (5, -1) {};
+            
+            \draw[->] (n0) -- (n1);
+            \draw[->] (n1) -- node[midway, above] {$o_1$} (n2);
+            \draw[->] (n1) -- node[midway, above] {$o_2$} (n3);
+    	\end{tikzpicture}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\begin{tikzpicture}
+            \node[draw, circle, label=$A_1$] (n0) at (0, 0) {};
+            \node[draw, circle, label=$A_2$] (n1) at (2.5, 0) {};
+            \node[draw, circle, label=$O$] (n2) at (5, 0) {};
+            
+            \draw[->] (n0) -- (n1);
+            \draw[->] (n1) -- (n2);
+    	\end{tikzpicture}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+    	\centering
+    	\begin{tikzpicture}
+            \node[draw, circle, label=$A_2$] (n0) at (0, 0) {};
+            \node[draw, circle, label=$A_1$] (n1) at (2.5, 0) {};
+            \node[draw, circle, label=$O$] (n2) at (5, 0) {};
+            
+            \draw[->] (n0) -- (n1);
+            \draw[->] (n1) -- (n2);
+    	\end{tikzpicture}
+    \end{subfigure}
+
+\caption{Tous les arbres de stratégies admissible que l'on peut construire à partir de $\mathcal C = \{A_1, A_2\}$, $\mathcal C_o = \varnothing$ et $\mathcal O = \{O\}$ avec $O\in\{o_1, o_2\}$.}
+\label{arbresDeStrategies}
+\end{figure}
+
+Pour dénombrer tous les arbres de stratégie possibles nous proposons commençant par chaque noeud admissible $n \in \mathcal O \cup \mathcal C$ de relancer de manière récursive le dénombrement excluant \emph{n} de l'ensemble des noeuds permis. Si \emph{n} est une observation globale l'on sauvegarde ses conséquences, son identifiant dans un arbre ainsi que des noeuds qui étaient admissible à ce moment-là. Ensuite, on continue à dénombrer remplissant l'une des branches qui part du \emph{n}. Sinon, l'on n'a qu'une seule branche à remplir parce qu'un noeud qui correspond à une réparation ou à une observation-réparation n'a qu'une seul conséquence à considérer : l'on a effectué une action correspondante à \emph{n} donc une composante correspondante dès maintenant marche avec certain, mais le système généralement ne marche pas (si l'on a réparé le système alors l'on a déjà fini le processus de réparation et il n'y a pas de besoin de continuer). Dans ce cas-là, l'on continue le dénombrement excluant \emph{n}, mais ne sauvegardant pas sa position dans un arbre courant ni ses conséquences. Dès que l'on obtient en entrée d'appel récursif un ensemble vide pour des noeuds réalisables, l'on considère qu'une branche courante est déjà remplie. C'est pour cette raison que l'on cherche une observation la plus récente qui dispose d'une conséquence dont la branche n'a pas été encore touchée. S'il y en existe au moins une, l'on relance ce processus récursif pour cette branche trouvée. Sinon, l'on a rempli alors toutes les branches de toutes les conséquences de toutes les observations, et l'on considère un arbre comme déjà construit. L'on calcule son \emph{espérance de coût} ce que l'on compare avec celle la meilleure pour le moment finissant d'une telle façon un appel particulier du dénombrement. Pour résumer, cet algorithme proposé se ressemble au parcours en profondeur. En effet, étant donné un noeud ayant une possibilité d'avoir un successeur mais n'en disposant pas l'on rempli se successeur s'il existe des noeuds admissible pour cette opération. Sinon, on cherche un autre tel noeud qui peut avoir un enfant mais qui ne l'a pas pour le remplir. À la fin, s'il n'existe plus des tels noeuds alors l'on a réussi à construire un arbre particulier.
+
+Par ailleurs, pour évaluer une stratégie $S \in \mathcal S$ déjà trouvée l'on utilise comme le critère son \emph{espérance de coût} que l'on calcule avec une formule également récursive donnée ci-dessous :
+
+\begin{equation}
+\label{CoutEspereGeneral}
+\begin{gathered}
+EC(E, S) = P(o_0 \neq \text{normal} \mid E) \: \cdot \left[\text{coût}(\text{racine}(S)) \: + \vphantom{\sum_{r}^{} EC(E \cup \{\text{racine}(S) = r, o_0 \neq \text{normal toujours}\}, \text{sous-arbre}(S, \{\text{racine}(S) = r\}))} \right. \\ \left. \sum_{r}^{} EC(E \cup \{\text{racine}(S) = r, o_0 \neq \text{normal toujours}\}, \text{sous-arbre}(S, \{\text{racine}(S) = r\}))\right]
+\end{gathered}
+\end{equation}
+où $E$ est un ensemble d'évidences dont on dispose au moment lorsque l'on doit exécuter une action $\text{racine}(S)$. Initialement l'on pose $E_0 = \{o_0 \neq \text{normal au début}\}$. Cette fonction-là donnée par la formule~(\ref{CoutEspereGeneral}) est notre objectif que l'on voudrait minimiser. Par conséquent, l'algorithme concerné nous retourne une stratégie $S^*$ t.q. :
+
+\begin{equation}
+\label{SolMainProblem}
+EC(E_0, S^*) = \min_{S \in \mathcal S} {EC(E_0, S)}.
+\end{equation}
+
+\begin{remk}
+Des formules $\{o_0 \neq \text{normal}\}$, $\{\text{racine}(S) = r, o_0 \neq \text{normal toujours}\}$ et $\{o_0 \neq \text{normal au début}\}$ dénotent les trois événements différents car, en fait, le résultat d'une observation $o_0$ dépend du temps où l'on l'exécute. En effet, $o_0 \neq \text{normal}$ dénote le fait que si l'on faisait une telle observation actuellement, l'on obtiendrait un résultat qui ne serait pas $\text{normal}$. En même temps, une notation $\{\text{racine}(S) = r, o_0 \neq \text{normal toujours}\}$ veut dire que le système ne marchait pas à l'avant, et qu'il continue à ne pas marcher même si $\text{racine}(S) = r$. Enfin, $o_0 \neq \text{normal au début}$ décrit le fait que le système ne marchait pas au tout début i.e. avant que l'on a commencé le processus de réparation. Il est alors assez évident que le calcul des probabilités correspondantes à ces événements ne serait pas très facile à effectuer en termes du modèle utilisé. C'est pourquoi l'on utilise la \emph{``single fault assumption''} décrite dans la Section~\ref{SecImplRepresentation}.
+\end{remk}
+
+\subsubsection{Programmation dynamique}
+\label{SecProgDyn}
+
+Le problème principal d'un algorithme de dénombrement complet proposé au-dessus c'est ce qu'il devient intraitable trop vite. Même pour les problèmes assez petits, par exemple lorsque $\mid \mathcal O \mid = 4$, $\mid \mathcal C \mid = 3$ et $\mid \mathcal C_0 \mid = 0$, cela prend des heures pour dénombrer tous les arbres possibles. Cependant, il existe une possibilité d'améliorer l'algorithme de recherche exhaustive en utilisant le principe de programmation dynamique. Observant encore une fois la formule~(\ref{CoutEspereGeneral}) l'on constate que le coût espéré d'un arbre quelconque dépend linéairement des coûts espérés de ses sous-arbres avec des coefficients positifs ($P(o_0 \neq \text{normal} \mid E) \in \left[0, 1\right]$). De plus, l'on remplit des branches de quel que soit arbre de stratégie de manière indépendante : un sous-arbre construit pour l'une des branches n'influence pas les sous-arbres que l'on construit pour les autres branches. C'est pour cette raison que pour minimiser l'espérance du coût d'une stratégie il suffit de minimiser cette espérance des sous-stratégies correspondantes.
+
+Ainsi, l'idée principale de cette technique est de parcourir par tous les noeuds admissibles afin de connecter à chacun un sous-arbre optimal construit à partir des noeuds qui restent. Puis, pour trouver un sous-arbre optimal on relance récursivement la même méthode, c'est-à-dire, l'on parcourt par tous les noeuds qui restent et l'on connecte vers chacun de ces noeuds un ``sous-sous-arbre'' encore optimal. L'on continue à effectuer ces appels récursifs jusqu'à ce que l'on atteint un moment où il ne reste pas de noeuds à utiliser. En ce moment-là, l'on pose que toutes les espérances des coûts des sous-arbres dans la formule~(\ref{CoutEspereGeneral}) sont égales à $0$ et l'on retourne une stratégie optimale de cet appel ce qui nous permet de trouver une stratégie optimale d'un appel précédente et qui nous permettrait à la fin de construire un arbre optimal en général.
 
 \subsection{Élicitation des coûts}
 \label{SecContribElicitation}
@@ -808,7 +964,26 @@ Une fois la meilleure question trouvée, la méthode \texttt{elicitation} permet
 \subsection{Algorithme exact}
 \label{SecImplExact}
 
-\textcolor{red}{TODO~!}
+En comparant aux algorithmes approchés décrits au-dessus, les méthodes exactes nécessitent d'avoir une structure assez spécifique pour stocker et pour manipuler leurs solutions. Par conséquent l'on a eu besoin d'une représentation des arbres de stratégie. C'est pourquoi, avant d'implémenter des algorithmes eux-mêmes, nous avons conçus certaines classes auxiliaires :
+
+\begin{itemize}
+    \item \texttt{\textbf{NodeST}} : une classe abstraite qui représente un noeud abstrait d'un arbre de stratégie ;
+    \item \texttt{\textbf{Repair}} : une classe qui représente un noeud de réparation ;
+    \item \texttt{\textbf{Observation}} : une classe qui représente un noeud d'observation ;
+    \item \texttt{\textbf{StrategyTree}} : une classe qui représente un arbre de stratégie.
+\end{itemize}
+Toutes ces classes sont fournies dans un module \texttt{StrategyTree.py}. L'on remarque qu'il n'y a pas de classe séparée pour l'action du type ``observation-réparation'' car il suffit d'utiliser \texttt{Observation} pour ce cas-là. Ces classes auxiliaires nous permettent de gérer assez facilement des objets concernés. Par exemple, une classe \texttt{StrategyTree} dispose des méthodes \texttt{get\_sub\_tree} (pour obtenir un sous-arbre quelconque), \texttt{connect} (pour connecter un arbre avec l'un d'autre), \texttt{visualize} (pour afficher un arbre dans le fichier \texttt{.pdf}), etc.
+
+Afin de lancer un algorithme de force brute la classe \texttt{TroubleShootingProblem} dispose d'une méthode dévouée \texttt{brute\_force\_solver} qui est une fonction wrapper permettant de lancer toutes les deux versions de l'algorithme, soit le \emph{dénombrement complet}, soit la \emph{programmation dynamique}. Par ailleurs, cette méthode prend également des configurations importantes de l'algorithme :
+\begin{itemize}
+    \item \texttt{\textbf{obs\_rep\_couples}} : une variable booléenne qui est lié à une idée suivante : étant donné une action $a \in \mathcal O \cup \mathcal C$ l'on la considère comme une couple ``observation-réparation'' ; en effet, l'on pourrait quand même considérer cette action comme les deux séparées : $a_o$ qui est une observation locale et $a_r$ qui est une réparation pure ; cela nous donnerait une capacité de mettre de temps en temps une action de réparation n'effectuant aucune observation d'une composante correspondante à l'avant ; parfois, les stratégies qui admettent cette supposition sont plus efficaces en sens de l'\emph{espérance du coût}, plus précisément, dans les cas où selon l'évidence courante il est très probable que certaine composante ne marche pas, et alors ce serait pas très utile de l'observer puisque l'on est presque sûr déjà d'y avoir un défaut ; c'est-à-dire, une valeur de l'information obtenue avec cette observation serait plutôt négative ; se retournant vers un paramètre il faut passer $\texttt{\textbf{obs\_rep\_couples} = False}$ afin que l'algorithme puisse considérer une action et une observation de manière séparée, et $\texttt{\textbf{obs\_rep\_couples} = True}$ sinon ;
+    \item \texttt{\textbf{obs\_obsolete}} : pour qu'une méthode concernée puisse considérer le fait que l'on peut rendre telle ou telle observation obsolète réparant quelque composante, il faut passer \texttt{True} ; sinon, l'on passe \texttt{False}.
+\end{itemize}
+Les autres paramètres sont plutôt techniques, et l'on les décrit dans le fichier de la documentation.
+
+Les versions différentes de l'approche de force brute s'effectuent en appelant les deux méthodes bien récursive : \texttt{\_evaluate\_all\_st} pour le dénombrement complet et\break\texttt{dynamic\_programming\_solver} pour la programmation dynamique. L'on remarque que c'est possible d'appeler \texttt{dynamic\_programming\_solver} sans évoquant la wrapper au-dessus tandis que des appels de \texttt{\_evaluate\_all\_st} ne sont pas recommandés. L'on ajoute que pour calculer l'espérance du coût d'une stratégie dans \texttt{\_evaluate\_all\_st} l'on utilise une méthode\break\texttt{expected\_cost\_of\_repair} qui est également bien récursive (en fait, plutôt sa partie interne\break\texttt{\_expected\_cost\_of\_repair\_internal}) alors que \texttt{dynamic\_programming\_solver} calcule cette valeur directement dans son coeur.
+
+L'on utilise objet du type \texttt{StrategyTree} pour stocker une solution optimale trouvée ce que l'on retourne dans la fonction \texttt{brute\_force\_solver} avec la valeur du meilleur coût espéré.
 
 \subsection{Calcul de l'espérance de coût par une méthode de Monte-Carlo}
 \label{SecImplMC}
