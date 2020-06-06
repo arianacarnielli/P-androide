@@ -51,13 +51,48 @@ nodesAssociations = {
     "callService": {"service"}
 }
 
-# Un deuxième dictionnaire de types, plus réduit, est fourni pour que
-# l'algorithme exacte s'exécute en temps raisonnable.
-nodesAssociationsSimple = {
-     "car.batteryFlat": {"repairable", "observable"},
-     "tank.Empty": {"repairable"},
-     "oil.noOil": {"repairable", "observable"},
+# Des dictionnaires complémentaires de types, plus réduits,
+# sont fournis pour que l'algorithme exacte s'exécute
+# en temps raisonnable.
+
+# dp, obs_rep_couples = True
+nodesAssociationsSimple0 = {
+    "car.batteryFlat": {"repairable", "observable"},
+    "oil.noOil": {"repairable", "observable"},
+    "tank.Empty": {"repairable"},
+    "starter.starterBroken": {"repairable", "observable"},
+    "car.lightsOk": {"unrepairable", "observable"},
     "oil.dipstickLevelOk": {"unrepairable", "observable"},
-     "car.carWontStart": {"problem-defining"},
-     "callService": {"service"}
+    "car.carWontStart": {"problem-defining"},
+    "callService": {"service"}
+}
+
+# dp, obs_rep_couples = False
+nodesAssociationsSimple1 = {
+    "car.batteryFlat": {"repairable"},
+    "oil.noOil": {"repairable", "observable"},
+    "tank.Empty": {"repairable"},
+    "starter.starterBroken": {"repairable"},
+    "oil.dipstickLevelOk": {"unrepairable", "observable"},
+    "car.carWontStart": {"problem-defining"},
+    "callService": {"service"}
+}
+
+# all, obs_rep_couples = True
+nodesAssociationsSimple2 = {
+    "car.batteryFlat": {"repairable", "observable"},
+    "oil.noOil": {"repairable", "observable"},
+    "tank.Empty": {"repairable"},
+    "oil.dipstickLevelOk": {"unrepairable", "observable"},
+    "car.carWontStart": {"problem-defining"},
+    "callService": {"service"}
+}
+
+# all, obs_rep_couples = False
+nodesAssociationsSimple3 = {
+    "car.batteryFlat": {"repairable", "observable"},
+    "tank.Empty": {"repairable"},
+    "oil.dipstickLevelOk": {"unrepairable", "observable"},
+    "car.carWontStart": {"problem-defining"},
+    "callService": {"service"}
 }
