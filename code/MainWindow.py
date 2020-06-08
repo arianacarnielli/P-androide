@@ -191,14 +191,18 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentWidget(self.trouble)
 
     def startBruteForce(self):
-        answer = QMessageBox.question(self, "Attention !", "Les calculs avec" \
-                                        " la recherche exhaustive sont trop" \
-                                        " lourds. Voulez-vous utiliser une" \
-                                        " version simplifiée du problème ?", \
-                                        QMessageBox.Yes | QMessageBox.No)            
-        if answer == QMessageBox.Yes:
-            self.nodesAssociations = nodesAssociationsSimple
-
+        # answer = QMessageBox.question(
+        #     self, "Attention !",
+        #     "Les calculs avec la recherche exhaustive peuvent être trop"
+        #     " lourds (à peu près 50 minutes même pour la meilleure "
+        #     "configuration). Voulez-vous utiliser une version simplifiée "
+        #     "du problème ?",
+        #     QMessageBox.Yes | QMessageBox.No)
+        # if answer == QMessageBox.Yes:
+        #     self.nodesAssociations = nodesAssociationsSimple3
+        #     self.tsp = dtt.TroubleShootingProblem(
+        #         gum.loadBN(self.bnCarFilename), [self.costsRep, self.costsObs],
+        #         self.nodesAssociations)
         self.resize(self.configSize[0], self.configSize[1])
         self.bruteForceStats["rep_num"] = 0
         self.bruteForceStats["obs_num"] = 0
@@ -305,6 +309,25 @@ class MainWindow(QMainWindow):
             self.modeExec = "step-by-step"
         else:
             self.modeExec = "show-tree"
+        answer = QMessageBox.question(
+            self, "Attention !",
+            "Les calculs avec la recherche exhaustive peuvent être trop"
+            " lourds (à peu près 50 minutes même pour la meilleure "
+            "configuration). Voulez-vous utiliser une version simplifiée "
+            "du problème ?",
+            QMessageBox.Yes | QMessageBox.No)
+        if answer == QMessageBox.Yes:
+            if self.modeCalc == "dp" and self.obsRepCouples:
+                self.nodesAssociations = nodesAssociationsSimple0
+            elif self.modeCalc == "dp" and not self.obsRepCouples:
+                self.nodesAssociations = nodesAssociationsSimple1
+            elif self.modeCalc == "all" and self.obsRepCouples:
+                self.nodesAssociations = nodesAssociationsSimple2
+            elif self.modeCalc == "all" and not self.obsRepCouples:
+                self.nodesAssociations = nodesAssociationsSimple3
+            self.tsp = dtt.TroubleShootingProblem(
+                gum.loadBN(self.bnCarFilename), [self.costsRep, self.costsObs],
+                self.nodesAssociations)
         pbarMax = self.findPbarMax()
         self.config.progressBar.setRange(0, pbarMax)
         self.randomSocketPort = int(np.random.randint(1024, 10000, 1))
@@ -318,6 +341,7 @@ class MainWindow(QMainWindow):
             )
         else:
             self.bfProcess = Process(target=self.launchBruteForceMultiProcessing)
+        self.config.calcButton.setText("Le calcul de la stratégie optimale est en cours...")
         self.bfProcess.start()
         self.managePbar()
 
@@ -377,6 +401,7 @@ class MainWindow(QMainWindow):
     def launchBruteForceMultiProcessing(self):
         sock = socket.socket()
         sock.connect(("localhost", self.randomSocketPort))
+        sock.send("0".encode())
         best_tree, best_ecr = self.tsp.brute_force_solver(
             mode=self.modeCalc, obs_rep_couples=self.obsRepCouples, obs_obsolete=self.obsObsolete,
             sock=sock
@@ -435,7 +460,7 @@ class MainWindow(QMainWindow):
         elif not self.obsRepCouples and self.modeCalc == "all":
             pbarMax += fnodesNum * (fnodesNum - 1)
 
-        return pbarMax + 1
+        return pbarMax + 2
 
     def quit(self):
         box = QMessageBox()
@@ -458,6 +483,7 @@ def launch_brute_force_multi_processing_windows(
     tsp = dtt.TroubleShootingProblem(gum.loadBN(bayesian_network_filename), costs, nodes_types)
     sock = socket.socket()
     sock.connect(("localhost", port))
+    sock.send("0".encode())
     best_tree, best_ecr = tsp.brute_force_solver(
         mode=mode_calc, obs_rep_couples=obs_rep_couples, obs_obsolete=obs_obsolete, sock=sock
     )

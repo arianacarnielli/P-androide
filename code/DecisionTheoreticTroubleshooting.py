@@ -2304,6 +2304,9 @@ class TroubleShootingProblem:
                       % i)
             if debug_nb_call == 1 and sock is not None:
                 sock.send('0'.encode())
+            if debug_nb_call == 1 and debug_iter:
+                print(f'{bcolors.OKGREEN}\n########################\nSubiter %d\n########################\n{bcolors.ENDC}'
+                      % i)
             # On crée un (sous-)arbre qui a un noeud courant pour sa racine calculant une probabilité de ne pas réparer
             # le dispositif effectuant une action qui correspond à ce noeud-là et mettant à jour tous les paramètres
             # nécessaires
@@ -2420,7 +2423,7 @@ class TroubleShootingProblem:
              Dictionnaire de prix d'observations des composantes observables.
         
         Returns
-        ------- 
+        -------
         sortie_anti : bool
             True en cas de sortie anticipée, False sinon.
         costs : numpy.ndarray
