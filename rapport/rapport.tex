@@ -63,6 +63,16 @@
 %                          acentuados como um único bloco.
 
 %-----------------------------------------------------------------------------------%
+% PACOTES DE BIBLIOGRAFIA                                                           %
+%-----------------------------------------------------------------------------------%
+%\usepackage{babelbib} % Permite definir a língua das entradas da bibliografia. Usar
+%                       [fixlanguage] para uma mesma língua para todas as entradas e
+%                       \selectbiblanguage{} para definir a língua. Um estilo compa-
+%                       tível com babelbib deve ser usado (ex: babplain)
+%\usepackage{cite} % Organiza os elementos citados dentro de um mesmo \cite.
+\usepackage[sort]{natbib}
+
+%-----------------------------------------------------------------------------------%
 % PACOTES DE LÍNGUAS                                                                %
 %-----------------------------------------------------------------------------------%
 \usepackage[french]{babel} % Seleciona a língua do documento, definindo nomes de
@@ -71,15 +81,6 @@
 %                              última.
 \NoAutoSpaceBeforeFDP % Utilizar em francês se quiser evitar espaços antes de :
 \usepackage{subcaption}
-
-%-----------------------------------------------------------------------------------%
-% PACOTES DE BIBLIOGRAFIA                                                           %
-%-----------------------------------------------------------------------------------%
-%\usepackage{babelbib} % Permite definir a língua das entradas da bibliografia. Usar
-%                       [fixlanguage] para uma mesma língua para todas as entradas e
-%                       \selectbiblanguage{} para definir a língua. Um estilo compa-
-%                       tível com babelbib deve ser usado (ex: babplain)
-\usepackage{cite} % Organiza os elementos citados dentro de um mesmo \cite.
 
 %-----------------------------------------------------------------------------------%
 % PACOTES DE FONTES                                                                 %
@@ -1174,7 +1175,7 @@ Une possible solution à ce problème est de passer à des questions d'élicitat
 
 
 
-\bibliographystyle{abbrv}
+\bibliographystyle{ACM}
 \bibliography{bibliographie}
 
 \end{document}
