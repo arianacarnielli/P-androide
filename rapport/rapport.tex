@@ -166,7 +166,7 @@
 %\usepackage{refcheck} % Verifica as referências procurando por
 %                      % labels não usados ou equações numeradas sem labels.
 %                      % Verificar o arquivo .log e procurar por RefCheck.
-\usepackage[french, onelanguage]{algorithm2e}
+\usepackage[ruled, vlined, french, onelanguage]{algorithm2e}
 
 \usepackage{pdflscape}
 
@@ -801,12 +801,86 @@ où $E$ est l'ensemble d'évidences dont on dispose au moment d'exécuter l'acti
 Les évènements $\{o_0 \neq \text{normal}\}$, $\{\text{racine}(S) = r, o_0 \neq \text{normal toujours}\}$ et $\{o_0 \neq \text{normal }\allowbreak\text{au }\allowbreak\text{début}\}$ sont tous les trois différents car le résultat d'une observation $o_0$ dépend de l'instant où on l'exécute. En effet, $o_0 \neq \text{normal}$ dénote le fait que, si on fait une telle observation en ce moment, on obtiendrait un résultat qui n'est pas $\text{normal}$. En même temps, la notation $\{\text{racine}(S) = r, o_0 \neq \text{normal toujours}\}$ veut dire que le système ne marchait pas avant, et qu'il ne marche toujours pas même si $\text{racine}(S) = r$. Enfin, $\{o_0 \neq \text{normal au début}\}$ décrit le fait que le système ne marchait pas au tout début, avant que l'on ait commencé le processus de réparation. Il est alors assez évident que le calcul des probabilités correspondantes à ces événements ne serait pas très facile à effectuer en termes du modèle utilisé. C'est pourquoi on utilise la \emph{«~single fault assumption~»} introduite dans la Section~\ref{SecAlgoSimple} et décrite dans la suite dans la Section~\ref{SecImplRepresentation}.
 \end{remk}
 
+Pour résumer l'on fournit l'algorithme en pseudo-code d'une fonction \emph{Évaluer} qui réalise une approche décrite au-dessus donc qui dénombre tous les arbres de stratégie possibles :
+
+\begin{algorithm}
+    \label{evaluerTousLesArbres}
+    \DontPrintSemicolon
+    \KwData{$\mathcal N = \mathcal C \cup \mathcal O$, l'ensemble de noeuds admissibles.\\\hphantom{Données : }\emph{args}, les paramètres complémentaires ; rien par défaut.\\\hphantom{Données : }$S^*$, une variable globale que l'on peut utiliser dans tous les appels indépendants\\\hphantom{Données : }de cet algorithme et qui représente la meilleure solution trouvée pour l'instant.}
+    \KwResult{$S^*$, le meilleur arbre de stratégie trouvé avec l'espérance de coût minimale.}
+    \tcp{Parcours par tous les noeuds admissibles (s'il en existe au moins un)}
+    \For {$n \in \mathcal N$} {
+        \eIf {$args = \varnothing$} {
+            \tcp{Le cas où l'on a appelé cette fonction la première fois}
+            \emph{Évaluer}($\mathcal N \setminus \{n\}$, \emph{CreateArgs}(\emph{n}))
+        }{
+            \tcp{L'on connecte un noeud courant avec son parent qui est stocké avec la branche à remplir dans \emph{args}}
+            \emph{Connecter}(\emph{n}, \emph{args})
+
+            \tcp{L'on continue en remplissant des enfants d'un noeud \emph{n} si c'est bien possible}
+            \emph{Évaluer}($\mathcal N \setminus \{n\}$, \emph{ActualiserArgs}(\emph{n}, \emph{args}))
+        }
+    }
+    \If {$\vert \mathcal N \vert = 0$} {
+
+        \eIf {Il nous reste des branches à remplir} {
+            \tcp{Danc ce cas-là, l'on doit se retourner vers une dernière observation dont une branche l'on n'a pas encore rempli}
+            \emph{Évaluer}(\emph{NoeudsAdmissiblesPrecedents}(args), \emph{ActualiserArgs}(\emph{n}, \emph{args}))
+        }{
+            \tcp{L'on a déjà rempli toutes les branches possibles alors l'on a fini la construction d'un arbre ; il faut alors calculer son espérance du coût}
+            \tcp{L'on suppose que l'on stocke un arbre courant dans \emph{args} et que l'on peut l'obtenir en appelant une fonction dévouée}
+            \emph{ec} $\longleftarrow EC(\varnothing, ObtenirArbreCourant(args))$
+            
+            $S^* \longleftarrow $ \leIf{$ec < EC(\varnothing, S^*)$}{\emph{ObtenirArbreCourant}(\emph{args})}{$S^*$}
+        }
+    }
+    \caption{\emph{Évaluer}}
+\end{algorithm}
+
 \subsubsection{Programmation dynamique}
 \label{SecProgDyn}
 
 Le problème principal de l'algorithme de dénombrement complet de la Section~\ref{SecDenombrComplet} est qu'il devient intraitable trop vite. Même pour des problèmes assez petits, par exemple lorsque $\abs{\mathcal O} = 4$, $\abs{\mathcal C} = 3$ et $\abs{\mathcal C_o} = 0$, dénombrer tous les arbres possibles prend des heures. Cependant, il existe une possibilité d'améliorer l'algorithme de recherche exhaustive en utilisant le principe de programmation dynamique. Observant encore une fois la formule \eqref{CoutEspereGeneral}, on constate que le coût espéré d'un arbre quelconque dépend linéairement des coûts espérés de ses sous-arbres avec des coefficients positifs ($P(o_0 \neq \text{normal} \mid E) \in \left[0, 1\right]$). De plus, on remplit les branches d'un arbre de stratégie de manière indépendante~: le sous-arbre construit pour l'une des branches n'influence pas les sous-arbres que l'on construit pour les autres branches. C'est pour cette raison que, pour minimiser l'espérance de coût d'une stratégie, il suffit de minimiser l'espérance de coût des sous-stratégies correspondantes.
 
 Ainsi, l'idée principale de cette technique est de parcourir toutes les actions admissibles afin de connecter à chacune un sous-arbre optimal construit à partir des actions restantes. Puis, pour trouver un sous-arbre optimal, on relance récursivement la même méthode, c'est-à-dire, on parcourt toutes les actions restantes et on connecte à chacune d'entre elles un «~sous-sous-arbre~» encore optimal. On continue à effectuer ces appels récursifs jusqu'à ce que l'on n'ait plus d'actions à réaliser. À ce moment-là, on pose que toutes les espérances des coûts des sous-arbres dans la formule \eqref{CoutEspereGeneral} sont égales à $0$ et on retourne la stratégie optimale triviale de cet appel, ce qui nous permet de trouver une stratégie optimale de l'appel précédent, et ainsi de suite, ce qui nous permettra à la fin de construire un arbre optimal.
+
+Par conséquent, utilisant les idées indiquées au-dessus l'on a une possibilité de formuler un algorithme proposé en pseudo-code (de la fonction \emph{DynProg}, plus précisément) :
+
+\begin{algorithm}
+    \label{bruteForceProgDyn}
+    \DontPrintSemicolon
+    \KwData{$\mathcal N = \mathcal C \cup \mathcal O$, l'ensemble de noeuds admissibles.\\\hphantom{Données : }p, la probabilité que le système ne marchait pas après avoir fait une action\\\hphantom{Données : }précédente ; 1 par défaut.\\\hphantom{Données : }E, un ensemble des évidences ; $\varnothing$ par défaut.}
+    \KwResult{$S^*$, le meilleur arbre de stratégie trouvé avec l'espérance de coût minimale.}
+    
+    \tcp{S'il n'y a pas de noeuds admissibles alors on ne retourne rien}
+    \If{$\vert \mathcal N \vert = 0$}{
+        \Return{$\varnothing, 0$}
+    }
+    
+    \tcp{Une initialisation par un arbre qui ne contient qu'un noeud de service}
+    $S^* \longleftarrow \{ServiceNode \longrightarrow \varnothing\}$
+    
+    \tcp{Parcours par tous les noeuds admissibles (s'il en existe au moins un)}
+    \For {$n \in \mathcal N$} {
+        $ec  \longleftarrow p \cdot \text{coût}(n)$
+        
+        \tcp{Une initialisation de l'arbre courant $S_c$ qui a \emph{n} pour sa racine}
+        $S_c \longleftarrow \{n \longrightarrow \varnothing\}$    
+        
+        \For {\emph{tous les résultats possibles} $r$ \emph{d'exécution d'action qui correspond à} $n$} {
+            $pn \longleftarrow P(o_0 \neq \text{normal} \mid E \cup \{n = r, o_0 \neq \text{normal toujours}\})$
+            
+            $ec \longleftarrow ec + p \cdot \emph{connect}(S_c, \emph{n}, \emph{DynProg}(\mathcal N \setminus \{n\}, pn, E \cup \{n = r, o_0 \neq \text{normal toujours}\}))$
+        }
+        
+        \If{$ec < EC(E, S^*)$}{
+            $S^* \longleftarrow S_c$
+        }
+    }
+
+    \Return{$S^*, EC(E, S^*)$}
+    \caption{Résolution par la programmation dynamique}
+\end{algorithm}
 
 \subsection{Élicitation des coûts}
 \label{SecContribElicitation}
